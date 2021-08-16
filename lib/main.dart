@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:howell_capstone/screens/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-//  added it back
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase
