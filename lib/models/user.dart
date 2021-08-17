@@ -1,9 +1,6 @@
 class User {
   final String uid;
+  final String? email;
 
-  User({this.uid});
+  User(this.uid, this.email);
 }
-
-
-
-https://www.youtube.com/watch?v=PS0b2gJ04Bs&list=PL4cUxeGkcC9j--TKIdkb3ISfRbJeJYQwC&index=6

@@ -1,25 +1,42 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:howell_capstone/models/user.dart';
 
 class AuthService {
-  // private property _auth
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
 
-  // sign in anonymously
-  Future signinAnonymously() async {
-    try {
-      UserCredential result = await _auth.signInAnonymously();
-      User? user = result.user;
-      return user;
-    } catch (e) {
-      print(e.toString());
+  User? _userFromFirebase(auth.User? user) {
+    if (user == null) {
       return null;
     }
+
+    return User(user.uid, user.email);
   }
 
-  // sign in with email and password
+  Stream<User?>? get user {
+    return _firebaseAuth.authStateChanges().map(_userFromFirebase);
+  }
 
-  // register with email and passwords
+  Future<User?> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password);
 
-  // sign out
+    return _userFromFirebase(credential.user);
+  }
 
+  Future<User?> createUserWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
+    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+
+    return _userFromFirebase(credential.user);
+  }
+
+  Future<void> signOut() async {
+    return await _firebaseAuth.signOut();
+  }
 }
