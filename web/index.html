@@ -94,5 +94,43 @@
       loadMainDartJs();
     }
   </script>
+
+
+
+
+  <!--Firebase Dependecies-->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-storage.js"></script>
+
+  <!-- Add for Cloud Firestore: https://pub.dev/packages/cloud_firestore -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-firestore.js"></script>
+
+  <!-- Add for Firebase Auth: https://pub.dev/packages/firebase_auth -->
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase-auth.js"></script>
+  
+
+
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyCPpMQZnOCbzYNY6QILapPnjdrOjQh85DY",
+    authDomain: "howell-capstone.firebaseapp.com",
+    projectId: "howell-capstone",
+    storageBucket: "howell-capstone.appspot.com",
+    messagingSenderId: "835606108902",
+    appId: "1:835606108902:web:c0e76dcf597a5fa4bbf927",
+    measurementId: "G-272L24DBYN"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
 </body>
 </html>
