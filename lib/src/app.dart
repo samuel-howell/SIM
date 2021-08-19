@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/screens/login.dart';
+import 'package:howell_capstone/src/screens/login-screen.dart';
 
 class App extends StatelessWidget {
   const App({Key? key}) : super(key: key);
@@ -7,7 +7,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login App',
+      title: 'SIM',
       theme: ThemeData(accentColor: Colors.purple, primarySwatch: Colors.blue),
       home: LoginScreen(),
     );
