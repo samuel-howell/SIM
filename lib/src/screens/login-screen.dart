@@ -132,4 +132,3 @@ class _LoginScreenState extends State<LoginScreen> {
 // make switch statements with all of these Firebase Auth error messages
 
 
-//NEXT STEP:   https://www.youtube.com/watch?v=YZt92I2V704 

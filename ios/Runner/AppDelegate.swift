@@ -11,3 +11,5 @@ import Flutter
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }
+
+//TODO: set up firebase for ios

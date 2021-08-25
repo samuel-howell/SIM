@@ -1,6 +1,7 @@
 //  THIS PAGE IS A NAVIGATION OVERLAY WIDGET THAT DISPLAYS OVER OTHER SCREENS 
 
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/create-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/view-screen.dart';
@@ -52,6 +53,13 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
               text:'VIEW', 
               icon: Icons.info,
               onClicked: () => selectedItem(context, 3),
+            ),
+
+            const SizedBox(height:15),
+            buildMenuItem(
+              text:'CREATE', 
+              icon: Icons.access_alarm, //TODO: change this icon to something more relevant
+              onClicked: () => selectedItem(context, 4),
             ),
 
             //  this is our divider
@@ -114,6 +122,13 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
       case 3: 
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ViewScreen(),
+        )
+      );
+      break;
+
+      case 4: 
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => CreateScreen(),
         )
       );
       break;
