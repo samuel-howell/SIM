@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:howell_capstone/src/res/custom-colors.dart';
+import 'package:howell_capstone/src/utilities/database.dart';
+
 
 // Define a custom Form widget.
 class AddItemForm extends StatefulWidget {
@@ -20,7 +24,32 @@ class AddItemFormState extends State<AddItemForm> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
-  String? _name = " ";
+  bool _isProcessing = false;
+
+  //  these two controllers will store the data inputed by the user.
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+
+//   //  this method puts the data from the AddItemForm and pushes it to Firestore.
+//   addData(){
+  
+//   Map<String,dynamic> demoData = { // this is a JSON file that is inserted into the DB
+//     "name": _name,
+//     "description" : _description,
+//     "price" : _price,
+//     };
+
+//   CollectionReference collectionReference = FirebaseFirestore.instance.collection('data');  //collectionReference var now referes to the "data" collection in Firestore
+//   collectionReference.add(demoData); 
+// }
+
+  //initialize vars
+  // String? _name;
+  // String? _description;
+  // String? _price;
+
+
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
@@ -30,13 +59,54 @@ class AddItemFormState extends State<AddItemForm> {
         children: <Widget>[
           // Add TextFormFields and ElevatedButton here.
 
+          //text field for item name
           TextFormField(
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
               labelText: 'Enter the item\'s name',
             ),
 
-            onSaved: (value) => this._name = value,  //  when the user submits form, save whatever text is in this field to the _name variable
+
+            controller: _nameController,
+            keyboardType: TextInputType.text,
+           
+
+            validator: (value) { // The validator receives the text that the user has entered.
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+
+          // text field for item description
+          TextFormField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Enter the item\'s description',
+            ),
+
+            controller: _descriptionController,
+            keyboardType: TextInputType.text, 
+
+            validator: (value) { // The validator receives the text that the user has entered.
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+
+          // text field for item price
+          TextFormField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Enter the item\'s price',
+            ),
+
+            controller: _priceController,
+            keyboardType: TextInputType.number,
+              
 
             validator: (value) { // The validator receives the text that the user has entered.
               if (value == null || value.isEmpty) {
@@ -47,19 +117,54 @@ class AddItemFormState extends State<AddItemForm> {
           ),
 
 
-          ElevatedButton(
-            onPressed: () {
-              // Validate returns true if the form is valid, or false otherwise.
-              if (_formKey.currentState!.validate()) {
-                // If the form is valid, display a snackbar. In the real world,
-                // you'd often call a server or save the information in a database.
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Processing Data')),
-                );
-              }
-            },
-            child: const Text('Submit'),
-          ),
+
+          _isProcessing
+              ? Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      CustomColors.cpink,
+                    ),
+                  ),
+                )
+              : Container(
+                  width: double.maxFinite,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        CustomColors.cpink,
+                      ),
+                      shape: MaterialStateProperty.all(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    onPressed: () async {
+                      // Validate returns true if the form is valid, or false otherwise.
+                      if (_formKey.currentState!.validate()) {
+                        
+                        setState(() {
+                            _isProcessing = true;
+                        });
+
+                        await Database.addItem(
+                          name: _nameController.text,
+                          description: _descriptionController.text,
+                          price: _priceController.text,
+                          //TODO: add all the other textform fields to get the different required values in the addItem method from database.dart
+                        );
+                        
+                        setState(() {
+                          _isProcessing = false;
+                        });
+
+                        Navigator.of(context).pop(); // return to previous screen after operation is complete
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+            )
         ],
       ),
     );

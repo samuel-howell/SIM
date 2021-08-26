@@ -15,19 +15,7 @@ class _CreateScreenState extends State<CreateScreen>{
 Map data = {}; 
 
 
-addData(){
-  //TODO:  Add textControllers here to record String data to vars that can then be passed to JSON map below
 
-  String name = "Iphone Pro";
-
-  Map<String,dynamic> demoData = { // this is a JSON file that is inserted into the DB
-    "name": name,
-    "description" : "256GB-RED"
-    };
-
-  CollectionReference collectionReference = FirebaseFirestore.instance.collection('data');  //collectionReference var now referes to the "data" collection in Firestore
-  collectionReference.add(demoData); 
-}
 
    @override
   Widget build(BuildContext context) {
