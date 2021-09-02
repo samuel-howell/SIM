@@ -5,7 +5,7 @@ import 'package:howell_capstone/src/screens/create-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/view-screen.dart';
-import 'package:howell_capstone/src/screens/database-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen.dart';
 
 
 
@@ -26,7 +26,7 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
             //  each of these is an item in the nav drawer
             const SizedBox(height:50),
             buildMenuItem(
-              text:'DATABASE', 
+              text:'STORE', 
               icon: Icons.store,
               onClicked: () => selectedItem(context, 0),
             ),
@@ -100,7 +100,7 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
     switch (index) {
       case 0: 
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => DBScreen(),
+          builder: (context) => StoreScreen(),
         )
       );
       break;

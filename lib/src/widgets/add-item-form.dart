@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:intl/intl.dart';
+
+
 
 
 // Define a custom Form widget.
@@ -26,28 +28,16 @@ class AddItemFormState extends State<AddItemForm> {
 
   bool _isProcessing = false;
 
-  //  these two controllers will store the data inputed by the user.
+  //  these controllers will store the data inputed by the user.
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _scanInController = TextEditingController();
 
-//   //  this method puts the data from the AddItemForm and pushes it to Firestore.
-//   addData(){
-  
-//   Map<String,dynamic> demoData = { // this is a JSON file that is inserted into the DB
-//     "name": _name,
-//     "description" : _description,
-//     "price" : _price,
-//     };
+  //quick calculation of the current date for mostRecentScanIn section in the Firestore DB using the intl package for date formatting
+  String _currentDateTime = DateFormat.yMEd().add_jms().format(DateTime.now());
 
-//   CollectionReference collectionReference = FirebaseFirestore.instance.collection('data');  //collectionReference var now referes to the "data" collection in Firestore
-//   collectionReference.add(demoData); 
-// }
-
-  //initialize vars
-  // String? _name;
-  // String? _description;
-  // String? _price;
 
 
   @override
@@ -108,6 +98,7 @@ class AddItemFormState extends State<AddItemForm> {
             keyboardType: TextInputType.number,
               
 
+          
             validator: (value) { // The validator receives the text that the user has entered.
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
@@ -116,14 +107,32 @@ class AddItemFormState extends State<AddItemForm> {
             },
           ),
 
+          // text field for quantity
+          TextFormField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Enter the item\'s quantity',
+            ),
 
+            controller: _quantityController,
+            keyboardType: TextInputType.number,
+              
+
+          
+            validator: (value) { // The validator receives the text that the user has entered.
+              if (value == null || value.isEmpty) {
+                return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
 
           _isProcessing
               ? Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      CustomColors.cpink,
+                      CustomColors.cblue,
                     ),
                   ),
                 )
@@ -152,7 +161,8 @@ class AddItemFormState extends State<AddItemForm> {
                           name: _nameController.text,
                           description: _descriptionController.text,
                           price: _priceController.text,
-                          //TODO: add all the other textform fields to get the different required values in the addItem method from database.dart
+                          quantity: _quantityController.text,
+                          mostRecentScanIn: _currentDateTime,  // pulls from the  _currentDateTime var created above.
                         );
                         
                         setState(() {

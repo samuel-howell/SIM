@@ -36,21 +36,8 @@ Map data = {};
 
             SizedBox(height:70,),
 
-            AddItemForm(), //TODO: Tie this in with the TODO above about textControllers
-            // MaterialButton(
-            //   elevation: 0,
-            //   minWidth: double.maxFinite,
-            //   height: 50,
-            //   onPressed: addData, //! This will crash if you run a mobile emulator, but if you run chrome or a physical device it works fine
-            //   color: CustomColors.cblue,
-            //   child: Row(
-            //     mainAxisAlignment:MainAxisAlignment.center,
-            //     children: <Widget>[
-            //       SizedBox(width: 10),
-            //       Text('Add Data')
-            //     ]
-            //   )
-            // )
+            AddItemForm(), 
+    
           ]
        
         )
@@ -59,6 +46,6 @@ Map data = {};
   }
 }
 
-//TODO: Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
+//* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
 
 //TODO Gihub Reference - https://github.com/sbis04/flutterfire-samples/tree/crud-firestore/lib 
