@@ -1,6 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+//  gets the current user id
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final currentUserUID = _auth.currentUser?.uid;
+
 
 
 //TODONOTE: !!!!!!!  ITEMS need to be placed under store id in the firebase database. it need s to go like user --> store-->item
@@ -12,6 +19,7 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
+  final db = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,6 +27,34 @@ class _StoreScreenState extends State<StoreScreen> {
         title: Text('Store Screen'),
         centerTitle: true,
         backgroundColor: Colors.black
+      ),
+
+      body: StreamBuilder<QuerySnapshot>(
+        stream: db.collection('Users').doc(currentUserUID).collection('stores').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
+        builder: (context,  snapshot) { 
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else
+            return ListView(
+              children: snapshot.data!.docs.map((doc) {
+                return Card(
+                  child: ListTile(
+                    isThreeLine: true,
+                    title: Text(doc.get('name')),
+                    subtitle: Text(doc.get('address')),
+                    onTap: () {
+                      //TODO: Set this store id to be the current store id and pass it to the database.dart
+                      Database().currentStoreID = doc.id;
+                      //! calling Database().currentStoreID = doc.id creates an infinite loop. something is wrog with the getters and setters in the database class.
+                      
+                    }
+                  )
+                );
+              }).toList(),
+            );
+        },
       ),
 
     floatingActionButton: FloatingActionButton(  
@@ -33,6 +69,9 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 }
+
+
+
 
 
 final TextEditingController _storeNameController = TextEditingController();
