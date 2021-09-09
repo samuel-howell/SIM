@@ -39,20 +39,21 @@ class _StoreScreenState extends State<StoreScreen> {
             return ListView(
               children: snapshot.data!.docs.map((doc) {
                 return Card(
+                  margin: EdgeInsets.all(10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+
+                  
                   child: ListTile(
-                    isThreeLine: true,
                     title: Text(doc.get('name')),
                     subtitle: Text(doc.get('address')),
                     onTap: () {
                       //TODO: Set this store id to be the current store id and pass it to the database.dart
 
 
-                      //Database().setcurrentStoreID(doc.id);
-                      Database().setcurrentStoreID(doc.id);
-
-                      //! getCurrentStoreID works, but the setter still doesn't work in the database.dart file
+                      Database.setcurrentStoreID(doc.id);
+                      
+                      //print out to show what the current store id is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
-                      print('the current doc.id is ' + doc.id);
                       print(" ");
                     }
                   )

@@ -25,7 +25,7 @@ class Database {
   }) async {
 
     DocumentReference documentReferencer =
-        _userCollection.doc(currentUserUID).collection('stores').doc(/*! THIS NEEDS TO BE tHJE MOST RECENT STORE ID CLICKED IN Store Listview on store-screen page*/Database().currentStoreID).collection('items').doc();   // current user -> store -> items -> *insert the new item here in this blank doc*
+        _userCollection.doc(currentUserUID).collection('stores').doc(/*! THIS NEEDS TO BE tHJE MOST RECENT STORE ID CLICKED IN Store Listview on store-screen page*/Database.currentStoreID).collection('items').doc();   // current user -> store -> items -> *insert the new item here in this blank doc*
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -40,7 +40,7 @@ class Database {
 
     await documentReferencer
         .set(data)
-        .whenComplete(() => print("Item added to the database    " + Database().currentStoreID.toString()))
+        .whenComplete(() => print("Item added to the store with the ID :  " + Database.currentStoreID.toString()))
         .catchError((e) => print(e));
   }
 
@@ -69,19 +69,15 @@ class Database {
 
 
 
-String currentStoreID = "test";
+  static String currentStoreID = ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen) 
 
   //  method to get a currentStoreID
   String getCurrentStoreID(){
     return currentStoreID;
   }
 
-  //  method to set a currentStoreID
-  set settcurrentStoreID(String storeID) {
-    currentStoreID = storeID;
-  }
-
-  void setcurrentStoreID(String id) {
+  //method to set a store id
+  static setcurrentStoreID(String id) {
     currentStoreID = id;
   }
 }
