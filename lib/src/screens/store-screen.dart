@@ -9,7 +9,6 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final currentUserUID = _auth.currentUser?.uid;
 
 
-
 //TODONOTE: !!!!!!!  ITEMS need to be placed under store id in the firebase database. it need s to go like user --> store-->item
 
 class StoreScreen extends StatefulWidget {
@@ -46,9 +45,15 @@ class _StoreScreenState extends State<StoreScreen> {
                     subtitle: Text(doc.get('address')),
                     onTap: () {
                       //TODO: Set this store id to be the current store id and pass it to the database.dart
-                      Database().currentStoreID = doc.id;
-                      //! calling Database().currentStoreID = doc.id creates an infinite loop. something is wrog with the getters and setters in the database class.
-                      
+
+
+                      //Database().setcurrentStoreID(doc.id);
+                      Database().setcurrentStoreID(doc.id);
+
+                      //! getCurrentStoreID works, but the setter still doesn't work in the database.dart file
+                      print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
+                      print('the current doc.id is ' + doc.id);
+                      print(" ");
                     }
                   )
                 );
@@ -160,7 +165,7 @@ Future<void> _addStoreDialog(BuildContext context) async {
                               _isProcessing = true;
                           });
 
-                          await Database.addStore( //TODO: After the store is added, rebuild the listview on the database screen page to show the new store
+                          await Database.addStore( 
                             name: _storeNameController.text,
                             address: _storeAddressController.text,
                           );

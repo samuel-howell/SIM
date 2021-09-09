@@ -6,7 +6,6 @@ final CollectionReference _userCollection = _firestore.collection('Users');
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 final currentUserUID = _auth.currentUser?.uid;
-// final currentStoreID = " "; //TODO: Figure out how to keep track of the store id. when a user clicks on a store, the id for that store is passed here.  https://stackoverflow.com/questions/62968486/how-do-i-get-documentid-of-a-firestore-document-in-flutter/65951674 ???
 
 getcurrentUserUIDUid() {
     print('Current user id is ' + _auth.currentUser!.uid.toString());
@@ -41,7 +40,7 @@ class Database {
 
     await documentReferencer
         .set(data)
-        .whenComplete(() => print("Item added to the database    " + Database().currentStoreID))
+        .whenComplete(() => print("Item added to the database    " + Database().currentStoreID.toString()))
         .catchError((e) => print(e));
   }
 
@@ -67,15 +66,23 @@ class Database {
         .catchError((e) => print(e));
   }
 
-//! Something is wrong with these two methods, because I am getting stuck in a n infinite loop when I call it in the store-scree.dart and here above.
+
+
+
+String currentStoreID = "test";
+
   //  method to get a currentStoreID
-  String get currentStoreID{
+  String getCurrentStoreID(){
     return currentStoreID;
   }
 
   //  method to set a currentStoreID
-  set currentStoreID (String storeID) {
+  set settcurrentStoreID(String storeID) {
     currentStoreID = storeID;
+  }
+
+  void setcurrentStoreID(String id) {
+    currentStoreID = id;
   }
 }
 
