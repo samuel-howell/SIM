@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:howell_capstone/src/widgets/slidable-widget.dart';
+
 
 //  gets the current user id
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,6 +32,8 @@ class _StoreScreenState extends State<StoreScreen> {
         backgroundColor: Colors.black
       ),
 
+  
+
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('Users').doc(currentUserUID).collection('stores').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
         builder: (context,  snapshot) { 
@@ -38,27 +44,50 @@ class _StoreScreenState extends State<StoreScreen> {
           } else
             return ListView(
               children: snapshot.data!.docs.map((doc) {
-                return Card(
-                  margin: EdgeInsets.all(10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-
-                  
+                return Slidable( //TODO: Figure Out how to slide in from the right  
+                  actionPane: SlidableDrawerActionPane(),
+                  actionExtentRatio: 0.25,
                   child: ListTile(
                     title: Text(doc.get('name')),
                     subtitle: Text(doc.get('address')),
                     onTap: () {
-                      //TODO: Set this store id to be the current store id and pass it to the database.dart
-
-
-                      Database.setcurrentStoreID(doc.id);
+                      Database.setcurrentStoreID(doc.id); 
                       
                       //print out to show what the current store id is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
                       print(" ");
                     }
-                  )
+                  ),
+                    actions: <Widget>[
+                    
+                    // slide action to delete
+                    IconSlideAction
+                    (
+                        caption: 'Delete',
+                        color: Colors.red,
+                        icon: Icons.delete_sharp,
+                        onTap: () => {
+                          //TODO: add a alert dialog asking you to confirm before you delete.
+                          db.collection('Users').doc(currentUserUID).collection('stores').doc(doc.id).delete(), // in firebase, it goes from collection  users -> store -> the doc id of the the store you just tapped, then deletes it
+                          Fluttertoast.showToast(msg: 'You deleted the store!', gravity: ToastGravity.TOP)
+                        }
+                    ),
+
+                    // slide action to edit
+                    IconSlideAction
+                    (
+                        caption: 'Edit',
+                        color: CustomColors.cblue,
+                        icon: Icons.pageview,  //TODO: find a more appropriate icon
+                        onTap: () => {
+                          //TODO: add a alert dialog to edit the name and the address of the store.  Perhaps pull from the create store dialog???.
+                          
+                        }
+                    ),
+                    ]
                 );
-              }).toList(),
+               }
+              ).toList(),
             );
         },
       ),
@@ -71,8 +100,8 @@ class _StoreScreenState extends State<StoreScreen> {
       _addStoreDialog(context)
       },  
   
-      ),  
-    );
+      ),
+      );  
   }
 }
 

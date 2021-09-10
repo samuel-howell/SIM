@@ -36,6 +36,7 @@ dependencies:
   firebase_core_web: ^1.1.0
   fluttertoast: ^8.0.8
   intl: ^0.17.0
+  flutter_slidable: ^0.6.0
   
  
 
