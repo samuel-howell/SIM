@@ -5,12 +5,16 @@ import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:howell_capstone/src/widgets/slidable-widget.dart';
+import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 
 
 //  gets the current user id
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final currentUserUID = _auth.currentUser?.uid;
+
+//accesses the firebase database
+final db = FirebaseFirestore.instance;
+
 
 
 //TODONOTE: !!!!!!!  ITEMS need to be placed under store id in the firebase database. it need s to go like user --> store-->item
@@ -22,7 +26,6 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
-  final db = FirebaseFirestore.instance;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,9 +70,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.red,
                         icon: Icons.delete_sharp,
                         onTap: () => {
-                          //TODO: add a alert dialog asking you to confirm before you delete.
-                          db.collection('Users').doc(currentUserUID).collection('stores').doc(doc.id).delete(), // in firebase, it goes from collection  users -> store -> the doc id of the the store you just tapped, then deletes it
-                          Fluttertoast.showToast(msg: 'You deleted the store!', gravity: ToastGravity.TOP)
+                          showStoreDeleteConfirmationAlertDialog(context, doc.id),
                         }
                     ),
 
