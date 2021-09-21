@@ -44,12 +44,12 @@ class Database {
         .catchError((e) => print(e));
   }
 
+   int listIndex = 0;
 
 //  method to  add a store
   static Future<void> addStore({
     required String name,
     required String address,
-    //required String storeID,
   }) async {
     DocumentReference storeDocumentReferencer =
         _userCollection.doc(currentUserUID).collection('stores').doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
@@ -70,6 +70,7 @@ class Database {
 
 
   static String currentStoreID = ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen) 
+  static bool isSelected = false;
 
   //  method to get a currentStoreID
   String getCurrentStoreID(){

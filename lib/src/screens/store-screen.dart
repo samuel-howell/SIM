@@ -15,6 +15,9 @@ final currentUserUID = _auth.currentUser?.uid;
 //accesses the firebase database
 final db = FirebaseFirestore.instance;
 
+//hovercolor for web on store list
+final hoverColor = Colors.blue;
+
 
 
 //TODONOTE: !!!!!!!  ITEMS need to be placed under store id in the firebase database. it need s to go like user --> store-->item
@@ -35,7 +38,6 @@ class _StoreScreenState extends State<StoreScreen> {
         backgroundColor: Colors.black
       ),
 
-  
 
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('Users').doc(currentUserUID).collection('stores').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
@@ -45,19 +47,26 @@ class _StoreScreenState extends State<StoreScreen> {
               child: CircularProgressIndicator(),
             );
           } else
-            return ListView(
-              children: snapshot.data!.docs.map((doc) {
-                return Slidable( //TODO: Figure Out how to slide in from the right  
+          return ListView.builder(
+            itemCount:snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+                DocumentSnapshot doc = snapshot.data!.docs[index];
+
+                     return Slidable( //TODO: Figure Out how to slide in from the right  
                   actionPane: SlidableDrawerActionPane(),
                   actionExtentRatio: 0.25,
                   child: ListTile(
+                    hoverColor: hoverColor,  //  adds some extra pizzazz if you're viewing it on the web
                     title: Text(doc.get('name')),
                     subtitle: Text(doc.get('address')),
                     onTap: () {
                       Database.setcurrentStoreID(doc.id); 
                       
+                      //TODO: need to be able to change background color of selected store
                       //print out to show what the current store id is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
+                      print('item index  is ' + index.toString()); 
+
                       print(" ");
                     }
                   ),
@@ -88,9 +97,8 @@ class _StoreScreenState extends State<StoreScreen> {
                     ]
                 );
                }
-              ).toList(),
             );
-        },
+            }
       ),
 
     floatingActionButton: FloatingActionButton(  
