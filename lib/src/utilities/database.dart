@@ -44,7 +44,6 @@ class Database {
         .catchError((e) => print(e));
   }
 
-   int listIndex = 0;
 
 //  method to  add a store
   static Future<void> addStore({
@@ -66,7 +65,7 @@ class Database {
         .catchError((e) => print(e));
   }
 
-
+//TODO: method to update a store
 
 
   static String currentStoreID = ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen) 

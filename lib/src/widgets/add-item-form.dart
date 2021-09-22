@@ -33,7 +33,6 @@ class AddItemFormState extends State<AddItemForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
-  final TextEditingController _scanInController = TextEditingController();
 
   //quick calculation of the current date for mostRecentScanIn section in the Firestore DB using the intl package for date formatting
   String _currentDateTime = DateFormat.yMEd().add_jms().format(DateTime.now());
@@ -120,8 +119,8 @@ class AddItemFormState extends State<AddItemForm> {
 
           
             validator: (value) { // The validator receives the text that the user has entered.
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+              if (value == null || value.isEmpty /*|| value.isDigit()*/ ) { //TODO: create  method to check if the val is a number and then add it here
+                return 'Please enter a valid numver';
               }
               return null;
             },

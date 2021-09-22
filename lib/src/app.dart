@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
 
 class App extends StatelessWidget {
@@ -9,7 +10,10 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'SIM',
       theme: ThemeData(accentColor: Colors.purple, primarySwatch: Colors.blue),
-      home: LoginScreen(),
+
+       home: LoginScreen(),  
+
+  
     );
   }
 }

@@ -18,9 +18,10 @@ final db = FirebaseFirestore.instance;
 //hovercolor for web on store list
 final hoverColor = Colors.blue;
 
+//  this var will store the index of the store that is currently highlighted in the Listview.builder 
+var tappedIndex;
 
 
-//TODONOTE: !!!!!!!  ITEMS need to be placed under store id in the firebase database. it need s to go like user --> store-->item
 
 class StoreScreen extends StatefulWidget {
 
@@ -39,6 +40,7 @@ class _StoreScreenState extends State<StoreScreen> {
       ),
 
 
+      //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of stores pops up.
       body: StreamBuilder<QuerySnapshot>(
         stream: db.collection('Users').doc(currentUserUID).collection('stores').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
         builder: (context,  snapshot) { 
@@ -51,26 +53,37 @@ class _StoreScreenState extends State<StoreScreen> {
             itemCount:snapshot.data!.docs.length,
             itemBuilder: (context, index) {
                 DocumentSnapshot doc = snapshot.data!.docs[index];
+                
 
-                     return Slidable( //TODO: Figure Out how to slide in from the right  
+                // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                return Slidable(  
                   actionPane: SlidableDrawerActionPane(),
                   actionExtentRatio: 0.25,
                   child: ListTile(
+
+                    tileColor:  tappedIndex == index ? Colors.greenAccent : null,   // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
                     hoverColor: hoverColor,  //  adds some extra pizzazz if you're viewing it on the web
-                    title: Text(doc.get('name')),
-                    subtitle: Text(doc.get('address')),
+                    title:  Text(doc.get('name')),
+                    subtitle:Text(doc.get('address')),
                     onTap: () {
                       Database.setcurrentStoreID(doc.id); 
-                      
-                      //TODO: need to be able to change background color of selected store
-                      //print out to show what the current store id is.
+
+                      setState(() {
+                        tappedIndex = index;  //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
+                         }
+                        );
+
+                      //print out to console what the current store id, index, and list length and tapped index is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
                       print('item index  is ' + index.toString()); 
+                      print('list length  is ' + snapshot.data!.docs.length.toString()); 
+                      print('tapped index is '  + tappedIndex.toString()); 
+
 
                       print(" ");
                     }
                   ),
-                    actions: <Widget>[
+                    actions: <Widget>[  // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
                     
                     // slide action to delete
                     IconSlideAction
@@ -106,129 +119,10 @@ class _StoreScreenState extends State<StoreScreen> {
       backgroundColor: Colors.green,  
       foregroundColor: Colors.white,  
       onPressed: () => {
-      _addStoreDialog(context)
+        showAddStoreDialog(context),
       },  
   
       ),
       );  
   }
 }
-
-
-
-
-
-final TextEditingController _storeNameController = TextEditingController();
-final TextEditingController _storeAddressController = TextEditingController();
-
-bool _isProcessing = false;
-
-
-//TODO: Migrate this _addStoreDialog widget to the widgets folder, then import it into this page. kind of like you diud with the add item form. for refactoring.
-//this alert dialog will pop up when the user clicks the "add database" floating action button
-Future<void> _addStoreDialog(BuildContext context) async {
-  return showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState)  {
-        return AlertDialog(
-          title: const Text('Add a new Store'),
-          content: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              //text field for store name
-              TextFormField(
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Enter the store\'s name',
-                ),
-
-
-                controller: _storeNameController,
-                keyboardType: TextInputType.text,
-              
-
-                validator: (value) { // The validator receives the text that the user has entered.
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              ),
-
-            //text field for store address
-              TextFormField(
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Enter the store\'s address',
-                ),
-
-
-                controller: _storeAddressController,
-                keyboardType: TextInputType.text,
-              
-
-                validator: (value) { // The validator receives the text that the user has entered.
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter some text';
-                  }
-                  return null;
-                },
-              ),
-          
-              _isProcessing
-                  ? Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          CustomColors.cblue,
-                        ),
-                      ),
-                    )
-                  : Container(
-                      width: double.maxFinite,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            CustomColors.cyellow,
-                          ),
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                        onPressed: () async {
-                          setState(() {
-                              _isProcessing = true;
-                          });
-
-                          await Database.addStore( 
-                            name: _storeNameController.text,
-                            address: _storeAddressController.text,
-                          );
-                          
-                          setState(() {
-                            _isProcessing = false;
-                          });
-
-                          Navigator.of(context).pop(); // return to previous screen after operation is complete
-                          }
-                        ,
-                        child: const Text('Submit'),
-                      ),
-                )
-            ],
-          ),
-          )
-      );
-    }  
-  );
-  }
-);
-}
-
-
-
-  //TODO: for reference on alert dialog - https://www.appsdeveloperblog.com/alert-dialog-with-a-text-field-in-flutter/
