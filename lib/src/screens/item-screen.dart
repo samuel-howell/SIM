@@ -23,26 +23,26 @@ var tappedIndex;
 
 
 
-class StoreScreen extends StatefulWidget {
+class ItemScreen extends StatefulWidget {
 
   @override
-  State<StoreScreen> createState() => _StoreScreenState();
+  State<ItemScreen> createState() => _ItemScreenState();
 }
 
-class _StoreScreenState extends State<StoreScreen> {
+class _ItemScreenState extends State<ItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Store Screen'),
+        title: Text('Item Screen'),
         centerTitle: true,
         backgroundColor: Colors.black
       ),
 
 
-      //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of stores pops up.
+      //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
       body: StreamBuilder<QuerySnapshot>(
-        stream: db.collection('Users').doc(currentUserUID).collection('stores').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
+        stream: db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
         builder: (context,  snapshot) { 
           if (!snapshot.hasData) {
             return Center(
@@ -64,14 +64,11 @@ class _StoreScreenState extends State<StoreScreen> {
                     tileColor:  tappedIndex == index ? Colors.greenAccent : null,   // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
                     hoverColor: hoverColor,  //  adds some extra pizzazz if you're viewing it on the web
                     title:  Text(doc.get('name')),
-                    subtitle:Text(doc.get('address')),
+                    subtitle:Text(doc.get('description')),
                     onTap: () {
-                      Database.setcurrentStoreID(doc.id); 
-
-                      setState(() {
-                        tappedIndex = index;  //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
-                         }
-                        );
+                      //TODO: open a new page and populate it with all item details from firebase 
+                      
+                        
 
                       //print out to console what the current store id, index, and list length and tapped index is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
@@ -92,8 +89,8 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: Colors.red,
                         icon: Icons.delete_sharp,
                         onTap: () => {
-                          showStoreDeleteConfirmationAlertDialog(context, doc.id),
-                          print('store ' + doc.id + ' was deleted.')
+                          showItemDeleteConfirmationAlertDialog(context, doc.id),
+                          print('item ' + doc.id + ' was deleted.')
                         }
                     ),
 
@@ -104,8 +101,8 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: CustomColors.cblue,
                         icon: Icons.edit,  
                         onTap: () => {
-                          showEditStoreDialog(context, doc.id),
-                          print('store ' + doc.id + ' was edited')
+                          showEditItemDialog(context, doc.id),
+                          print('item ' + doc.id + ' was edited')
                         }
                     ),
                     ]
@@ -120,10 +117,77 @@ class _StoreScreenState extends State<StoreScreen> {
       backgroundColor: Colors.green,  
       foregroundColor: Colors.white,  
       onPressed: () => {
-        showAddStoreDialog(context),
+        showAddStoreDialog(context), //TODO: make an showAddItemDialog (migrate it from the add item form). put it in the custom-alert-dialogs.dart and call it here.
       },  
   
       ),
       );  
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//! Old working code
+
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:flutter/material.dart';
+// import 'package:howell_capstone/src/res/custom-colors.dart';
+// import 'package:howell_capstone/src/widgets/add-item-form.dart';
+
+
+
+// class ItemScreen extends StatefulWidget {
+// @override
+// _ItemScreenState createState() => _ItemScreenState();
+// }
+
+// class _ItemScreenState extends State<ItemScreen>{
+  
+// Map data = {}; 
+
+
+
+
+//    @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Create Screen'),
+//         centerTitle: true,
+//         backgroundColor: Colors.transparent,
+//         elevation:0,
+//       ),
+
+//       body: Container(
+//         margin: EdgeInsets.symmetric(horizontal:20),
+//         child: Column(
+//           children: [
+//             SizedBox(height:30,),
+//             Text('Create Screen', textAlign: TextAlign.center),
+
+//             SizedBox(height:70,),
+
+//             AddItemForm(), 
+    
+//           ]
+       
+//         )
+//       )
+//     );
+//   }
+// }
+
+// //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
+
+// //TODO Gihub Reference - https://github.com/sbis04/flutterfire-samples/tree/crud-firestore/lib 

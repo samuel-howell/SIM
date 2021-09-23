@@ -1,7 +1,7 @@
 //  THIS PAGE IS A NAVIGATION OVERLAY WIDGET THAT DISPLAYS OVER OTHER SCREENS 
 
 import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/screens/create-screen.dart';
+import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/view-screen.dart';
@@ -128,7 +128,7 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
 
       case 4: 
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => CreateScreen(),
+          builder: (context) => ItemScreen(),
         )
       );
       break;

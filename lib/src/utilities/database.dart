@@ -17,10 +17,9 @@ class Database {
 //  method to  add an item
   static Future<void> addItem({
     required String name,
-    required String description,
     required String price,
     required String quantity,
-    //required String itemID,
+    required String description,
     required String mostRecentScanIn,
   }) async {
 
@@ -65,7 +64,60 @@ class Database {
         .catchError((e) => print(e));
   }
 
-//TODO: method to update a store
+//method to update a store
+  static Future<void> editStore({
+    required String name,
+    required String address,
+    required String docID,
+  }) async {
+    DocumentReference storeDocumentReferencer =
+        _userCollection.doc(currentUserUID).collection('stores').doc(docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "name": name,
+      "address": address,
+      "storeID" : storeDocumentReferencer.id, 
+    };
+
+    await storeDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("Store added to the database"))
+        .catchError((e) => print(e));
+  }
+
+
+//  method to update an item
+  static Future<void> editItem({
+    required String name,
+    required String price,
+    required String quantity,
+    required String description,
+    //required String mostRecentScanIn,  //! do i really need this here?
+    required String itemDocID
+
+  }) async {
+    DocumentReference itemDocumentReferencer =
+        _userCollection.doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "name": name,
+      "price": price,
+      "quantity": quantity,
+      "tags": [],
+      "description" : description,
+      "LastEmployeeToInteract": currentUserUID,
+      "item-id" : itemDocumentReferencer.id, 
+      //"mostRecentScanIn" : mostRecentScanIn  //! do i really need this here?
+    };
+
+    await itemDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("Store added to the database"))
+        .catchError((e) => print(e));
+  }
+
+
+
 
 
   static String currentStoreID = ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen) 
