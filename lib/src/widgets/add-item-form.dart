@@ -37,6 +37,12 @@ class AddItemFormState extends State<AddItemForm> {
   //quick calculation of the current date for mostRecentScanIn section in the Firestore DB using the intl package for date formatting
   String _currentDateTime = DateFormat.yMEd().add_jms().format(DateTime.now());
 
+  // this regex pattern will only accept numbers
+  RegExp numbersOnlyRegex = RegExp(r'[0-9]'); 
+  RegExp numbersTextHyphenRegex = RegExp(r'[a-zA-Z0-9 -]');
+  
+
+  //*really good article on validation - https://michaeladesola1410.medium.com/input-validation-flutter-dfe433caec5c 
 
 
   @override
@@ -54,19 +60,17 @@ class AddItemFormState extends State<AddItemForm> {
               border: UnderlineInputBorder(),
               labelText: 'Enter the item\'s name',
             ),
-
-
             controller: _nameController,
             keyboardType: TextInputType.text,
-           
-
             validator: (value) { // The validator receives the text that the user has entered.
-              if (value == null || value.isEmpty) {
+              if (value == null || value.isEmpty) { //TODO: put a regex here that can accept str like "IPHONE-11-red (2021)", but not sql injection type of stuff.  apply same regex at all similar fields.
                 return 'Please enter some text';
               }
               return null;
             },
           ),
+
+
 
           // text field for item description
           TextFormField(
@@ -74,17 +78,17 @@ class AddItemFormState extends State<AddItemForm> {
               border: UnderlineInputBorder(),
               labelText: 'Enter the item\'s description',
             ),
-
             controller: _descriptionController,
             keyboardType: TextInputType.text, 
-
             validator: (value) { // The validator receives the text that the user has entered.
               if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+                return 'Please enter some valid text';
               }
               return null;
             },
           ),
+
+
 
           // text field for item price
           TextFormField(
@@ -92,19 +96,20 @@ class AddItemFormState extends State<AddItemForm> {
               border: UnderlineInputBorder(),
               labelText: 'Enter the item\'s price',
             ),
-
             controller: _priceController,
             keyboardType: TextInputType.number,
-              
-
-          
             validator: (value) { // The validator receives the text that the user has entered.
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
+
+            //* way 1 of declaring a regex
+              RegExp regex = new RegExp(r'[0-9]');
+              if (!regex.hasMatch(value!) ) {     // regex makes sure users only enter number values
+                return 'Please enter a valid number amount';
               }
               return null;
             },
           ),
+
+
 
           // text field for quantity
           TextFormField(
@@ -112,19 +117,20 @@ class AddItemFormState extends State<AddItemForm> {
               border: UnderlineInputBorder(),
               labelText: 'Enter the item\'s quantity',
             ),
-
             controller: _quantityController,
             keyboardType: TextInputType.number,
-              
-
-          
             validator: (value) { // The validator receives the text that the user has entered.
-              if (value == null || value.isEmpty /*|| value.isDigit()*/ ) { //TODO: create  method to check if the val is a number and then add it here
-                return 'Please enter a valid numver';
+
+            //way 2: calling regex created at beginning of file
+              if (!numbersOnlyRegex.hasMatch(value!) ) { 
+                return 'Please enter a valid number amount';
               }
               return null;
             },
           ),
+
+
+
 
           _isProcessing
               ? Padding(

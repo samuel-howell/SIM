@@ -5,7 +5,10 @@ import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:howell_capstone/src/widgets/add-item-form.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
+
+import 'add-item-screen.dart';
 
 
 //  gets the current user id
@@ -32,7 +35,7 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+      return Scaffold(
       appBar: AppBar(
         title: Text('Item Screen'),
         centerTitle: true,
@@ -41,7 +44,8 @@ class _ItemScreenState extends State<ItemScreen> {
 
 
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
-      body: StreamBuilder<QuerySnapshot>(
+      body: 
+      StreamBuilder<QuerySnapshot>(
         stream: db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
         builder: (context,  snapshot) { 
           if (!snapshot.hasData) {
@@ -72,6 +76,7 @@ class _ItemScreenState extends State<ItemScreen> {
 
                       //print out to console what the current store id, index, and list length and tapped index is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
+                      print('the current user id is ' + _auth.currentUser!.uid.toString());
                       print('item index  is ' + index.toString()); 
                       print('list length  is ' + snapshot.data!.docs.length.toString()); 
                       print('tapped index is '  + tappedIndex.toString()); 
@@ -117,13 +122,17 @@ class _ItemScreenState extends State<ItemScreen> {
       backgroundColor: Colors.green,  
       foregroundColor: Colors.white,  
       onPressed: () => {
-        showAddStoreDialog(context), //TODO: make an showAddItemDialog (migrate it from the add item form). put it in the custom-alert-dialogs.dart and call it here.
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddItemScreen(),
+            )
+          )//
       },  
   
       ),
       );  
   }
 }
+
 
 
 

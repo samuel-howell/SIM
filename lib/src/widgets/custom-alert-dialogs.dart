@@ -292,6 +292,7 @@ return showDialog(
 
 
 
+
 //TODO:  figure out a way to delete multiple items at one time from the list
 //  this method will delete the item from the item list
 showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {  // 
@@ -330,8 +331,6 @@ showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) { 
     },
   );
 }
-
-
 
 
 // this method shows an alert to update the item information
@@ -492,3 +491,13 @@ return showDialog(
     }
   );
 }
+
+
+
+
+
+
+
+
+
+

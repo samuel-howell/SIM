@@ -75,6 +75,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
                       //print out to console what the current store id, index, and list length and tapped index is.
                       print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
+                      print('the current user id is ' + _auth.currentUser!.uid.toString());
                       print('item index  is ' + index.toString()); 
                       print('list length  is ' + snapshot.data!.docs.length.toString()); 
                       print('tapped index is '  + tappedIndex.toString()); 
