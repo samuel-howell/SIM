@@ -81,7 +81,7 @@ class Database {
 
     await storeDocumentReferencer
         .update(data)
-        .whenComplete(() => print("Store added to the database"))
+        .whenComplete(() => print("Store updated in the database"))
         .catchError((e) => print(e));
   }
 
@@ -96,25 +96,25 @@ class Database {
     required String itemDocID
 
   }) async {
-    DocumentReference itemDocumentReferencer =
-        _userCollection.doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+        DocumentReference itemDocumentReferencer =
+            _userCollection.doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
 
-    Map<String, dynamic> data = <String, dynamic>{
-      "name": name,
-      "price": price,
-      "quantity": quantity,
-      "tags": [],
-      "description" : description,
-      "LastEmployeeToInteract": currentUserUID,
-      "item-id" : itemDocumentReferencer.id, 
-      //"mostRecentScanIn" : mostRecentScanIn  //! do i really need this here?
-    };
+        Map<String, dynamic> data = <String, dynamic>{
+          "name": name,
+          "price": price,
+          "quantity": quantity,
+          "tags": [],
+          "description" : description,
+          "LastEmployeeToInteract": currentUserUID,
+          "item-id" : itemDocumentReferencer.id, 
+          //"mostRecentScanIn" : mostRecentScanIn  //! do i really need this here?
+        };
 
-    await itemDocumentReferencer
-        .update(data)
-        .whenComplete(() => print("Store added to the database"))
-        .catchError((e) => print(e));
-  }
+        await itemDocumentReferencer
+            .update(data)
+            .whenComplete(() => print("item edited in the database"))
+            .catchError((e) => print(e));
+      }
 
 
 

@@ -16,7 +16,7 @@ final currentUserUID = _auth.currentUser?.uid;
 final db = FirebaseFirestore.instance;
 
 //hovercolor for web on store list
-final hoverColor = Colors.blue;
+final hoverColor = Colors.indigo[50];
 
 //  this var will store the index of the store that is currently highlighted in the Listview.builder 
 var tappedIndex;

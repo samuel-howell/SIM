@@ -19,7 +19,7 @@ final currentUserUID = _auth.currentUser?.uid;
 final db = FirebaseFirestore.instance;
 
 //hovercolor for web on store list
-final hoverColor = Colors.blue;
+final hoverColor = Colors.indigo[50];
 
 //  this var will store the index of the store that is currently highlighted in the Listview.builder 
 var tappedIndex;
@@ -43,7 +43,10 @@ class _ItemScreenState extends State<ItemScreen> {
       ),
 
 
+      //!KNOWN ISSUES
+      //TODO: if I don't select a store before I navigate to this item screen, the page crashes
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
+      
       body: 
       StreamBuilder<QuerySnapshot>(
         stream: db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.

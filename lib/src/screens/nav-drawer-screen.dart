@@ -31,6 +31,12 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
               onClicked: () => selectedItem(context, 0),
             ),
 
+            const SizedBox(height:15),
+            buildMenuItem(
+              text:'ITEMS', 
+              icon: Icons.article, 
+              onClicked: () => selectedItem(context, 4),
+            ),
 
             const SizedBox(height:15),
             buildMenuItem(
@@ -55,12 +61,7 @@ final padding = EdgeInsets.symmetric(horizontal: 20);
               onClicked: () => selectedItem(context, 3),
             ),
 
-            const SizedBox(height:15),
-            buildMenuItem(
-              text:'CREATE', 
-              icon: Icons.access_alarm, //TODO: change this icon to something more relevant
-              onClicked: () => selectedItem(context, 4),
-            ),
+            
 
             //  this is our divider
             const SizedBox(height:24),

@@ -406,14 +406,17 @@ return showDialog(
                           controller: _itemPriceController,
                           keyboardType: TextInputType.number,
                         
+                          //TODO:  These number validators are not working in the alert dialog
 
                           validator: (value) { // The validator receives the text that the user has entered.
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some numbers';
-                            }
-                            return null;
+                             RegExp regex = new RegExp(r'[0-9]');
+                              if (!regex.hasMatch(value!) ) {     // regex makes sure users only enter number values
+                                return 'Please enter a valid number amount';
+                              }
+                              return null;
                           },
                         ),
+                    
 
                         //text field for item quantity
                         TextFormField(
@@ -428,10 +431,11 @@ return showDialog(
                         
 
                           validator: (value) { // The validator receives the text that the user has entered.
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter some numbers';
-                            }
-                            return null;
+                            RegExp regex = new RegExp(r'[0-9]');
+                              if (!regex.hasMatch(value!) ) {     // regex makes sure users only enter number values
+                                return 'Please enter a valid number amount';
+                              }
+                              return null;
                           },
                         ),
                     

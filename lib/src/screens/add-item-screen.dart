@@ -12,10 +12,6 @@ _AddItemScreenState createState() => _AddItemScreenState();
 
 class _AddItemScreenState extends State<AddItemScreen>{
   
-//Map data = {}; 
-
-
-
 
    @override
   Widget build(BuildContext context) {
