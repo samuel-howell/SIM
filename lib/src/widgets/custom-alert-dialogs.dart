@@ -21,7 +21,6 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final currentUserUID = _auth.currentUser?.uid;
 
 
-//TODO:  figure out a way to delete multiple items at one time from the list
 //  this method will show an alert dialog asking user if they really want to delete the store. If yes is clicked, store will be deleted from firebase database
 showStoreDeleteConfirmationAlertDialog(BuildContext context, String storeDocID) {  // 
   // set up the buttons
@@ -69,15 +68,20 @@ final TextEditingController _storeNameController = TextEditingController();
 final TextEditingController _storeAddressController = TextEditingController();
 bool _isProcessing = false;
 
+final _formKey = GlobalKey<FormState>();  // this key is what allows us to check for validation in the form below
+
+
 return showDialog(
   context: context,
   builder: (context) {
 
      return StatefulBuilder(
         builder: (context, setState)  {
-          AlertDialog newStoreAlert = AlertDialog(
+          return AlertDialog(
               title: Text("Add a New Store"),
-              content: SingleChildScrollView(
+              content: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
                         //text field for store name
@@ -93,7 +97,7 @@ return showDialog(
                         
 
                           validator: (value) { // The validator receives the text that the user has entered.
-                            if (value == null || value.isEmpty) {
+                            if (value == null || value.isEmpty) { //TODO:change  this to a regex like on the additem dialog. so that we don't have to worry about sql injection
                               return 'Please enter some text';
                             }
                             return null;
@@ -113,7 +117,7 @@ return showDialog(
                         
 
                           validator: (value) { // The validator receives the text that the user has entered.
-                            if (value == null || value.isEmpty) {
+                            if (value == null || value.isEmpty) {  //TODO:change  this to a regex like on the additem dialog. so that we don't have to worry about sql injection
                               return 'Please enter some text';
                             }
                             return null;
@@ -143,31 +147,32 @@ return showDialog(
                                     ),
                                   ),
                                   onPressed: () async {
-                                    setState(() {
-                                        _isProcessing = true;
-                                    });
+                                   if (_formKey.currentState!.validate()) { // this call to validate has to be included or else the form validation checks set above won't show.
 
-                                    await Database.addStore( 
-                                      name: _storeNameController.text,
-                                      address: _storeAddressController.text,
-                                    );
-                                    
-                                    setState(() {
-                                      _isProcessing = false;
-                                    });
+                                      setState(() {
+                                          _isProcessing = true;
+                                      });
 
-                                    Navigator.of(context).pop(); // return to previous screen after operation is complete
-                                    }
-                                  ,
+                                      await Database.addStore( 
+                                        name: _storeNameController.text,
+                                        address: _storeAddressController.text,
+                                      );
+                                      
+                                      setState(() {
+                                        _isProcessing = false;
+                                      });
+
+                                      Navigator.of(context).pop(); // return to previous screen after operation is complete
+                                      }
+                                  },
                                   child: const Text('Submit'),
                                 ),
                           )
                       ],
                     ),
-            ),
-                  
+                ),
+              )  
           );
-          return newStoreAlert; 
         }
       ); 
     }
@@ -182,6 +187,7 @@ showEditStoreDialog(BuildContext context, String storeDocID) {  // make sure to 
 final TextEditingController _storeNameController = TextEditingController();
 final TextEditingController _storeAddressController = TextEditingController();
 bool _isProcessing = false;
+final _formKey = GlobalKey<FormState>();
 
 return showDialog(
   context: context,
@@ -189,9 +195,11 @@ return showDialog(
 
      return StatefulBuilder(
         builder: (context, setState)  {
-          AlertDialog editStoreAlert = AlertDialog(
-              title: Text("Edit a Current Store"),
-              content: SingleChildScrollView(
+          return AlertDialog(
+              title: Text("Edit the Current Store"),
+              content: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
                         //text field for store name
@@ -257,6 +265,8 @@ return showDialog(
                                     ),
                                   ),
                                   onPressed: () async {
+                                  if (_formKey.currentState!.validate()) { // this call to validate has to be included or else the form validation checks set above won't show.
+
                                     setState(() {
                                         _isProcessing = true;
                                     });
@@ -273,16 +283,15 @@ return showDialog(
 
                                     Navigator.of(context).pop(); // return to previous screen after operation is complete
                                     }
-                                  ,
+                                  },
                                   child: const Text('Submit'),
                                 ),
                           )
                       ],
                     ),
-            ),
-                  
+                 ),
+              )    
           );
-          return editStoreAlert; 
         }
       ); 
     }
@@ -290,10 +299,9 @@ return showDialog(
 }
 
 
+//TODO:figure out how to autoselect the first store in the store list upon user login so that the program doesn't crash when user goes to item page before store page
 
 
-
-//TODO:  figure out a way to delete multiple items at one time from the list
 //  this method will delete the item from the item list
 showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {  // 
   // set up the buttons
@@ -343,16 +351,23 @@ final TextEditingController _itemQuantityController = TextEditingController();
 final TextEditingController _itemPriceController = TextEditingController();
 bool _isProcessing = false;
 
+final _formKey = GlobalKey<FormState>();
+
 return showDialog(
   context: context,
   builder: (context) {
 
-     return StatefulBuilder(
+
+     return StatefulBuilder(  
         builder: (context, setState)  {
-          AlertDialog editStoreAlert = AlertDialog(
-              title: Text("Edit a Current Item"),
-              content: SingleChildScrollView(
+
+            return AlertDialog(
+              title: Text("Edit the Current Item"),
+              content: Form( // if you don't create a form inside of the alert dialog, then you cannot use input validation.
+                  key: _formKey,
+                    child: SingleChildScrollView(
                     child: Column(
+                      
                       children: <Widget>[
                         //text field for item name
                         TextFormField(
@@ -406,7 +421,6 @@ return showDialog(
                           controller: _itemPriceController,
                           keyboardType: TextInputType.number,
                         
-                          //TODO:  These number validators are not working in the alert dialog
 
                           validator: (value) { // The validator receives the text that the user has entered.
                              RegExp regex = new RegExp(r'[0-9]');
@@ -462,39 +476,42 @@ return showDialog(
                                     ),
                                   ),
                                   onPressed: () async {
-                                    setState(() {
-                                        _isProcessing = true;
-                                    });
+                                    if (_formKey.currentState!.validate()) { // this call to validate has to be included or else the form validation checks set above won't show.
+                                      setState(() {
+                                          _isProcessing = true;
+                                      });
 
-                                    await Database.editItem( 
-                                      name: _itemNameController.text,
-                                      description: _itemDescriptionController.text, 
-                                      itemDocID: itemDocID, //! make sure this is the item docId
-                                      price: _itemPriceController.text, 
-                                      quantity: _itemQuantityController.text,  // make sure to pass the doc id to the editItem method so you know which store document to update
-                                    );
-                                    
-                                    setState(() {
-                                      _isProcessing = false;
-                                    });
+                                      await Database.editItem( 
+                                        name: _itemNameController.text,
+                                        description: _itemDescriptionController.text, 
+                                        itemDocID: itemDocID, //! make sure this is the item docId
+                                        price: _itemPriceController.text, 
+                                        quantity: _itemQuantityController.text,  // make sure to pass the doc id to the editItem method so you know which store document to update
+                                      );
+                                      
+                                      setState(() {
+                                        _isProcessing = false;
+                                      });
 
-                                    Navigator.of(context).pop(); // return to previous screen after operation is complete
+                                      Navigator.of(context).pop(); // return to previous screen after operation is complete
                                     }
+                                  }
                                   ,
                                   child: const Text('Submit'),
                                 ),
                           )
                       ],
                     ),
-            ),
-                  
+               ),
+              )   
           );
-          return editStoreAlert; 
         }
       ); 
     }
   );
 }
+
+
 
 
 

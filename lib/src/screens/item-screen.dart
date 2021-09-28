@@ -202,4 +202,3 @@ class _ItemScreenState extends State<ItemScreen> {
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
 
-// //TODO Gihub Reference - https://github.com/sbis04/flutterfire-samples/tree/crud-firestore/lib 
