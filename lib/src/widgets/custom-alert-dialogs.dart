@@ -300,8 +300,7 @@ return showDialog(
 
 
 //TODO:figure out how to autoselect the first store in the store list upon user login so that the program doesn't crash when user goes to item page before store page
-
-
+//TODO:  ADD search bar for store list and item list pages
 //  this method will delete the item from the item list
 showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {  // 
   // set up the buttons
