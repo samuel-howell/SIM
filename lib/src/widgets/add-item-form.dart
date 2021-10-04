@@ -101,7 +101,7 @@ class AddItemFormState extends State<AddItemForm> {
             validator: (value) { // The validator receives the text that the user has entered.
 
             //* way 1 of declaring a regex
-              RegExp regex = new RegExp(r'[0-9]');
+              RegExp regex = new RegExp(r'[0-9]'); //TODO:  allows ` . its should not allow that character
               if (!regex.hasMatch(value!) ) {     // regex makes sure users only enter number values
                 return 'Please enter a valid number amount';
               }

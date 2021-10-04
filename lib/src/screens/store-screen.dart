@@ -24,7 +24,7 @@ var tappedIndex;
 // for the search bar
 String searchKey = "";
 Stream<QuerySnapshot> streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').snapshots();
-int searchFilter = 0;
+int searchFilter = 1;  //  set to 1, so the default search would be Name Search
 
 
 class StoreScreen extends StatefulWidget {
@@ -71,40 +71,16 @@ class _StoreScreenState extends State<StoreScreen> {
                 //this search bar filters out stores
                 Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child:showAddressSearch() //! doesn't work
+                  child: 
+                  
 
-                  //* this code works
-                  // child: TextField(
-                  //   onChanged: (value) {
-                  //     setState(() {
-                  //         searchKey = value; // TODO: set this toLowercase once you have implemented the todo below
+                     showSearchDialog(),  // TODO:  this dialog doesn't show that the search bar has changed unti you begin to type  in the search bar
+                    
+                    
 
-                  //         //  this stream query matches the searchkey to the names of the stores in the db
-                  //         streamQuery = db.collection('Users').doc(currentUserUID).collection('stores')
-                  //         .where('name',isGreaterThanOrEqualTo: searchKey) //TODO:create a new field each store doc called lowercaseName that stores a LOWERCASE version of whatever the user enters as the name.  then search against lowerCaseName rather than name
-                  //         .where('name',isLessThan: searchKey+'z').snapshots();
-
-                  //         //TODO:  need to be able to search by name and address. there are no OR queries in firebase though. FIGURE OUT HOW TO DO AN 'OR' QUERY
-                  //         //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
-                  //     });
-                  //   },
-                  //   decoration: InputDecoration(
-                  //       labelText: "Search",
-                  //       hintText: "Search",
-                  //       prefixIcon: Icon(Icons.search),
-                  //       border: OutlineInputBorder(
-                  //           borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-                  // ),
-
-                // //!---------------------------------- this code doesn't but i want it to
-                // //TODO:  check what searchfilter is set to, then call the appropriate method, which should then make the right search textfield show up.
-                  // if(searchFilter == 1) {
-                  //   showAddressSearch();
-                  // }
-                // //!--------------------------------------
-
-                ),
-
+                  
+                  
+               ),
                
 
                 Expanded(  // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
@@ -180,33 +156,33 @@ class _StoreScreenState extends State<StoreScreen> {
             
       ),
 
-    // floatingActionButton: FloatingActionButton(  
-    //   child: Icon(Icons.post_add),  
-    //   backgroundColor: Colors.green,  
-    //   foregroundColor: Colors.white,  
-    //   onPressed: () => {
-    //     showAddStoreDialog(context),
-    //   },  
-    //   ),
-
-
-//TODO:  add another floating action button so you can uncomment the one above.  one action button for adding store, one for changing filter
-      floatingActionButton: FloatingActionButton(  
+    floatingActionButton: FloatingActionButton(  
       child: Icon(Icons.post_add),  
       backgroundColor: Colors.green,  
       foregroundColor: Colors.white,  
       onPressed: () => {
-        showchangeSearchDialog(context),
-
+        showAddStoreDialog(context),
       },  
-      ),
-      );  
+      )
+    );
   }
 
+  
 
 
 
 
+
+
+//TODO: migrate all of the search dialog functionality to the item page.
+
+showSearchDialog() {
+
+  switch(searchFilter) {
+    case 1 : {return showNameSearch();} 
+    case 2 : {return showAddressSearch();} 
+  }
+}
 
 
 showchangeSearchDialog(BuildContext context) {  // 
@@ -248,27 +224,42 @@ showchangeSearchDialog(BuildContext context) {  //
 //  the search bar for the stores address
 showAddressSearch()
     {
-    TextField(
-        onChanged: (value) {
-          setState(() {
-              searchKey = value; // TODO: set this toLowercase once you have implemented the todo below
+    return Row(
 
-              //  this stream query matches the searchkey to the names of the stores in the db
-              streamQuery = db.collection('Users').doc(currentUserUID).collection('stores')
-              .where('address',isGreaterThanOrEqualTo: searchKey) //TODO:create a new field each store doc called lowercaseName that stores a LOWERCASE version of whatever the user enters as the name.  then search against lowerCaseName rather than name
-              .where('address',isLessThan: searchKey+'z').snapshots();
+       children: <Widget> [
 
-              //TODO:  need to be able to search by name and address. there are no OR queries in firebase though. FIGURE OUT HOW TO DO AN 'OR' QUERY
-              //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
-          });
-        },
-        decoration: InputDecoration(
-            labelText: "Address Search",
-            hintText: "Address Search",
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+         Expanded( // textfield has no intrinsic width, so i have to wrap it in expanded to force it to fill up only the space not occupied by the textbutton in the row.  otherwise, this entire row causes a crash
+           child: TextField(
+                 onChanged: (value) {
+            setState(() {
+                searchKey = value.toLowerCase(); 
+         
+                //  this stream query matches the searchkey to the names of the stores in the db
+                streamQuery = db.collection('Users').doc(currentUserUID).collection('stores')
+                .where('lowercaseAddress',isGreaterThanOrEqualTo: searchKey) 
+                .where('lowercaseAddress',isLessThan: searchKey+'z').snapshots();
+         
+            });
+                 },
+                 decoration: InputDecoration(
+              labelText: "Address Search",
+              hintText: "Address Search",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+           ),
+         ),
+
+         TextButton(
+           onPressed: (){
+               showchangeSearchDialog(context);
+           }, 
+           child: Icon(Icons.filter_1_rounded)
+          )
+
+       ]
       );
+    
     } 
     
 
@@ -276,27 +267,38 @@ showAddressSearch()
 // the seach bar for the store name
 showNameSearch()
     {
-    TextField(
-        onChanged: (value) {
-          setState(() {
-              searchKey = value; // TODO: set this toLowercase once you have implemented the todo below
-
-              //  this stream query matches the searchkey to the names of the stores in the db
-              streamQuery = db.collection('Users').doc(currentUserUID).collection('stores')
-              .where('name',isGreaterThanOrEqualTo: searchKey) //TODO:create a new field each store doc called lowercaseName that stores a LOWERCASE version of whatever the user enters as the name.  then search against lowerCaseName rather than name
-              .where('name',isLessThan: searchKey+'z').snapshots();
-
-              //TODO:  need to be able to search by name and address. there are no OR queries in firebase though. FIGURE OUT HOW TO DO AN 'OR' QUERY
-              //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
-          });
-        },
-        decoration: InputDecoration(
-            labelText: "Name Search",
-            hintText: "Name Search",
-            prefixIcon: Icon(Icons.search),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25.0)))),
-      );
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+              onChanged: (value) {
+                setState(() {
+                    searchKey = value.toLowerCase(); 
+        
+                    //  this stream query matches the searchkey to the names of the stores in the db
+                    streamQuery = db.collection('Users').doc(currentUserUID).collection('stores')
+                    .where('lowercaseName',isGreaterThanOrEqualTo: searchKey) 
+                    .where('lowercaseName',isLessThan: searchKey+'z').snapshots();
+        
+                    //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
+                });
+              },
+              decoration: InputDecoration(
+                  labelText: "Name Search",
+                  hintText: "Name Search",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+            ),
+        ),
+          TextButton(
+           onPressed: (){
+               showchangeSearchDialog(context);
+           }, 
+           child: Icon(Icons.filter_alt_rounded)
+          )
+      ],
+    );
     } 
 }
 

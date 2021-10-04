@@ -28,13 +28,18 @@ class Database {
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
+      "lowercaseName" : name.toLowerCase(), // for use with the search bar
+
       "description": description,
       "price": price,
       "quantity": quantity,
+
       "item-id": itemDocumentReferencer.id, 
+      "lowercase-item-id":itemDocumentReferencer.id.toLowerCase(), // for use with the search bar
+
       "mostRecentScanIn" : mostRecentScanIn,
       "LastEmployeeToInteract" : currentUserUID, //this will be the user id of the last employee to either scan in or scan out the item
-      "tags" : [] //TODO: let the user add tags to id this item with. ideally add the tags as an array.
+      "tags" : [] //TODO: let the user add tags to id this item with. ideally add the tags as an array. when adding an item and editing, allow the user to edit and add tags
     };
 
     await itemDocumentReferencer
@@ -54,7 +59,10 @@ class Database {
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
+      "lowercaseName" : name.toLowerCase(),
+
       "address": address,
+      "lowercaseAddress" : address.toLowerCase(),
       "storeID" : storeDocumentReferencer.id, 
     };
 
