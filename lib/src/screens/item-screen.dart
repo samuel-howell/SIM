@@ -24,7 +24,10 @@ final hoverColor = Colors.indigo[50];
 //  this var will store the index of the store that is currently highlighted in the Listview.builder 
 var tappedIndex;
 
-
+// for the search bar
+String searchKey = "";
+Stream<QuerySnapshot> streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots();
+int searchFilter = 1; 
 
 class ItemScreen extends StatefulWidget {
 
@@ -44,81 +47,103 @@ class _ItemScreenState extends State<ItemScreen> {
 
 
       //!KNOWN ISSUES
-      //TODO: if I don't select a store before I navigate to this item screen, the page crashes
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
       
       body: 
       StreamBuilder<QuerySnapshot>(
-        stream: db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots(), // navigate to the correct collection and then call “.snapshots()” at the end. This stream will grab all relevant documents found under that collection to be handled inside our “builder” property.
+        stream: streamQuery,  // this streamQuery will change based on what is typed into the search bar
         builder: (context,  snapshot) { 
           if (!snapshot.hasData) {
             return Center(
               child: CircularProgressIndicator(),
             );
-          } else
-          return ListView.builder(
-            itemCount:snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-                DocumentSnapshot doc = snapshot.data!.docs[index];
-                
+          } 
+          
+          
+          else{
+          return Container(
+            child: Column(
+              children: <Widget>[
 
-                // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
-                return Slidable(  
-                  actionPane: SlidableDrawerActionPane(),
-                  actionExtentRatio: 0.25,
-                  child: ListTile(
+                //this search bar filters out stores
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: 
+                  
 
-                    tileColor:  tappedIndex == index ? Colors.greenAccent : null,   // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                    hoverColor: hoverColor,  //  adds some extra pizzazz if you're viewing it on the web
-                    title:  Text(doc.get('name')),
-                    subtitle:Text(doc.get('description')),
-                    onTap: () {
-                      //TODO: open a new page and populate it with all item details from firebase 
-                      
-                        
-
-                      //print out to console what the current store id, index, and list length and tapped index is.
-                      print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
-                      print('the current user id is ' + _auth.currentUser!.uid.toString());
-                      print('item index  is ' + index.toString()); 
-                      print('list length  is ' + snapshot.data!.docs.length.toString()); 
-                      print('tapped index is '  + tappedIndex.toString()); 
-
-
-                      print(" ");
-                    }
-                  ),
-                    actions: <Widget>[  // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+                     showSearchDialog(),  // TODO:  this dialog doesn't show that the search bar has changed unti you begin to type  in the search bar
                     
-                    // slide action to delete
-                    IconSlideAction
-                    (
-                        caption: 'Delete',
-                        color: Colors.red,
-                        icon: Icons.delete_sharp,
-                        onTap: () => {
-                          showItemDeleteConfirmationAlertDialog(context, doc.id),
-                          print('item ' + doc.id + ' was deleted.')
-                        }
-                    ),
+        
+               ),
 
-                    // slide action to edit
-                    IconSlideAction
-                    (
-                        caption: 'Edit',
-                        color: CustomColors.cblue,
-                        icon: Icons.edit,  
-                        onTap: () => {
-                          showEditItemDialog(context, doc.id),
-                          print('item ' + doc.id + ' was edited')
-                        }
+          Expanded(
+            child: ListView.builder(
+              itemCount:snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                  DocumentSnapshot doc = snapshot.data!.docs[index];
+                  
+          
+                  // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                  return Slidable(  
+                    actionPane: SlidableDrawerActionPane(),
+                    actionExtentRatio: 0.25,
+                    child: ListTile(
+                      tileColor:  tappedIndex == index ? Colors.greenAccent : null,   // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
+                      hoverColor: hoverColor,  //  adds some extra pizzazz if you're viewing it on the web
+                      title:  Text(doc.get('name')),
+                      subtitle:Text(doc.get('description')),
+                      onTap: () {
+                        //TODO: open a new page and populate it with all item details from firebase 
+                        
+                          
+          
+                        //print out to console what the current store id, index, and list length and tapped index is.
+                        print('the getCurrentStoreID is ' + Database().getCurrentStoreID());
+                        print('the current user id is ' + _auth.currentUser!.uid.toString());
+                        print('item index  is ' + index.toString()); 
+                        print('list length  is ' + snapshot.data!.docs.length.toString()); 
+                        print('tapped index is '  + tappedIndex.toString()); 
+          
+          
+                        print(" ");
+                      }
                     ),
-                    ]
-                );
-               }
-            );
-            }
-      ),
+                      actions: <Widget>[  // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+                      
+                      // slide action to delete
+                      IconSlideAction
+                      (
+                          caption: 'Delete',
+                          color: Colors.red,
+                          icon: Icons.delete_sharp,
+                          onTap: () => {
+                            showItemDeleteConfirmationAlertDialog(context, doc.id),
+                            print('item ' + doc.id + ' was deleted.')
+                          }
+                      ),
+          
+                      // slide action to edit
+                      IconSlideAction
+                      (
+                          caption: 'Edit',
+                          color: CustomColors.cblue,
+                          icon: Icons.edit,  
+                          onTap: () => {
+                            showEditItemDialog(context, doc.id),
+                            print('item ' + doc.id + ' was edited')
+                          }
+                      ),
+                      ]
+                  );
+                 }
+              ),
+          )
+        ]
+      )
+    );
+   }
+  }
+ ),
 
     floatingActionButton: FloatingActionButton(  
       child: Icon(Icons.post_add),  
@@ -134,71 +159,134 @@ class _ItemScreenState extends State<ItemScreen> {
       ),
       );  
   }
+
+  showSearchDialog() {
+
+  switch(searchFilter) {
+    case 1 : {return showNameSearch();} 
+    case 2 : {return showItemIDSearch();} 
+  }
 }
 
 
+showchangeSearchDialog(BuildContext context) {  // 
+  // set up the buttons
+  Widget nameButton = TextButton(
+    child: Text("By Name"),
+    onPressed:  () {
+      print('New searching by name');
+      searchFilter = 1;
+      Navigator.of(context).pop(); // removes the dialog from the screen
+    },
+  );
+  Widget addressButton = TextButton(
+    child: Text("By Item ID"),
+    onPressed:  () {
+      print('Now searching by item id.');
+      searchFilter = 2;
+      Navigator.of(context).pop(); // removes the dialog from the screen
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Choose Filter Type"),
+    content: Text("Which identifier would you like to search for?"),
+    actions: [
+      nameButton,
+      addressButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
 
+//  the search bar for the stores address
+showItemIDSearch()
+    {
+    return Row(
 
+       children: <Widget> [
 
+         Expanded( // textfield has no intrinsic width, so i have to wrap it in expanded to force it to fill up only the space not occupied by the textbutton in the row.  otherwise, this entire row causes a crash
+           child: TextField(
+                 onChanged: (value) {
+            setState(() {
+                searchKey = value.toLowerCase(); 
+         
+                //  this stream query matches the searchkey to the names of the stores in the db
+                streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
+                .where('lowercase-item-id',isGreaterThanOrEqualTo: searchKey)
+                .where('lowercase-item-id',isLessThan: searchKey+'z').snapshots();
+         
+            });
+                 },
+                 decoration: InputDecoration(
+              labelText: "Item ID Search",
+              hintText: "Item ID Search",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+           ),
+         ),
 
+         TextButton(
+           onPressed: (){
+               showchangeSearchDialog(context);
+           }, 
+           child: Icon(Icons.filter_alt_rounded)
+          )
 
-
-
-
-
-
-
-
-
-//! Old working code
-
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:flutter/material.dart';
-// import 'package:howell_capstone/src/res/custom-colors.dart';
-// import 'package:howell_capstone/src/widgets/add-item-form.dart';
-
-
-
-// class ItemScreen extends StatefulWidget {
-// @override
-// _ItemScreenState createState() => _ItemScreenState();
-// }
-
-// class _ItemScreenState extends State<ItemScreen>{
-  
-// Map data = {}; 
-
-
-
-
-//    @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Create Screen'),
-//         centerTitle: true,
-//         backgroundColor: Colors.transparent,
-//         elevation:0,
-//       ),
-
-//       body: Container(
-//         margin: EdgeInsets.symmetric(horizontal:20),
-//         child: Column(
-//           children: [
-//             SizedBox(height:30,),
-//             Text('Create Screen', textAlign: TextAlign.center),
-
-//             SizedBox(height:70,),
-
-//             AddItemForm(), 
+       ]
+      );
     
-//           ]
-       
-//         )
-//       )
-//     );
-//   }
-// }
+    } 
+    
+
+
+// the seach bar for the store name
+showNameSearch()
+    {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+              onChanged: (value) {
+                setState(() {
+                    searchKey = value.toLowerCase(); 
+        
+                    //  this stream query matches the searchkey to the names of the items in the db
+                    streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
+                    .where('lowercaseName',isGreaterThanOrEqualTo: searchKey)
+                    .where('lowercaseName',isLessThan: searchKey+'z').snapshots();
+
+
+                    //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
+                });
+              },
+              decoration: InputDecoration(
+                  labelText: "Name Search",
+                  hintText: "Name Search",
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+            ),
+        ),
+          TextButton(
+           onPressed: (){
+               showchangeSearchDialog(context);
+           }, 
+           child: Icon(Icons.filter_alt_rounded)
+          )
+      ],
+    );
+    } 
+}
+
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
 
