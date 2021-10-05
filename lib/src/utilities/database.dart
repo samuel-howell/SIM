@@ -17,10 +17,11 @@ class Database {
 //  method to  add an item
   static Future<void> addItem({
     required String name,
-    required String price,
+    required double price,
     required String quantity,
     required String description,
     required String mostRecentScanIn,
+    required String id
   }) async {
 
     DocumentReference itemDocumentReferencer =
@@ -34,8 +35,9 @@ class Database {
       "price": price,
       "quantity": quantity,
 
-      "item-id": itemDocumentReferencer.id, 
-      "lowercase-item-id":itemDocumentReferencer.id.toLowerCase(), // for use with the search bar
+      "id": id,
+      "lowercaseID" : id.toLowerCase(), // for use with the search bar
+      "db-item-id": itemDocumentReferencer.id, 
 
       "mostRecentScanIn" : mostRecentScanIn,
       "LastEmployeeToInteract" : currentUserUID, //this will be the user id of the last employee to either scan in or scan out the item
@@ -97,7 +99,7 @@ class Database {
 //  method to update an item
   static Future<void> editItem({
     required String name,
-    required String price,
+    required double price,
     required String quantity,
     required String description,
     //required String mostRecentScanIn,  //! do i really need this here?

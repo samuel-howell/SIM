@@ -26,6 +26,10 @@ var tappedIndex;
 
 // for the search bar
 String searchKey = "";
+
+double lowSearchKey = 0;  // have to be double because prices can be $24.99 etc.
+double highSearchKey = 0; 
+
 Stream<QuerySnapshot> streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots();
 int searchFilter = 1; 
 
@@ -165,6 +169,7 @@ class _ItemScreenState extends State<ItemScreen> {
   switch(searchFilter) {
     case 1 : {return showNameSearch();} 
     case 2 : {return showItemIDSearch();} 
+    case 3 : {return showPriceSearch();}
   }
 }
 
@@ -187,6 +192,14 @@ showchangeSearchDialog(BuildContext context) {  //
       Navigator.of(context).pop(); // removes the dialog from the screen
     },
   );
+  Widget priceButton = TextButton(
+    child: Text("By Price"),
+    onPressed:  () {
+      print('Now searching by price.');
+      searchFilter = 3;
+      Navigator.of(context).pop(); // removes the dialog from the screen
+    },
+  );
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: Text("Choose Filter Type"),
@@ -194,6 +207,7 @@ showchangeSearchDialog(BuildContext context) {  //
     actions: [
       nameButton,
       addressButton,
+      priceButton,
     ],
   );
   // show the dialog
@@ -220,8 +234,8 @@ showItemIDSearch()
          
                 //  this stream query matches the searchkey to the names of the stores in the db
                 streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
-                .where('lowercase-item-id',isGreaterThanOrEqualTo: searchKey)
-                .where('lowercase-item-id',isLessThan: searchKey+'z').snapshots();
+                .where('lowercaseID',isGreaterThanOrEqualTo: searchKey)
+                .where('lowercaseID',isLessThan: searchKey+'z').snapshots();
          
             });
                  },
@@ -285,7 +299,78 @@ showNameSearch()
       ],
     );
     } 
+
+
+    // the seach bar for the store name
+showPriceSearch()
+    {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+              onChanged: (value) {
+                setState(() {
+                    lowSearchKey = double.parse(value); 
+                    //  this stream query matches the searchkey to the names of the items in the db
+                    streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
+                    .where('price',isGreaterThanOrEqualTo: lowSearchKey)
+                    .where('price',isLessThan: highSearchKey).snapshots();
+
+
+                });
+              },
+              decoration: InputDecoration(
+                  labelText: "Low",
+                  hintText: "insert lower NUMBER bound",
+                  prefixIcon: Icon(Icons.attach_money_rounded),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+            ),
+        ),
+
+        // this text button is just a divider between the two search bars that represent the lower and upper bounds of the price filter
+        TextButton(
+           onPressed: (){
+               
+           }, 
+           child: Icon(Icons.remove) // this icon looks like a - 
+          ),
+
+        Expanded(
+          child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                      highSearchKey = double.parse(value);  
+          
+                      //  this stream query matches the searchkey to the names of the items in the db
+                      streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
+                      .where('price',isGreaterThanOrEqualTo: lowSearchKey)
+                      .where('price',isLessThanOrEqualTo: highSearchKey).snapshots();
+        
+        
+                  });
+                },
+                decoration: InputDecoration(
+                    labelText: "High",
+                    hintText: "insert higher NUMBER bound",
+                    prefixIcon: Icon(Icons.attach_money_rounded),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              ),
+        ),
+          TextButton(
+           onPressed: (){
+               showchangeSearchDialog(context);
+           }, 
+           child: Icon(Icons.filter_alt_rounded)
+          )
+      ],
+    );
+    } 
 }
+
+
+
 
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 

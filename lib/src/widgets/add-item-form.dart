@@ -33,6 +33,8 @@ class AddItemFormState extends State<AddItemForm> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+
 
   //quick calculation of the current date for mostRecentScanIn section in the Firestore DB using the intl package for date formatting
   String _currentDateTime = DateFormat.yMEd().add_jms().format(DateTime.now());
@@ -129,6 +131,24 @@ class AddItemFormState extends State<AddItemForm> {
             },
           ),
 
+          // text field for quantity
+          TextFormField(
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Enter the item\'s ID',
+            ),
+            controller: _idController,
+            keyboardType: TextInputType.text,
+            validator: (value) { // The validator receives the text that the user has entered.
+
+            //way 2: calling regex created at beginning of file
+              if (value == null || value.isEmpty) { 
+                return 'Please enter an ID';
+              }
+              return null;
+            },
+          ),
+
 
 
 
@@ -165,9 +185,10 @@ class AddItemFormState extends State<AddItemForm> {
                         await Database.addItem(
                           name: _nameController.text,
                           description: _descriptionController.text,
-                          price: _priceController.text,
+                          price: double.parse(_priceController.text),
                           quantity: _quantityController.text,
                           mostRecentScanIn: _currentDateTime,  // pulls from the  _currentDateTime var created above.
+                          id: _idController.text,
                         );
                         
                         setState(() {
