@@ -67,7 +67,6 @@ class _StoreScreenState extends State<StoreScreen> {
             child: Column(
               children: <Widget>[
 
-                //TODO:  migrate this code over to the item page
                 //this search bar filters out stores
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -254,7 +253,7 @@ showAddressSearch()
            onPressed: (){
                showchangeSearchDialog(context);
            }, 
-           child: Icon(Icons.filter_1_rounded)
+           child: Icon(Icons.filter_alt_rounded)
           )
 
        ]
