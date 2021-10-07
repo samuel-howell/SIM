@@ -173,7 +173,6 @@ class _StoreScreenState extends State<StoreScreen> {
 
 
 
-//TODO: migrate all of the search dialog functionality to the item page.
 
 showSearchDialog() {
 
@@ -279,7 +278,6 @@ showNameSearch()
                     .where('lowercaseName',isGreaterThanOrEqualTo: searchKey) 
                     .where('lowercaseName',isLessThan: searchKey+'z').snapshots();
         
-                    //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
                 });
               },
               decoration: InputDecoration(
