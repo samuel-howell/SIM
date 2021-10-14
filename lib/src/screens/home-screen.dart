@@ -2,9 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class HomeScreen extends StatelessWidget {
   final auth = FirebaseAuth.instance;
+  
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,7 @@ class HomeScreen extends StatelessWidget {
               Container(  
                 margin: EdgeInsets.only(top:200),  
                 child: TextButton(  
-                  child: Text('Page 1', style: TextStyle(fontSize: 20.0),),  
+                  child: Text('Hello.  this is page 1', style: TextStyle(fontSize: 20.0),),  
                   onPressed: () {},  
                 ),  
               ),  
@@ -30,7 +33,13 @@ class HomeScreen extends StatelessWidget {
                 child: TextButton(  
                   child: Text('Sign Out', 
                   style: TextStyle(fontSize: 20.0),), 
-                  onPressed: () {
+                  onPressed: () async {
+                    
+                    //  removes anything in shared pref forcing the user to relogin next time
+                    final SharedPreferences sharedPreferences =
+                    await SharedPreferences.getInstance();
+                    sharedPreferences.remove('email');
+
                     auth.signOut();
                     Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => LoginScreen()));
                   },  

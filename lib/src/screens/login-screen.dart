@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -111,12 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
           Theme(
             data: ThemeData(unselectedWidgetColor: Colors.white),
             child: Checkbox(
-              value: _rememberMe,
+              value: _rememberMe,    /// the _rememberMe boolean
               checkColor: Colors.green,
               activeColor: Colors.white,
               onChanged: (bool? value) {
                 setState(() {
-                  _rememberMe = value!;
+                  _rememberMe = true;
+                  print('_rememberMe is true now.');
                 });
               },
             ),
@@ -147,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
             obscureText: true,
             onChanged: (value) {
                   setState(() {
-                    _password = value.trim();
+                    _password = value.trim(); // the password string
                   });
                 },
             style: TextStyle(
@@ -187,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
             keyboardType: TextInputType.emailAddress,
             onChanged: (value) {
                   setState(() {
-                    _email = value.trim();
+                    _email = value.trim();   // the email string
                   });
                 },
             style: TextStyle(
@@ -215,10 +217,23 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.purple),
+                    style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
                     child: Text('Sign In'),
                     //when pressed, pass email and password to _signin function
-                    onPressed: () => _signin(_email, _password)));
+                    onPressed: () async {
+
+                      //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
+                      if(_rememberMe == true){
+                        final SharedPreferences sharedPreferences =
+                        await SharedPreferences.getInstance();
+                        sharedPreferences.setString('email', _email);
+                      }
+
+                      _signin(_email, _password); // pass email and password to _signin in function
+
+                    }
+                    )
+                    );
   }
  
    Widget _buildSignupBtn() { //  TODO:  Take thisto another page, where you ask for name, email, password, etc.

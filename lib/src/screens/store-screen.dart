@@ -53,8 +53,6 @@ class _StoreScreenState extends State<StoreScreen> {
         builder: (context,  snapshot) { 
 
           
-
-
           if (!snapshot.hasData) {
             return Center(
               child: CircularProgressIndicator(),
@@ -75,10 +73,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
                      showSearchDialog(),  // TODO:  this dialog doesn't show that the search bar has changed unti you begin to type  in the search bar
                     
-                    
-
-                  
-                  
+    
                ),
                
 
@@ -100,6 +95,7 @@ class _StoreScreenState extends State<StoreScreen> {
                         subtitle:Text(doc.get('address')),
                         onTap: () {
                           Database.setcurrentStoreID(doc.id); 
+      //  TODO:  Force one store to be auto selected so the program doesn't crash if you click on the item screen before selecting on a store.
 
                           setState(() {
                             tappedIndex = index;  //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
