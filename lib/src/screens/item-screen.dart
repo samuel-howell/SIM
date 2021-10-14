@@ -30,7 +30,7 @@ String searchKey = "";
 double lowSearchKey = 0;  // have to be double because prices can be $24.99 etc.
 double highSearchKey = 0; 
 
-Stream<QuerySnapshot> streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots();
+Stream<QuerySnapshot> streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots(); //TODO:  if this is already defined, then why fo i have to type into the search bar to get it to register the item of a new store?
 int searchFilter = 1; 
 
 class ItemScreen extends StatefulWidget {
@@ -52,7 +52,8 @@ class _ItemScreenState extends State<ItemScreen> {
 
       //!KNOWN ISSUES
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
-      
+      //TODO: I have to typein the search bar before a new stores items appear after changing stores 
+ 
       body: 
       StreamBuilder<QuerySnapshot>(
         stream: streamQuery,  // this streamQuery will change based on what is typed into the search bar
@@ -73,11 +74,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: 
-                  
-
-                     showSearchDialog(),  // TODO:  this dialog doesn't show that the search bar has changed unti you begin to type  in the search bar
-                    
-        
+                     showSearchDialog(),  
                ),
 
           Expanded(
@@ -85,7 +82,6 @@ class _ItemScreenState extends State<ItemScreen> {
               itemCount:snapshot.data!.docs.length,
               itemBuilder: (context, index) {
                   DocumentSnapshot doc = snapshot.data!.docs[index];
-                  
           
                   // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                   return Slidable(  
@@ -164,14 +160,14 @@ class _ItemScreenState extends State<ItemScreen> {
       );  
   }
 
-  showSearchDialog() {
+   showSearchDialog() {
 
-  switch(searchFilter) {
+  switch(searchFilter) {    
     case 1 : {return showNameSearch();} 
     case 2 : {return showItemIDSearch();} 
     case 3 : {return showPriceSearch();}
   }
-}
+ }
 
 
 showchangeSearchDialog(BuildContext context) {  // 
@@ -179,6 +175,9 @@ showchangeSearchDialog(BuildContext context) {  //
   Widget nameButton = TextButton(
     child: Text("By Name"),
     onPressed:  () {
+      setState((){  //* by calling setState there is an immediate change in the textfield whtn the button is pressed.
+            return showNameSearch();  
+        });
       print('New searching by name');
       searchFilter = 1;
       Navigator.of(context).pop(); // removes the dialog from the screen
@@ -187,6 +186,9 @@ showchangeSearchDialog(BuildContext context) {  //
   Widget addressButton = TextButton(
     child: Text("By Item ID"),
     onPressed:  () {
+      setState((){
+            return showItemIDSearch();  
+        });
       print('Now searching by item id.');
       searchFilter = 2;
       Navigator.of(context).pop(); // removes the dialog from the screen
@@ -195,6 +197,9 @@ showchangeSearchDialog(BuildContext context) {  //
   Widget priceButton = TextButton(
     child: Text("By Price"),
     onPressed:  () {
+       setState((){
+            return showPriceSearch();  
+        });
       print('Now searching by price.');
       searchFilter = 3;
       Navigator.of(context).pop(); // removes the dialog from the screen
@@ -222,13 +227,14 @@ showchangeSearchDialog(BuildContext context) {  //
 //  the search bar for the stores address
 showItemIDSearch()
     {
+    streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots();
+
     return Row(
-
        children: <Widget> [
-
-         Expanded( // textfield has no intrinsic width, so i have to wrap it in expanded to force it to fill up only the space not occupied by the textbutton in the row.  otherwise, this entire row causes a crash
+         Expanded( 
+           // textfield has no intrinsic width, so i have to wrap it in expanded to force it to fill up only the space not occupied by the textbutton in the row.  otherwise, this entire row causes a crash
            child: TextField(
-                 onChanged: (value) {
+            onChanged: (value) {
             setState(() {
                 searchKey = value.toLowerCase(); 
          
@@ -261,7 +267,6 @@ showItemIDSearch()
     } 
     
 
-
 // the seach bar for the store name
 showNameSearch()
     {
@@ -279,7 +284,6 @@ showNameSearch()
                     .where('lowercaseName',isLessThan: searchKey+'z').snapshots();
 
 
-                    //TODO: on the item page, will need to be able to search by price, name, product id, etc.  Perhaps a dropdown search that lets you specify wwhat you're searchin for?
                 });
               },
               decoration: InputDecoration(
@@ -293,6 +297,7 @@ showNameSearch()
           TextButton(
            onPressed: (){
                showchangeSearchDialog(context);
+              
            }, 
            child: Icon(Icons.filter_alt_rounded)
           )
@@ -304,6 +309,8 @@ showNameSearch()
     // the seach bar for the store name
 showPriceSearch()
     {
+    streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').snapshots();
+
     return Row(
       children: [
         Expanded(
@@ -315,8 +322,6 @@ showPriceSearch()
                     streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
                     .where('price',isGreaterThanOrEqualTo: lowSearchKey)
                     .where('price',isLessThan: highSearchKey).snapshots();
-
-
                 });
               },
               decoration: InputDecoration(
@@ -330,9 +335,7 @@ showPriceSearch()
 
         // this text button is just a divider between the two search bars that represent the lower and upper bounds of the price filter
         TextButton(
-           onPressed: (){
-               
-           }, 
+           onPressed: (){ }, 
            child: Icon(Icons.remove) // this icon looks like a - 
           ),
 
@@ -346,8 +349,6 @@ showPriceSearch()
                       streamQuery = db.collection('Users').doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items')
                       .where('price',isGreaterThanOrEqualTo: lowSearchKey)
                       .where('price',isLessThanOrEqualTo: highSearchKey).snapshots();
-        
-        
                   });
                 },
                 decoration: InputDecoration(
@@ -374,4 +375,3 @@ showPriceSearch()
 
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY 
-

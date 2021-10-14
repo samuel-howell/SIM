@@ -163,13 +163,6 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 
   
-
-
-
-
-
-
-
 showSearchDialog() {
 
   switch(searchFilter) {
@@ -184,6 +177,9 @@ showchangeSearchDialog(BuildContext context) {  //
   Widget nameButton = TextButton(
     child: Text("By Name"),
     onPressed:  () {
+      setState((){
+            return showNameSearch();  
+        });
       print('New searching by name');
       searchFilter = 1;
       Navigator.of(context).pop(); // removes the dialog from the screen
@@ -192,6 +188,9 @@ showchangeSearchDialog(BuildContext context) {  //
   Widget addressButton = TextButton(
     child: Text("By Address"),
     onPressed:  () {
+      setState((){
+            return showAddressSearch();  
+        });
       print('Now searching by address.');
       searchFilter = 2;
       Navigator.of(context).pop(); // removes the dialog from the screen
@@ -294,7 +293,6 @@ showNameSearch()
     );
     } 
 }
-
 
 
 
