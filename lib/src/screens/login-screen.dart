@@ -263,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
- 
+  
  @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -384,6 +384,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
+//ask the user to accept permissions upon initial login
+
 }
 
 
