@@ -43,6 +43,9 @@ dependencies:
   pdf: ^3.6.0
   path_provider: ^2.0.5
   share_plus: ^3.0.4
+  universal_html: ^2.0.8
+  http: ^0.13.4
+  permission_handler: ^8.2.5
   
  
 
