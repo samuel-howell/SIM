@@ -172,7 +172,7 @@ print("external storage directory is " + localAppDir.path.toString());
                           child: Text('Download QR'), //TODO: allow user to download qr code to their device.  also figure out a way to download qr code on web.  until then, workaround is email qr code to yourself and taking screenshot on web.
                           
                           onPressed: () async {
-
+saveFile();
 
                           }
             )
@@ -184,14 +184,24 @@ print("external storage directory is " + localAppDir.path.toString());
   }
  
 
+Future<String> getFilePath() async {
+    Directory? appDocumentsDirectory = await getExternalStorageDirectory(); // 1 //TODO: getExternalStorageDirectory only works in android. for ios, you have to migrate to something like this https://stackoverflow.com/questions/55220612/how-to-save-a-text-file-in-external-storage-in-ios-using-flutter 
+    String? appDocumentsPath = appDocumentsDirectory?.path; // 2
+    String filePath = '$appDocumentsPath/demoTextFile5.txt'; // 3
 
-void _showFilesinDir({required Directory dir}) {
-    dir.list(recursive: false, followLinks: false)
-    .listen((FileSystemEntity entity) {
-      print(entity.path);
-    });
+    return filePath;
   }
 
+  void saveFile() async {
+Directory? appDocumentsDirectory = await getExternalStorageDirectory(); // 1
+
+    String? appDocumentsPath = appDocumentsDirectory?.path;
+
+
+    File file = File(await getFilePath()); // 1
+    file.writeAsString("This is my demo text that will be saved to : demoTextFile.txt"); // 2
+    print('the file was saved at ' + appDocumentsPath.toString());
+  }
 
 //  perhaps use this package for reading the qr codes - https://pub.dev/packages/flutter_barcode_scanner
 
