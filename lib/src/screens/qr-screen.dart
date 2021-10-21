@@ -1,11 +1,15 @@
 
 import 'dart:convert';
 import 'dart:io';
+
 import 'dart:typed_data';
 import 'dart:ui';
-
+import 'package:screenshot/screenshot.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -25,6 +29,7 @@ class _QRScreenState extends State<QRScreen> {
   final qrTextController = TextEditingController();
   String qr = "";
   File? file;
+  final screenshotController = ScreenshotController();
 
 
 
@@ -100,7 +105,6 @@ Widget buildTextField(BuildContext context) => TextField(
     )
   )
 );
-}
 
 
 Widget buildExportQRBtn(BuildContext context, String qr, GlobalKey key, File? file) {
@@ -109,16 +113,76 @@ Widget buildExportQRBtn(BuildContext context, String qr, GlobalKey key, File? fi
     child: Column(
         children: 
           [
+
             SizedBox(
             width: double.infinity,
             child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                          child: Text('Export QR to other services'),
+                          child: Text('Download QR'), //TODO:  also figure out a way to download qr code on web.  until then, workaround is email qr code to yourself and taking screenshot on web.
+                          
+                          onPressed: () async {
+
+                          //this code "wraps" the qr widget into an image format
+                              RenderRepaintBoundary boundary = key.currentContext!
+                                  .findRenderObject() as RenderRepaintBoundary;
+                              //captures qr image 
+                              var image = await boundary.toImage();
+
+                              String qrName = qrTextController.text;
+                              
+                              //running on web
+                                if(kIsWeb){
+                                print('registering as a web device');
+                                ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+                                Uint8List pngBytes = byteData!.buffer.asUint8List();
+                                    final _base64 = base64Encode(pngBytes);
+                                    final anchor =
+                                        html.AnchorElement(href: 'data:application/octet-stream;base64,$_base64')
+                                          ..download = "$qrName.png"
+                                          ..target = 'blank';
+                                  
+                                    html.document.body!.append(anchor);
+                                    anchor.click();
+                                    anchor.remove();
+                                  
+                              }
+
+                              //running on Android
+                              else if(Platform.isAndroid){
+                                print('registering as an android device.');
+                                ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
+                                Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+                                //general downloads folder (accessible by files app) ANDROID ONLY
+                                Directory generalDownloadDir = Directory('/storage/emulated/0/Download'); //! THIS WORKS for android only !!!!!! Concerning iOS, from emarco comment  - https://stackoverflow.com/questions/51776109/how-to-get-the-absolute-path-to-the-download-folder/69150584#69150584
+
+                                //qr image file saved to general downloads folder
+                                File qrJpg = await File('${generalDownloadDir.path}/$qrName.jpg').create();    
+                                await qrJpg.writeAsBytes(pngBytes);
+
+                                Fluttertoast.showToast(msg: ' $qrName QR code was downloaded to ' + generalDownloadDir.path.toString(), gravity: ToastGravity.TOP);
+                              }
+                              
+                              //running on iOS
+                              else if(Platform.isIOS){
+                                //TODO: do ios version of download to device method shown above for android and web
+                              }
+
+                              
+ 
+                          }
+            )
+          ),
+
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
+                          child: Text('Share'),
                           
                           onPressed: () async {
 
                            
-                           //TODO figure out a way to download it to device locally.  See todo below
                             try {
 
                               //this code "wraps" the qr widget into an image format
@@ -137,19 +201,12 @@ Widget buildExportQRBtn(BuildContext context, String qr, GlobalKey key, File? fi
                               final appDir = await getApplicationDocumentsDirectory();
                               final localAppDir = await getExternalStorageDirectory();
 
-                              //current time
-                              var datetime = DateTime.now();
+
                               //qr image file creation
-                              file = await File('${localAppDir!.path}/$datetime.jpg').create();                  
+                              file = await File('${localAppDir!.path}/qrcode.jpg').create();   
 
                               //appending data
                               await file?.writeAsBytes(pngBytes);
-
-
-print("application documents directory is " + appDir.path.toString());
-print("external storage directory is " + localAppDir.path.toString());
-
-
 
                               //Shares QR image
                               await Share.shareFiles(
@@ -165,44 +222,18 @@ print("external storage directory is " + localAppDir.path.toString());
             ),
           ),
 
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                          child: Text('Download QR'), //TODO: allow user to download qr code to their device.  also figure out a way to download qr code on web.  until then, workaround is email qr code to yourself and taking screenshot on web.
-                          
-                          onPressed: () async {
-saveFile();
-
-                          }
-            )
-          )
+          
         ],
 
     ),
   );  
   }
+}
+
+
+
  
 
-Future<String> getFilePath() async {
-    Directory? appDocumentsDirectory = await getExternalStorageDirectory(); // 1 //TODO: getExternalStorageDirectory only works in android. for ios, you have to migrate to something like this https://stackoverflow.com/questions/55220612/how-to-save-a-text-file-in-external-storage-in-ios-using-flutter 
-    String? appDocumentsPath = appDocumentsDirectory?.path; // 2
-    String filePath = '$appDocumentsPath/demoTextFile5.txt'; // 3
 
-    return filePath;
-  }
-
-  void saveFile() async {
-Directory? appDocumentsDirectory = await getExternalStorageDirectory(); // 1
-
-    String? appDocumentsPath = appDocumentsDirectory?.path;
-
-
-    File file = File(await getFilePath()); // 1
-    file.writeAsString("This is my demo text that will be saved to : demoTextFile.txt"); // 2
-    print('the file was saved at ' + appDocumentsPath.toString());
-  }
-
-//  perhaps use this package for reading the qr codes - https://pub.dev/packages/flutter_barcode_scanner
 
 //TODO:  See if you can integrate this https://codereis.com/posts/multi-image-pdf/ onto this page.  take the qr, turn it into an image, multiply that image x number of times on a pdf page.
