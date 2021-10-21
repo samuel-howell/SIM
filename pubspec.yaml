@@ -46,6 +46,7 @@ dependencies:
   universal_html: ^2.0.8
   http: ^0.13.4
   permission_handler: ^8.2.5
+  qr_code_scanner: ^0.5.2
   
  
 

@@ -169,11 +169,10 @@ print("external storage directory is " + localAppDir.path.toString());
             width: double.infinity,
             child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                          child: Text('Download QR'),
+                          child: Text('Download QR'), //TODO: allow user to download qr code to their device.  also figure out a way to download qr code on web.  until then, workaround is email qr code to yourself and taking screenshot on web.
                           
                           onPressed: () async {
 
-                            createFolder("capstonefolderrrr");    //!  this error is thrown ERROR:flutter/lib/ui/ui_dart_state.cc(209)] Unhandled Exception: FileSystemException: Creation failed, path = 'storage/emulated/0/capstonefolderrrr' (OS Error: Operation not permitted, errno = 1)
 
                           }
             )
@@ -193,80 +192,6 @@ void _showFilesinDir({required Directory dir}) {
     });
   }
 
-
-//TODO:  integregrate the code below  following this link - https://referbruv.com/blog/posts/capturing-app-view-and-writing-to-local-storage-in-flutter
-// Future<String> _captureImage() async {
-//     RenderRepaintBoundary boundary =
-//         _boundaryKey.currentContext.findRenderObject();
-//     var image = await boundary.toImage();
-
-//     // get the directory to write the file
-//     var directory = await getExternalStorageDirectory();
-
-//     // prepare the file path
-//     var filePath =
-//         '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.png';
-
-//     // extract bytes from the image
-//     ByteData byteData = await image.toByteData(format: ImageByteFormat.png);
-//     Uint8List pngBytes = byteData.buffer.asUint8List();
-
-//     // openwrite a File with the specified path
-//     File imgFile = new File(filePath);
-
-//     // write the image bytes to the file
-//     imgFile.writeAsBytes(pngBytes);
-
-//     // return the created file
-//     return filePath;
-//   }
-
-// for downloading qr code on the web
-//  Future<void> downloadImage(String imageUrl) async {
-//     try {
-//       // first we make a request to the url like you did
-//       // in the android and ios version
-//       final http.Response r = await http.get(
-//         Uri.parse(imageUrl),
-//       );
-      
-//       // we get the bytes from the body
-//       final data = r.bodyBytes;
-//       // and encode them to base64
-//       final base64data = base64Encode(data);
-      
-//       // then we create and AnchorElement with the html package
-//       final a = html.AnchorElement(href: 'data:image/jpeg;base64,$base64data');
-      
-//       // set the name of the file we want the image to get
-//       // downloaded to
-//       a.download = 'download.jpg';
-      
-//       // and we click the AnchorElement which downloads the image
-//       a.click();
-//       // finally we remove the AnchorElement
-//       a.remove();
-//     } catch (e) {
-//       print(e);
-//     }
-//   }
-
-
-//  method to create a new folder on the local device
-  Future<String> createFolder(String folder) async {
-  final folderName = folder;
-  final path = Directory("storage/emulated/0/$folderName");
-  var status = await Permission.storage.status;
-  if (!status.isGranted) {
-    await Permission.storage.request();
-  }
-  if ((await path.exists())) {
-    return path.path;
-  } else {
-    path.create();
-    return path.path;
-  }
-}
 
 //  perhaps use this package for reading the qr codes - https://pub.dev/packages/flutter_barcode_scanner
 
