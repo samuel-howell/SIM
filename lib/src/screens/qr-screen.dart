@@ -118,7 +118,7 @@ Widget buildExportQRBtn(BuildContext context, String qr, GlobalKey key, File? fi
             width: double.infinity,
             child: ElevatedButton(
                           style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                          child: Text('Download QR'), //TODO:  also figure out a way to download qr code on web.  until then, workaround is email qr code to yourself and taking screenshot on web.
+                          child: Text('Download QR'), 
                           
                           onPressed: () async {
 

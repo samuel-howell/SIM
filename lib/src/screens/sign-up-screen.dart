@@ -17,7 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen>{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Item Form'),
+        title: Text('Sign Up Form'),
         centerTitle: true,
         backgroundColor: Colors.black,
         elevation:0,

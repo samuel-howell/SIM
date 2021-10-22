@@ -52,75 +52,93 @@ class Database {
 
 
 //  method to  add a user
-  static Future<void> addClient({  //TODO: figure out a better name. this is how we will store users.
+  static Future<void> addUser({  
     required String firstName,
     required String lastName,
     required String email,
-    required String password,
     required String dateAccountCreated,
-  }) async {
+    required String userID,
+    required bool emailVerified,
 
-    DocumentReference clientDocumentReferencer =
-        _userCollection.doc(getcurrentUserUIDUid());   //TODO: edit this line unitl you get the output of first name, etc in firebbase
-    Map<String, dynamic> data = <String, dynamic>{
-      "firstName": firstName,
-      "lastName" : lastName,
-      "email" : email,
-      "password" : password,
-      "userID": clientDocumentReferencer.id, 
-      "dateAccountCreated": dateAccountCreated,
-    };
+      }) async {
 
-    await clientDocumentReferencer
-        .set(data)
-        .whenComplete(() => print("Client added"))
-        .catchError((e) => print(e));
-  }
+        DocumentReference userDocumentReferencer = _userCollection.doc(userID);   
+        Map<String, dynamic> data = <String, dynamic>{
+          "firstName": firstName,
+          "lastName" : lastName,
+          "email" : email,
+          "userID": userID, 
+          "dateAccountCreated": dateAccountCreated,
+          "emailVerified": false,
+        };
 
+        await userDocumentReferencer
+            .set(data)
+            .whenComplete(() => print("User added"))
+            .catchError((e) => print(e));
+      }
+
+//  method to update user email verification
+ static Future<void> updateUserVerification({  
+    required String userID,
+    required bool emailVerified,
+
+      }) async {
+
+        DocumentReference userDocumentReferencer = _userCollection.doc(userID);   
+        Map<String, dynamic> data = <String, dynamic>{
+          "emailVerified": true,
+        };
+
+        await userDocumentReferencer
+            .update(data)
+            .whenComplete(() => print("User added"))
+            .catchError((e) => print(e));
+      }
 
 //  method to  add a store
-  static Future<void> addStore({
+  static Future<void> addStore({  
     required String name,
     required String address,
-  }) async {
-    DocumentReference storeDocumentReferencer =
-        _userCollection.doc(currentUserUID).collection('stores').doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+        }) async {
+          DocumentReference storeDocumentReferencer =
+              _userCollection.doc(currentUserUID).collection('stores').doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
 
-    Map<String, dynamic> data = <String, dynamic>{
-      "name": name,
-      "lowercaseName" : name.toLowerCase(),
+          Map<String, dynamic> data = <String, dynamic>{
+            "name": name,
+            "lowercaseName" : name.toLowerCase(),
 
-      "address": address,
-      "lowercaseAddress" : address.toLowerCase(),
-      "storeID" : storeDocumentReferencer.id, 
-    };
+            "address": address,
+            "lowercaseAddress" : address.toLowerCase(),
+            "storeID" : storeDocumentReferencer.id, 
+          };
 
-    await storeDocumentReferencer
-        .set(data)
-        .whenComplete(() => print("Store added to the database"))
-        .catchError((e) => print(e));
-  }
+          await storeDocumentReferencer
+              .set(data)
+              .whenComplete(() => print("Store added to the database"))
+              .catchError((e) => print(e));
+        }
 
 //method to update a store
   static Future<void> editStore({
-    required String name,
-    required String address,
-    required String docID,
-  }) async {
-    DocumentReference storeDocumentReferencer =
-        _userCollection.doc(currentUserUID).collection('stores').doc(docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+      required String name,
+      required String address,
+      required String docID,
+        }) async {
+          DocumentReference storeDocumentReferencer =
+              _userCollection.doc(currentUserUID).collection('stores').doc(docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
 
-    Map<String, dynamic> data = <String, dynamic>{
-      "name": name,
-      "address": address,
-      "storeID" : storeDocumentReferencer.id, 
-    };
+          Map<String, dynamic> data = <String, dynamic>{
+            "name": name,
+            "address": address,
+            "storeID" : storeDocumentReferencer.id, 
+          };
 
-    await storeDocumentReferencer
-        .update(data)
-        .whenComplete(() => print("Store updated in the database"))
-        .catchError((e) => print(e));
-  }
+          await storeDocumentReferencer
+              .update(data)
+              .whenComplete(() => print("Store updated in the database"))
+              .catchError((e) => print(e));
+        }
 
 
 //  method to update an item

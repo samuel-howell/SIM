@@ -48,6 +48,7 @@ dependencies:
   permission_handler: ^8.2.5
   qr_code_scanner: ^0.5.2
   screenshot: ^1.2.3
+  google_fonts: ^2.1.0
 
 
   

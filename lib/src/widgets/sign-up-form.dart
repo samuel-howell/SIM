@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/res/custom-colors.dart';
+import 'package:howell_capstone/src/screens/confirm-email-screen.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +32,7 @@ class SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormState>();
 
   bool _isProcessing = false;
-  bool _isObscure = false; // for obscuring text in the password creation field
+  bool _isObscure = true; // for obscuring text in the password creation field
 
   //  these controllers will store the data inputed by the user.
   final TextEditingController _firstNameController = TextEditingController();
@@ -38,6 +40,7 @@ class SignUpFormState extends State<SignUpForm> {
 
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+
 
 
 
@@ -126,7 +129,7 @@ class SignUpFormState extends State<SignUpForm> {
               labelText: 'Password',
               suffixIcon: IconButton(
                 icon: Icon(
-                  _isObscure ? Icons.visibility : Icons.visibility_off,
+                  _isObscure ? Icons.visibility_off : Icons.visibility,
                 ),
                 onPressed: () {
                    setState(() {
@@ -179,24 +182,17 @@ class SignUpFormState extends State<SignUpForm> {
                         });
 
                         
-
-                        if(_signup(_email,_password)){ // try to add the user via authentication.  if it works, then add a user profile in the database
-                          await Database.addClient(
-                          firstName: _firstNameController.text,
-                          lastName: _lastNameController.text,
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                          dateAccountCreated: _currentDateTime.toString(),
-                        );
-                        }
-                        else{
+                      
+                       _signup(_email,_password);// try to add the user via authentication.  if it works, then add a user profile in the database
+                   
+                      
                         setState(() {
                           _isProcessing = false;
                         });
                         }
 
-                      }
-                    },
+                      },
+                    
                     child: const Text('Submit'),
                   ),
             )
@@ -207,10 +203,20 @@ class SignUpFormState extends State<SignUpForm> {
 
      _signup(String _email, String _password) async {
     try{
-      await auth.createUserWithEmailAndPassword(email: _email, password: _password);
+      var userCredentials = await auth.createUserWithEmailAndPassword(email: _email, password: _password);
+      var userID = userCredentials.user!.uid; /// this is the user id that we pass to the add user database method so that it creates an entry 
+      await Database.addUser(
+                          firstName: _firstNameController.text,
+                          lastName: _lastNameController.text,
+                          email: _emailController.text,
+                          dateAccountCreated: _currentDateTime.toString(),
+                          userID: userID,
+                          emailVerified: false,
+                        );
 
       //Success
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      userCredentials.user!.sendEmailVerification();
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmEmailScreen()));
       return true;
 
     } on FirebaseAuthException catch (error){

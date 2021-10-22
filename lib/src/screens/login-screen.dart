@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:howell_capstone/src/screens/confirm-email-screen.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
+import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/sign-up-form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -272,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             TextSpan(
-              text: 'Sign Upppp',
+              text: 'Sign Up',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18.0,
@@ -361,10 +363,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _signin(String _email, String _password) async {
     try{
-      await auth.signInWithEmailAndPassword(email: _email, password: _password);
+      var userCredentials = await auth.signInWithEmailAndPassword(email: _email, password: _password);
+      var userID = userCredentials.user!.uid;
 
       //Success
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      if(userCredentials.user!.emailVerified){
+        
+        //updates user verification field in firebase
+        await Database.updateUserVerification(
+          userID: userID,
+          emailVerified:true
+        );
+
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+      }
+
+      // ifuser hasn't verified email, we send them back to the email confirmation page
+      else
+      {
+        userCredentials.user!.sendEmailVerification();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmEmailScreen()));
+
+      }
     } 
     
     //INFO: Fluttertoast will put pop up messages on the screen if auth encounters an error
@@ -384,6 +404,8 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+
+//! you may not need what is below now that you've moved the sign in to a different page
 
    _signup(String _email, String _password) async {
     try{
