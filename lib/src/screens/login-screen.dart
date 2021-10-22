@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
+import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
+import 'package:howell_capstone/src/widgets/sign-up-form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -235,10 +237,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     )
                     );
   }
+
+    Widget _newbuildSignupBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: double.infinity,
+      child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
+                    child: Text('Sign Up'),
+                    //when pressed, pass email and password to _signin function
+                    onPressed: () async {
+                    Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => SignUpScreen(),
+                                )
+                              );                 
+          }
+                    )
+                    );
+  }
  
+ //TODO: fixt gesture detector not responding
    Widget _buildSignupBtn() { //  TODO:  Take thisto another page, where you ask for name, email, password, etc.
     return GestureDetector(
-      onTap: () => _signup(_email, _password),
+      onTap: () => SignUpForm(),
       child: RichText(
         text: TextSpan(
           children: [
@@ -251,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
             TextSpan(
-              text: 'Sign Up',
+              text: 'Sign Upppp',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 18.0,
@@ -319,6 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _buildForgotPasswordBtn(),
                       _buildRememberMeCheckbox(),
                       _buildLoginBtn(),
+                      _newbuildSignupBtn(),
                       //_buildSignInWithText(), //! get rid of this if your not going to use it
                       //_buildSocialBtnRow(), //! get rid of this if your not going to use it
                       _buildSignupBtn(),

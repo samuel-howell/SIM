@@ -51,6 +51,33 @@ class Database {
   }
 
 
+//  method to  add a user
+  static Future<void> addClient({  //TODO: figure out a better name. this is how we will store users.
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String password,
+    required String dateAccountCreated,
+  }) async {
+
+    DocumentReference clientDocumentReferencer =
+        _userCollection.doc(getcurrentUserUIDUid());   //TODO: edit this line unitl you get the output of first name, etc in firebbase
+    Map<String, dynamic> data = <String, dynamic>{
+      "firstName": firstName,
+      "lastName" : lastName,
+      "email" : email,
+      "password" : password,
+      "userID": clientDocumentReferencer.id, 
+      "dateAccountCreated": dateAccountCreated,
+    };
+
+    await clientDocumentReferencer
+        .set(data)
+        .whenComplete(() => print("Client added"))
+        .catchError((e) => print(e));
+  }
+
+
 //  method to  add a store
   static Future<void> addStore({
     required String name,
