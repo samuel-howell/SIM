@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:howell_capstone/src/screens/confirm-email-screen.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
+import 'package:howell_capstone/src/screens/password-reset-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
@@ -17,19 +18,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-  Widget _buildForgotPasswordBtn() {  //TODO:  figure out a way to implement this
-    return Container(
-      alignment: Alignment.centerRight,
-      child: FlatButton(
-        onPressed: () => print('Forgot Password Button Pressed'),
-        padding: EdgeInsets.only(right: 0.0),
-        child: Text(
-          'Forgot Password?',
-          style: kLabelStyle,
-        ),
-      ),
-    );
-  }
+
+  
 
   
 
@@ -108,6 +98,33 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberMe = false;
 
+
+
+
+  Widget _buildForgotPasswordBtn() {  //TODO:  figure out a way to implement this
+    return Container(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextButton(
+          onPressed: () {
+            //print('forgot password pressed');
+            //print('the email that the password reset is being sent to is ' + _email);
+            //_passwordReset(_email); // pass the email to the password rest function, so firebase can send the password reset to the user
+
+            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PasswordResetScreen(),
+                                  )
+                                );    
+          },
+          child: Text(
+            'Forgot Password?',
+            style: kLabelStyle,
+          ),
+        ),
+      ),
+    );
+  }
   Widget _buildRememberMeCheckbox() { //TODO:  figure out a way to implement this
     return Container(
       height: 20.0,
@@ -240,28 +257,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
   }
 
-    Widget _newbuildSignupBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                    child: Text('Sign Up'),
-                    //when pressed, pass email and password to _signin function
-                    onPressed: () async {
-                    Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SignUpScreen(),
-                                )
-                              );                 
-          }
-                    )
-                    );
-  }
+
  
- //TODO: fixt gesture detector not responding
-   Widget _buildSignupBtn() { //  TODO:  Take thisto another page, where you ask for name, email, password, etc.
+   Widget _buildSignupBtn() { 
     return GestureDetector(
-      onTap: () => SignUpForm(),
+      onTap: () {
+        print('the sign up gesture was pressed');
+        Navigator.of(context).push(MaterialPageRoute(
+                     builder: (context) => SignUpScreen()));
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -342,7 +346,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       _buildForgotPasswordBtn(),
                       _buildRememberMeCheckbox(),
                       _buildLoginBtn(),
-                      _newbuildSignupBtn(),
                       //_buildSignInWithText(), //! get rid of this if your not going to use it
                       //_buildSocialBtnRow(), //! get rid of this if your not going to use it
                       _buildSignupBtn(),
@@ -405,31 +408,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-//! you may not need what is below now that you've moved the sign in to a different page
+  Future<void> _passwordReset(String email) async {
+  try{
+    await auth.sendPasswordResetEmail(email: email);
 
-   _signup(String _email, String _password) async {
-    try{
-      await auth.createUserWithEmailAndPassword(email: _email, password: _password);
-
-      //Success
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-    } on FirebaseAuthException catch (error){
-      if (error.code == 'weak-password'){
-          Fluttertoast.showToast(msg: 'Password needs to be at least 8 characters', gravity: ToastGravity.TOP);
-      }
-      else if (error.code == 'email-already-in-use'){
-          Fluttertoast.showToast(msg: 'This email is already associated with an account', gravity: ToastGravity.TOP);
-      }
-      else if (error.code == 'invalid-email'){
-          Fluttertoast.showToast(msg: 'Provided email address was not valid', gravity: ToastGravity.TOP);
-      }
-      else {
-          Fluttertoast.showToast(msg: 'ERROR', gravity: ToastGravity.TOP);
-      }
-    }
+  }catch (error){
+    print('an error was encountered with the forgot password function');
   }
-
-//ask the user to accept permissions upon initial login
+}
 
 }
 
