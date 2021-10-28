@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:developer';
 
@@ -20,6 +21,7 @@ class _ScanScreenState extends State<ScanScreen> {
   QRViewController? controller;
   DateTime? lastScan;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  int qrRead = 0;
 
   // In order to get hot reload to work we need to pause the camera if the platform
   @override
@@ -142,22 +144,50 @@ Widget _buildQrView(BuildContext context) {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
+  void _onQRViewCreated(QRViewController controller) async {
+
     setState(() {
      this.controller = controller;
 
     });
-    controller.scannedDataStream.listen((scanData) {
-       final currentScan = DateTime.now();
-       if (lastScan == null || currentScan.difference(lastScan!) > const Duration(seconds: 1)) {  //  TODO: I think this code is on the right track, but still needs to be modified. - https://stackoverflow.com/questions/66723300/set-interval-for-qr-coder-scanner-in-flutter
-       lastScan = currentScan;
-      print(scanData.code);
 
-      setState(() {
-        result = scanData;
+
+//!  _changeQrViewBorder(){
+//        var scanArea = (MediaQuery.of(context).size.width < 400 ||
+//             MediaQuery.of(context).size.height < 400)
+//         ? 150.0
+//         : 300.0;
+//        return QRView(
+//       key: qrKey,
+//       onQRViewCreated: _onQRViewCreated,
+//       overlay: QrScannerOverlayShape(
+//           borderColor: Colors.green,
+//           borderRadius: 10,
+//           borderLength: 30,
+//           borderWidth: 10,
+//           cutOutSize: scanArea),
+//       onPermissionSet: (ctrl, p) => _onPermissionSet(context, ctrl, p),
+//     );
+//   }
+
+// by using the DateTime below in the if statement, we put a 2 second interval delay between each time the state is set to the new ScanData, this prevents the stream from pushing a bunch of duplicate ScanData while the user hovers on a QR code
+    controller.scannedDataStream.listen((scanData) {
+          final currentScan = DateTime.now();
+          if (lastScan == null || currentScan.difference(lastScan!) > const Duration(seconds: 2)) 
+          {
+            lastScan = currentScan;
+            print(scanData.code);
+            qrRead++; // just a tracker to see how quick the scanner is reading codes with the dealy in place
+
+            //!_changeQrViewBorder();
+            //TODO: figure out a way here to briefly change the border color or vibrate or toast msg or something so the user knows that they have successfully scanned qr code. code in red above doesn't work
+      
+            setState(() {
+              result = scanData;
+              print('the qr just read was ' + scanData.code + " qr count: " + qrRead.toString());
+            });
+         }
       });
-     }  
-  });
   }
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
