@@ -18,78 +18,71 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+// Widget _buildSignInWithText() {
+//   return Column(
+//     children: <Widget>[
+//       Text(
+//         '- OR -',
+//         style: TextStyle(
+//           color: Colors.white,
+//           fontWeight: FontWeight.w400,
+//         ),
+//       ),
+//       SizedBox(height: 20.0),
+//       Text(
+//         'Sign in with',
+//         style: kLabelStyle,
+//       ),
+//     ],
+//   );
+// }
 
-  
+// Widget _buildSocialBtn(Function onTap, AssetImage logo) {
+//   return GestureDetector(
+//     onTap: (){print("social button was clicked");},
+//     child: Container(
+//       height: 60.0,
+//       width: 60.0,
+//       decoration: BoxDecoration(
+//         shape: BoxShape.circle,
+//         color: Colors.white,
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black26,
+//             offset: Offset(0, 2),
+//             blurRadius: 6.0,
+//           ),
+//         ],
+//         image: DecorationImage(
+//           image: logo,
+//         ),
+//       ),
+//     ),
+//   );
+// }
 
-  
-
-  // Widget _buildSignInWithText() {
-  //   return Column(
-  //     children: <Widget>[
-  //       Text(
-  //         '- OR -',
-  //         style: TextStyle(
-  //           color: Colors.white,
-  //           fontWeight: FontWeight.w400,
-  //         ),
-  //       ),
-  //       SizedBox(height: 20.0),
-  //       Text(
-  //         'Sign in with',
-  //         style: kLabelStyle,
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-  //   return GestureDetector(
-  //     onTap: (){print("social button was clicked");},
-  //     child: Container(
-  //       height: 60.0,
-  //       width: 60.0,
-  //       decoration: BoxDecoration(
-  //         shape: BoxShape.circle,
-  //         color: Colors.white,
-  //         boxShadow: [
-  //           BoxShadow(
-  //             color: Colors.black26,
-  //             offset: Offset(0, 2),
-  //             blurRadius: 6.0,
-  //           ),
-  //         ],
-  //         image: DecorationImage(
-  //           image: logo,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildSocialBtnRow() {
-  //   return Padding(
-  //     padding: EdgeInsets.symmetric(vertical: 30.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //       children: <Widget>[
-  //         _buildSocialBtn(
-  //           () => print('Login with Facebook'),
-  //           AssetImage(
-  //             'assets/logos/facebook.jpg',
-  //           ),
-  //         ),
-  //         _buildSocialBtn(
-  //           () => print('Login with Google'),
-  //           AssetImage(
-  //             'assets/logos/google.jpg',
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-
+// Widget _buildSocialBtnRow() {
+//   return Padding(
+//     padding: EdgeInsets.symmetric(vertical: 30.0),
+//     child: Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//       children: <Widget>[
+//         _buildSocialBtn(
+//           () => print('Login with Facebook'),
+//           AssetImage(
+//             'assets/logos/facebook.jpg',
+//           ),
+//         ),
+//         _buildSocialBtn(
+//           () => print('Login with Google'),
+//           AssetImage(
+//             'assets/logos/google.jpg',
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
 class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;
@@ -98,10 +91,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _rememberMe = false;
 
-
-
-
-  Widget _buildForgotPasswordBtn() {  //TODO:  figure out a way to implement this
+  Widget _buildForgotPasswordBtn() {
+    //TODO:  figure out a way to implement this
     return Container(
       alignment: Alignment.centerRight,
       child: Padding(
@@ -113,9 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
             //_passwordReset(_email); // pass the email to the password rest function, so firebase can send the password reset to the user
 
             Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => PasswordResetScreen(),
-                                  )
-                                );    
+              builder: (context) => PasswordResetScreen(),
+            ));
           },
           child: Text(
             'Forgot Password?',
@@ -125,7 +115,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  Widget _buildRememberMeCheckbox() { //TODO:  figure out a way to implement this
+
+  Widget _buildRememberMeCheckbox() {
+    //TODO:  figure out a way to implement this
     return Container(
       height: 20.0,
       child: Row(
@@ -133,7 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
           Theme(
             data: ThemeData(unselectedWidgetColor: Colors.white),
             child: Checkbox(
-              value: _rememberMe,    /// the _rememberMe boolean
+              value: _rememberMe,
+
+              /// the _rememberMe boolean
               checkColor: Colors.green,
               activeColor: Colors.white,
               onChanged: (bool? value) {
@@ -169,10 +163,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             obscureText: true,
             onChanged: (value) {
-                  setState(() {
-                    _password = value.trim(); // the password string
-                  });
-                },
+              setState(() {
+                _password = value.trim(); // the password string
+              });
+            },
             style: TextStyle(
               color: Colors.white,
               fontFamily: 'OpenSans',
@@ -209,10 +203,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             keyboardType: TextInputType.emailAddress,
             onChanged: (value) {
-                  setState(() {
-                    _email = value.trim();   // the email string
-                  });
-                },
+              setState(() {
+                _email = value.trim(); // the email string
+              });
+            },
             style: TextStyle(
               color: Colors.white,
               fontFamily: 'OpenSans',
@@ -232,39 +226,34 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
- 
+
   Widget _buildLoginBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
-                    child: Text('Sign In'),
-                    //when pressed, pass email and password to _signin function
-                    onPressed: () async {
+        padding: EdgeInsets.symmetric(vertical: 25.0),
+        width: double.infinity,
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
+            child: Text('Sign In'),
+            //when pressed, pass email and password to _signin function
+            onPressed: () async {
+              //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
+              if (_rememberMe == true) {
+                final SharedPreferences sharedPreferences =
+                    await SharedPreferences.getInstance();
+                sharedPreferences.setString('email', _email);
+              }
 
-                      //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
-                      if(_rememberMe == true){
-                        final SharedPreferences sharedPreferences =
-                        await SharedPreferences.getInstance();
-                        sharedPreferences.setString('email', _email);
-                      }
-
-                      _signin(_email, _password); // pass email and password to _signin in function
-
-                    }
-                    )
-                    );
+              _signin(_email,
+                  _password); // pass email and password to _signin in function
+            }));
   }
 
-
- 
-   Widget _buildSignupBtn() { 
+  Widget _buildSignupBtn() {
     return GestureDetector(
       onTap: () {
         print('the sign up gesture was pressed');
-        Navigator.of(context).push(MaterialPageRoute(
-                     builder: (context) => SignUpScreen()));
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => SignUpScreen()));
       },
       child: RichText(
         text: TextSpan(
@@ -290,8 +279,8 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-  
- @override
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -360,68 +349,57 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
-
-  
-
   _signin(String _email, String _password) async {
-    try{
-      var userCredentials = await auth.signInWithEmailAndPassword(email: _email, password: _password);
+    try {
+      var userCredentials = await auth.signInWithEmailAndPassword(
+          email: _email, password: _password);
       var userID = userCredentials.user!.uid;
 
       //Success
-      if(userCredentials.user!.emailVerified){
-        
+      if (userCredentials.user!.emailVerified) {
         //updates user verification field in firebase
         await Database.updateUserVerification(
-          userID: userID,
-          emailVerified:true
-        );
+            userID: userID, emailVerified: true);
 
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomeScreen()));
       }
 
       // ifuser hasn't verified email, we send them back to the email confirmation page
-      else
-      {
-        userCredentials.user!.sendEmailVerification();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmEmailScreen()));
-
-      }
-    } 
-    
-    //INFO: Fluttertoast will put pop up messages on the screen if auth encounters an error
-    on FirebaseAuthException catch (error){
-      if (error.code == 'user-not-found'){
-          Fluttertoast.showToast(msg: 'No user exists with this email', gravity: ToastGravity.TOP);
-      }
-      else if (error.code == 'wrong-password'){
-          Fluttertoast.showToast(msg: 'Incorrect Password', gravity: ToastGravity.TOP);
-      }
-      else if (error.code == 'invalid-email'){
-          Fluttertoast.showToast(msg: 'Provided email address was not valid', gravity: ToastGravity.TOP);
-      }
       else {
-          Fluttertoast.showToast(msg: 'ERROR', gravity: ToastGravity.TOP);
+        userCredentials.user!.sendEmailVerification();
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => ConfirmEmailScreen()));
+      }
+    }
+
+    //INFO: Fluttertoast will put pop up messages on the screen if auth encounters an error
+    on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        Fluttertoast.showToast(
+            msg: 'No user exists with this email', gravity: ToastGravity.TOP);
+      } else if (error.code == 'wrong-password') {
+        Fluttertoast.showToast(
+            msg: 'Incorrect Password', gravity: ToastGravity.TOP);
+      } else if (error.code == 'invalid-email') {
+        Fluttertoast.showToast(
+            msg: 'Provided email address was not valid',
+            gravity: ToastGravity.TOP);
+      } else {
+        Fluttertoast.showToast(msg: 'ERROR', gravity: ToastGravity.TOP);
       }
     }
   }
 
-
   Future<void> _passwordReset(String email) async {
-  try{
-    await auth.sendPasswordResetEmail(email: email);
-
-  }catch (error){
-    print('an error was encountered with the forgot password function');
+    try {
+      await auth.sendPasswordResetEmail(email: email);
+    } catch (error) {
+      print('an error was encountered with the forgot password function');
+    }
   }
 }
 
-}
-
-
 //TODO: https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword   make switch statements with all of these Firebase Auth error messages
-
-
 
 //TODO: https://github.com/MarcusNg/flutter_login_ui/blob/master/lib/screens/login_screen.dart   implement this formatting

@@ -10,11 +10,9 @@ void main() async {
   await Firebase.initializeApp();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var email = prefs.getString('email');
-  print('Shared Preferences shows that the current email is ' + email.toString());
+  print(
+      'Shared Preferences shows that the current email is ' + email.toString());
   //runApp(App());
   runApp(MaterialApp(
-    title: 'SIM',
-    home: email == null ? LoginScreen() : HomeScreen())
-    );
-
+      title: 'SIM', home: email == null ? LoginScreen() : HomeScreen()));
 }

@@ -3,9 +3,6 @@ import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:intl/intl.dart';
 
-
-
-
 // Define a custom Form widget.
 class AddItemForm extends StatefulWidget {
   const AddItemForm({Key? key}) : super(key: key);
@@ -35,23 +32,19 @@ class AddItemFormState extends State<AddItemForm> {
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _idController = TextEditingController();
 
-
   //quick calculation of the current date for mostRecentScanIn section in the Firestore DB using the intl package for date formatting
   String _currentDateTime = DateFormat.yMEd().add_jms().format(DateTime.now());
 
   // this regex pattern will only accept numbers
-  RegExp numbersOnlyRegex = RegExp(r'[0-9]'); 
+  RegExp numbersOnlyRegex = RegExp(r'[0-9]');
   RegExp numbersTextHyphenRegex = RegExp(r'[a-zA-Z0-9 -]');
-  
 
-  //*really good article on validation - https://michaeladesola1410.medium.com/input-validation-flutter-dfe433caec5c 
-
+  //*really good article on validation - https://michaeladesola1410.medium.com/input-validation-flutter-dfe433caec5c
 
   @override
   Widget build(BuildContext context) {
-
     //TODO:  Bottom OverflOwed by 45 Pixels on Samsung s20FE. fix it.
-    
+
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -67,15 +60,15 @@ class AddItemFormState extends State<AddItemForm> {
             ),
             controller: _nameController,
             keyboardType: TextInputType.text,
-            validator: (value) { // The validator receives the text that the user has entered.
-              if (value == null || value.isEmpty) { //TODO: put a regex here that can accept str like "IPHONE-11-red (2021)", but not sql injection type of stuff.  apply same regex at all similar fields.
+            validator: (value) {
+              // The validator receives the text that the user has entered.
+              if (value == null || value.isEmpty) {
+                //TODO: put a regex here that can accept str like "IPHONE-11-red (2021)", but not sql injection type of stuff.  apply same regex at all similar fields.
                 return 'Please enter some text';
               }
               return null;
             },
           ),
-
-
 
           // text field for item description
           TextFormField(
@@ -84,16 +77,15 @@ class AddItemFormState extends State<AddItemForm> {
               labelText: 'Enter the item\'s description',
             ),
             controller: _descriptionController,
-            keyboardType: TextInputType.text, 
-            validator: (value) { // The validator receives the text that the user has entered.
+            keyboardType: TextInputType.text,
+            validator: (value) {
+              // The validator receives the text that the user has entered.
               if (value == null || value.isEmpty) {
                 return 'Please enter some valid text';
               }
               return null;
             },
           ),
-
-
 
           // text field for item price
           TextFormField(
@@ -103,18 +95,19 @@ class AddItemFormState extends State<AddItemForm> {
             ),
             controller: _priceController,
             keyboardType: TextInputType.number,
-            validator: (value) { // The validator receives the text that the user has entered.
+            validator: (value) {
+              // The validator receives the text that the user has entered.
 
-            //* way 1 of declaring a regex
-              RegExp regex = new RegExp(r'[0-9]'); //TODO:  allows ` . its should not allow that character
-              if (!regex.hasMatch(value!) ) {     // regex makes sure users only enter number values
+              //* way 1 of declaring a regex
+              RegExp regex = new RegExp(
+                  r'[0-9]'); //TODO:  allows ` . its should not allow that character
+              if (!regex.hasMatch(value!)) {
+                // regex makes sure users only enter number values
                 return 'Please enter a valid number amount';
               }
               return null;
             },
           ),
-
-
 
           // text field for quantity
           TextFormField(
@@ -124,10 +117,11 @@ class AddItemFormState extends State<AddItemForm> {
             ),
             controller: _quantityController,
             keyboardType: TextInputType.number,
-            validator: (value) { // The validator receives the text that the user has entered.
+            validator: (value) {
+              // The validator receives the text that the user has entered.
 
-            //way 2: calling regex created at beginning of file
-              if (!numbersOnlyRegex.hasMatch(value!) ) { 
+              //way 2: calling regex created at beginning of file
+              if (!numbersOnlyRegex.hasMatch(value!)) {
                 return 'Please enter a valid number amount';
               }
               return null;
@@ -142,18 +136,16 @@ class AddItemFormState extends State<AddItemForm> {
             ),
             controller: _idController,
             keyboardType: TextInputType.text,
-            validator: (value) { // The validator receives the text that the user has entered.
+            validator: (value) {
+              // The validator receives the text that the user has entered.
 
-            //way 2: calling regex created at beginning of file
-              if (value == null || value.isEmpty) { 
+              //way 2: calling regex created at beginning of file
+              if (value == null || value.isEmpty) {
                 return 'Please enter an ID';
               }
               return null;
             },
           ),
-
-
-
 
           _isProcessing
               ? Padding(
@@ -180,9 +172,8 @@ class AddItemFormState extends State<AddItemForm> {
                     onPressed: () async {
                       // Validate returns true if the form is valid, or false otherwise.
                       if (_formKey.currentState!.validate()) {
-                        
                         setState(() {
-                            _isProcessing = true;
+                          _isProcessing = true;
                         });
 
                         await Database.addItem(
@@ -190,20 +181,22 @@ class AddItemFormState extends State<AddItemForm> {
                           description: _descriptionController.text,
                           price: double.parse(_priceController.text),
                           quantity: _quantityController.text,
-                          mostRecentScanIn: _currentDateTime,  // pulls from the  _currentDateTime var created above.
+                          mostRecentScanIn:
+                              _currentDateTime, // pulls from the  _currentDateTime var created above.
                           id: _idController.text,
                         );
-                        
+
                         setState(() {
                           _isProcessing = false;
                         });
 
-                        Navigator.of(context).pop(); // return to previous screen after operation is complete
+                        Navigator.of(context)
+                            .pop(); // return to previous screen after operation is complete
                       }
                     },
                     child: const Text('Submit'),
                   ),
-            )
+                )
         ],
       ),
     );

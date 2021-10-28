@@ -8,7 +8,6 @@ class CustomColors {
   static final Color cpink = Color(0xffEFBCD5);
 }
 
-
 /* Color scheme for app could be
  0xff403F4C -dark liver,  
  0xffE84855 -red crayola,  
