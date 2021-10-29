@@ -224,7 +224,7 @@ class _ItemScreenState extends State<ItemScreen> {
     );
   }
 
-//  the search bar for the stores address
+//  the search bar for the item id
   showItemIDSearch() {
     streamQuery = db
         .collection('Users')
@@ -240,7 +240,7 @@ class _ItemScreenState extends State<ItemScreen> {
         child: TextField(
           onChanged: (value) {
             setState(() {
-              searchKey = value.toLowerCase();
+              searchKey = value;
 
               //  this stream query matches the searchkey to the names of the stores in the db
               streamQuery = db
@@ -249,8 +249,8 @@ class _ItemScreenState extends State<ItemScreen> {
                   .collection('stores')
                   .doc(Database().getCurrentStoreID())
                   .collection('items')
-                  .where('lowercaseID', isGreaterThanOrEqualTo: searchKey)
-                  .where('lowercaseID', isLessThan: searchKey + 'z')
+                  .where('id', isGreaterThanOrEqualTo: searchKey)
+                  .where('id', isLessThan: searchKey + 'z')
                   .snapshots();
             });
           },
@@ -270,7 +270,7 @@ class _ItemScreenState extends State<ItemScreen> {
     ]);
   }
 
-// the seach bar for the store name
+// the seach bar for the item name
   showNameSearch() {
     return Row(
       children: [
@@ -309,7 +309,7 @@ class _ItemScreenState extends State<ItemScreen> {
     );
   }
 
-  // the seach bar for the store name
+  // the seach bar for the item price
   showPriceSearch() {
     streamQuery = db
         .collection('Users')

@@ -128,7 +128,7 @@ class AddItemFormState extends State<AddItemForm> {
             },
           ),
 
-          // text field for quantity
+          // text field for item id 
           TextFormField(
             decoration: InputDecoration(
               border: UnderlineInputBorder(),
@@ -136,7 +136,7 @@ class AddItemFormState extends State<AddItemForm> {
             ),
             controller: _idController,
             keyboardType: TextInputType.text,
-            validator: (value) {
+            validator: (value) { //TODO: create and call a method here that searches through every item in the store and looks for matching id value. if the id val is already in the store, reject using that string as an id again. perhaps pass _idController.text to a method similar to findItemByQR in the database.dart file. see if the id matches anything already in the database. 
               // The validator receives the text that the user has entered.
 
               //way 2: calling regex created at beginning of file

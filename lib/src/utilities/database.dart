@@ -7,6 +7,14 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 final currentUserUID = _auth.currentUser?.uid;
 
+// this streamquery snapshot pulls all the items out of the selected store so that we can compare the id of each item to the id the scanned qr code returns
+Stream<QuerySnapshot> streamQuery = _userCollection
+.doc(currentUserUID)
+.collection('stores')
+.doc(Database().getCurrentStoreID())
+.collection('items')
+.snapshots();
+
 getcurrentUserUIDUid() {
   print('Current user id is ' + _auth.currentUser!.uid.toString());
 }
@@ -36,7 +44,6 @@ class Database {
       "quantity": quantity,
 
       "id": id,
-      "lowercaseID": id.toLowerCase(), // for use with the search bar
       "db-item-id": itemDocumentReferencer.id,
 
       "mostRecentScanIn": mostRecentScanIn,
@@ -148,7 +155,6 @@ class Database {
       required double price,
       required String quantity,
       required String description,
-      //required String mostRecentScanIn,  //! do i really need this here?
       required String itemDocID}) async {
     DocumentReference itemDocumentReferencer = _userCollection
         .doc(currentUserUID)
@@ -164,9 +170,8 @@ class Database {
       "quantity": quantity,
       "tags": [],
       "description": description,
-      "LastEmployeeToInteract": currentUserUID,
+      "LastEmployeeToInteract": currentUserUID, //TODO: change this to the user's name 
       "item-id": itemDocumentReferencer.id,
-      //"mostRecentScanIn" : mostRecentScanIn  //! do i really need this here?
     };
 
     await itemDocumentReferencer
@@ -174,6 +179,56 @@ class Database {
         .whenComplete(() => print("item edited in the database"))
         .catchError((e) => print(e));
   }
+
+//  method to update item count in database by one (called each time qr code is scanned)
+
+
+/* 
+id retd by qr code
+oush that id to a method which finds a match in the item list in that store
+
+*/
+  static String findItemByQR(String qrCode)
+  {
+
+//TODO: this snapshot should contain the only item whos id matches the id given by the qr code. How do we pull the item out of the snapshot to where we can says something like doc.get('db-item-id') and then pass that as a string to the addOneToItemQuantity method to be the ItemDocID?
+    Stream<QuerySnapshot> streamQuery = _userCollection
+      .doc(currentUserUID)
+      .collection('stores')
+      .doc(Database().getCurrentStoreID())
+      .collection('items')
+      .where('id', isGreaterThanOrEqualTo: qrCode)
+      .where('id', isLessThan: qrCode + 'z')
+      .snapshots();
+
+
+      print(streamQuery.elementAt(0).toString());
+      return streamQuery.elementAt(0).toString();
+
+  }
+
+
+  static Future<void> addOneToItemQuantity({
+    required String itemDocID, // this will be the information stored in the qr
+
+  }) async {
+    DocumentReference itemDocumentReferencer = _userCollection.doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc(); 
+    Map<String, dynamic> data = <String, dynamic>{
+     // "quantity": curretnQuantity++ ,
+    };
+
+    await itemDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("item was incremented by 1"))
+        .catchError((e) => print(e));
+  }
+
+
+
+
+
+
+
 
   static String currentStoreID =
       ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen)

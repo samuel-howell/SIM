@@ -16,3 +16,6 @@ void main() async {
   runApp(MaterialApp(
       title: 'SIM', home: email == null ? LoginScreen() : HomeScreen()));
 }
+
+
+//TODO:  run "flutter format lib" in the terminal to autoformat all the code documents in lib folder. lib can be changed out for any directory.
