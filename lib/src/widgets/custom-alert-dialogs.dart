@@ -471,8 +471,8 @@ showEditItemDialog(BuildContext context, String itemDocID) {
                                           itemDocID, //! make sure this is the item docId
                                       price: double.parse(
                                           _itemPriceController.text),
-                                      quantity: _itemQuantityController
-                                          .text, // make sure to pass the doc id to the editItem method so you know which store document to update
+                                      quantity: int.parse(_itemQuantityController
+                                          .text), // make sure to pass the doc id to the editItem method so you know which store document to update
                                     );
 
                                     setState(() {

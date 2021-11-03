@@ -180,7 +180,7 @@ class AddItemFormState extends State<AddItemForm> {
                           name: _nameController.text,
                           description: _descriptionController.text,
                           price: double.parse(_priceController.text),
-                          quantity: _quantityController.text,
+                          quantity: int.parse(_quantityController.text),
                           mostRecentScanIn:
                               _currentDateTime, // pulls from the  _currentDateTime var created above.
                           id: _idController.text,

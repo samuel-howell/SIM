@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:vibration/vibration.dart';
+import 'package:howell_capstone/src/utilities/database.dart';
+
 
 class ScanScreen extends StatefulWidget {
 
@@ -19,6 +22,7 @@ class _ScanScreenState extends State<ScanScreen> {
   DateTime? lastScan;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   int qrRead = 0;
+
 
   // In order to get hot reload to work we need to pause the camera if the platform
   @override
@@ -153,7 +157,7 @@ class _ScanScreenState extends State<ScanScreen> {
       if (lastScan == null ||
           currentScan.difference(lastScan!) > const Duration(seconds: 2)){
         lastScan = currentScan;
-        print(scanData.code);
+        //print(scanData.code);
         qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
 
         // if device has vibration capabilities, vibrate for 200 ms on successful scan
@@ -170,6 +174,8 @@ class _ScanScreenState extends State<ScanScreen> {
               scanData.code +
               " qr count: " +
               qrRead.toString());
+
+              Database.incrementItemQuantity(scanData.code);
         });
       }
     });
@@ -190,3 +196,4 @@ class _ScanScreenState extends State<ScanScreen> {
     super.dispose();
   }
 }
+

@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _userCollection = _firestore.collection('Users');
@@ -7,13 +10,6 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 
 final currentUserUID = _auth.currentUser?.uid;
 
-// this streamquery snapshot pulls all the items out of the selected store so that we can compare the id of each item to the id the scanned qr code returns
-Stream<QuerySnapshot> streamQuery = _userCollection
-.doc(currentUserUID)
-.collection('stores')
-.doc(Database().getCurrentStoreID())
-.collection('items')
-.snapshots();
 
 getcurrentUserUIDUid() {
   print('Current user id is ' + _auth.currentUser!.uid.toString());
@@ -24,7 +20,7 @@ class Database {
   static Future<void> addItem(
       {required String name,
       required double price,
-      required String quantity,
+      required int quantity,
       required String description,
       required String mostRecentScanIn,
       required String id}) async {
@@ -33,7 +29,7 @@ class Database {
         .collection('stores')
         .doc(Database.currentStoreID)
         .collection('items')
-        .doc(); // current user -> store -> items -> *insert the new item here in this blank doc*
+        .doc(id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -153,7 +149,7 @@ class Database {
   static Future<void> editItem(
       {required String name,
       required double price,
-      required String quantity,
+      required int quantity,
       required String description,
       required String itemDocID}) async {
     DocumentReference itemDocumentReferencer = _userCollection
@@ -188,45 +184,34 @@ id retd by qr code
 oush that id to a method which finds a match in the item list in that store
 
 */
-  static String findItemByQR(String qrCode)
-  {
+  static Future<void> incrementItemQuantity(String qrCode) async {
+    int quantity = 0;
+    int newQuantity = 0;
+    DocumentReference itemDocumentReferencer = _userCollection
+        .doc(currentUserUID)
+        .collection('stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('items')
+        .doc(qrCode); // finds the document associate with the id read by the qr code scanner
 
-//TODO: this snapshot should contain the only item whos id matches the id given by the qr code. How do we pull the item out of the snapshot to where we can says something like doc.get('db-item-id') and then pass that as a string to the addOneToItemQuantity method to be the ItemDocID?
-    Stream<QuerySnapshot> streamQuery = _userCollection
-      .doc(currentUserUID)
-      .collection('stores')
-      .doc(Database().getCurrentStoreID())
-      .collection('items')
-      .where('id', isGreaterThanOrEqualTo: qrCode)
-      .where('id', isLessThan: qrCode + 'z')
-      .snapshots();
+//TODO:  use this same code below to get the name of the current user, and insert that in the lastEMployeeToInteract 
+  await itemDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
+    quantity = (snapshot.get('quantity'));
+    newQuantity = quantity + 1;
+  });
 
-
-      print(streamQuery.elementAt(0).toString());
-      return streamQuery.elementAt(0).toString();
-
-  }
-
-
-  static Future<void> addOneToItemQuantity({
-    required String itemDocID, // this will be the information stored in the qr
-
-  }) async {
-    DocumentReference itemDocumentReferencer = _userCollection.doc(currentUserUID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc(); 
     Map<String, dynamic> data = <String, dynamic>{
-     // "quantity": curretnQuantity++ ,
+      
+      "quantity": newQuantity,
+      
     };
 
     await itemDocumentReferencer
         .update(data)
-        .whenComplete(() => print("item was incremented by 1"))
+        .whenComplete(() => print("item quantity increemeted in the database"))
         .catchError((e) => print(e));
   }
-
-
-
-
-
+ 
 
 
 
