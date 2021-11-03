@@ -177,13 +177,7 @@ class Database {
   }
 
 //  method to update item count in database by one (called each time qr code is scanned)
-
-
-/* 
-id retd by qr code
-oush that id to a method which finds a match in the item list in that store
-
-*/
+//! a store must be selected before this method is called. so eventually set a default store
   static Future<void> incrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
