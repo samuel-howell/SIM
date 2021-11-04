@@ -8,11 +8,11 @@ final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _userCollection = _firestore.collection('Users');
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-final currentUserUID = _auth.currentUser?.uid;
+String? currentUserUID = _auth.currentUser?.uid;
 
 
 getcurrentUserUIDUid() {
-  print('Current user id is ' + _auth.currentUser!.uid.toString());
+  print('Current user id is ' + _auth.currentUser!.uid);
 }
 
 class Database {
@@ -24,6 +24,8 @@ class Database {
       required String description,
       required String mostRecentScanIn,
       required String id}) async {
+
+    String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
     DocumentReference itemDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -72,7 +74,6 @@ class Database {
       "email": email,
       "userID": userID,
       "dateAccountCreated": dateAccountCreated,
-      "emailVerified": false,
     };
 
     await userDocumentReferencer
@@ -81,20 +82,54 @@ class Database {
         .catchError((e) => print(e));
   }
 
-//  method to update user email verification
-  static Future<void> updateUserVerification({
-    required String userID,
-    required bool emailVerified,
-  }) async {
-    DocumentReference userDocumentReferencer = _userCollection.doc(userID);
-    Map<String, dynamic> data = <String, dynamic>{
-      "emailVerified": true,
-    };
+//! we don't need this method because we could just call .emailVerified (see code in login-screen.dart) to see if the user has been verified
+//  method to update user email verification status
+  // static Future<void> updateUserVerification({
+  //   required String userID,
+  //   required bool emailVerified,
+  // }) async {
+  //   DocumentReference userDocumentReferencer = _userCollection.doc(userID);
+  //   Map<String, dynamic> data = <String, dynamic>{
+  //     "emailVerified": true,
+  //   };
 
-    await userDocumentReferencer
-        .update(data)
-        .whenComplete(() => print("User added"))
-        .catchError((e) => print(e));
+  //   await userDocumentReferencer
+  //       .update(data)
+  //       .whenComplete(() => print("Update User Verification complete"))
+  //       .catchError((e) => print(e));
+  // }
+
+
+//  method to delete a store
+  static Future<void> deleteStore(String storeDocID)async{
+          String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered 
+
+           await  _userCollection
+          .doc(currentUserUID)
+          .collection('stores')
+          .doc(Database().getCurrentStoreID())
+          .collection('items')
+          .doc(storeDocID)
+          .delete();
+
+          print('the delete button was pressed.and the store id was ' + storeDocID.toString());
+
+  }
+
+  //  method to delete a store
+  static Future<void> deleteItem(String itemDocID)async{
+          String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered 
+
+           await  _userCollection
+          .doc(currentUserUID)
+          .collection('stores')
+          .doc(Database().getCurrentStoreID())
+          .collection('items')
+          .doc(itemDocID)
+          .delete();
+
+          print('the delete buttonnnnnwas pressed.and the item id was ' + itemDocID.toString());
+
   }
 
 //  method to  add a store
@@ -102,6 +137,8 @@ class Database {
     required String name,
     required String address,
   }) async {
+
+    String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
     DocumentReference storeDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -127,6 +164,8 @@ class Database {
     required String address,
     required String docID,
   }) async {
+
+    String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
     DocumentReference storeDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -152,6 +191,8 @@ class Database {
       required int quantity,
       required String description,
       required String itemDocID}) async {
+
+    String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
     DocumentReference itemDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -181,6 +222,8 @@ class Database {
   static Future<void> incrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
+
+    String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -215,7 +258,13 @@ class Database {
     return currentStoreID;
   }
 
+   static String? getCurrentUserID() {
+    String? currentUserID = _auth.currentUser?.uid;
+    return currentUserID;
+  }
+
 setDefaultStore()async{
+  String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
   print('currentuserid is ' + currentUserUID.toString());
   print('current store id is ' + currentStoreID.toString());
    DocumentReference itemDocumentReferencer = _userCollection
@@ -235,4 +284,7 @@ setDefaultStore()async{
   static setcurrentStoreID(String storeID) {
     currentStoreID = storeID;
   }
+
 }
+
+

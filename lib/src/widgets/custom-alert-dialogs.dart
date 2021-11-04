@@ -34,7 +34,9 @@ showStoreDeleteConfirmationAlertDialog(
   Widget continueButton = TextButton(
     child: Text("Yes"),
     onPressed: () {
-      print('the delete button was pressed.');
+      String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered 
+
+      print('the delete button for store delete was pressed and the store id was ' + storeDocID.toString());
       db
           .collection('Users')
           .doc(currentUserUID)
@@ -302,15 +304,22 @@ showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {
   Widget continueButton = TextButton(
     child: Text("Yes"),
     onPressed: () {
-      print('the delete button was pressed.');
-      db
+      
+
+       String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered 
+
+           
+           db
           .collection('Users')
           .doc(currentUserUID)
           .collection('stores')
           .doc(Database().getCurrentStoreID())
           .collection('items')
           .doc(itemDocID)
-          .delete(); // in firebase, it goes from collection  users -> store -> the doc id of the the store you just tapped, then deletes it
+          .delete();
+
+          print('the delete button was pressed.and the item id was ' + itemDocID.toString());
+// pass item doc id to the deleteStore method in database.doc
 
       Navigator.of(context).pop(); // removes the dialog from the screen
       Fluttertoast.showToast(

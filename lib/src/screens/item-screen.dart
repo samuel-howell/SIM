@@ -42,7 +42,7 @@ class _ItemScreenState extends State<ItemScreen> {
   //  placing the Stream inside of the class forces it to call itself every time the page is rebuilt, (thus allowing it to automatically see if the store has been changed)
   Stream<QuerySnapshot> streamQuery = db
     .collection('Users')
-    .doc(currentUserUID)
+    .doc(Database.getCurrentUserID().toString())
     .collection('stores')
     .doc(Database().getCurrentStoreID()) //! this is calling current store id of previous logged in user and not giving me access to current users items
     .collection('items')
@@ -52,7 +52,7 @@ class _ItemScreenState extends State<ItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Item Screen'),
+          title: Text(Database().getCurrentStoreID().toString()),
           centerTitle: true,
           backgroundColor: Colors.black),
 
@@ -60,8 +60,7 @@ class _ItemScreenState extends State<ItemScreen> {
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
 
       body: StreamBuilder<QuerySnapshot>(
-          stream: 
-              streamQuery, // this streamQuery will change based on what is typed into the search bar
+          stream: streamQuery, // this streamQuery will change based on what is typed into the search bar
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(

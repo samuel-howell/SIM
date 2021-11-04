@@ -8,15 +8,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   final auth = FirebaseAuth.instance;
+  
 
+//! may need to remove this store list. it isn't doing anyhting. replace with a tile that shows overall store stats
   Stream<QuerySnapshot> storeListQuery =
     FirebaseFirestore.instance.collection('Users').doc(currentUserUID).collection('stores').snapshots();
+
+  
 
 
   @override
   Widget build(BuildContext context) {
-  
-  // Database().setDefaultStore();
+  String? currentUserID = auth.currentUser?.uid;
 
     return Scaffold(
       //  import my custom navigation sidebar drawer widget and use as the drawer.
@@ -39,7 +42,7 @@ class HomeScreen extends StatelessWidget {
               children: <Widget>[
                 Container(
                   margin: EdgeInsets.all(25),
-                  child: Text('This is the home screen.', style: TextStyle(fontSize: 25))
+                  child: Text('This is the home screen. the user id currently active is ' + currentUserID.toString(), style: TextStyle(fontSize: 25))
                 ),
 
 

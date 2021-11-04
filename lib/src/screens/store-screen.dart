@@ -7,9 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 
-//  gets the current user id
+//  init firesbase auth
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final currentUserUID = _auth.currentUser?.uid;
 
 //accesses the firebase database
 final db = FirebaseFirestore.instance;
@@ -22,9 +21,11 @@ var tappedIndex;
 
 // for the search bar
 String searchKey = "";
-Stream<QuerySnapshot> streamQuery =
-    db.collection('Users').doc(currentUserUID).collection('stores').snapshots();
 int searchFilter = 1; //  set to 1, so the default search would be Name Search
+
+//!String? currentUserID = _auth.currentUser?.uid;
+
+
 
 class StoreScreen extends StatefulWidget {
   @override
@@ -32,11 +33,23 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
+
+  Stream<QuerySnapshot> streamQuery = db
+    .collection('Users')
+    .doc(Database.getCurrentUserID().toString())
+    .collection('stores')
+    .snapshots();
+
   @override
   Widget build(BuildContext context) {
+
+
+
+
+
     return Scaffold(
         appBar: AppBar(
-            title: Text('Store Screen'),
+            title: Text(Database.getCurrentUserID().toString()),
             centerTitle: true,
             backgroundColor: Colors.black),
 
@@ -201,6 +214,8 @@ class _StoreScreenState extends State<StoreScreen> {
 
 //  the search bar for the stores address
   showAddressSearch() {
+    String? currentUserID = _auth.currentUser?.uid;
+
     return Row(children: <Widget>[
       Expanded(
         // textfield has no intrinsic width, so i have to wrap it in expanded to force it to fill up only the space not occupied by the textbutton in the row.  otherwise, this entire row causes a crash
@@ -212,7 +227,7 @@ class _StoreScreenState extends State<StoreScreen> {
               //  this stream query matches the searchkey to the names of the stores in the db
               streamQuery = db
                   .collection('Users')
-                  .doc(currentUserUID)
+                  .doc(currentUserID)
                   .collection('stores')
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
@@ -237,6 +252,8 @@ class _StoreScreenState extends State<StoreScreen> {
 
 // the seach bar for the store name
   showNameSearch() {
+    String? currentUserID = _auth.currentUser?.uid;
+
     return Row(
       children: [
         Expanded(
@@ -248,7 +265,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 //  this stream query matches the searchkey to the names of the stores in the db
                 streamQuery = db
                     .collection('Users')
-                    .doc(currentUserUID)
+                    .doc(currentUserID)
                     .collection('stores')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
