@@ -55,7 +55,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child:
-                        showSearchDialog(), // TODO:  this dialog doesn't show that the search bar has changed unti you begin to type  in the search bar
+                        showSearchDialog(), 
                   ),
 
                   Expanded(
@@ -64,6 +64,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             DocumentSnapshot doc = snapshot.data!.docs[index];
+
 
                             // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                             return Slidable(
@@ -79,7 +80,6 @@ class _StoreScreenState extends State<StoreScreen> {
                                     subtitle: Text(doc.get('address')),
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
-                                      //  TODO:  Force one store to be auto selected so the program doesn't crash if you click on the item screen before selecting on a store.
 
                                       setState(() {
                                         tappedIndex =

@@ -29,13 +29,7 @@ String searchKey = "";
 double lowSearchKey = 0; // have to be double because prices can be $24.99 etc.
 double highSearchKey = 0;
 
-Stream<QuerySnapshot> streamQuery = db
-    .collection('Users')
-    .doc(currentUserUID)
-    .collection('stores')
-    .doc(Database().getCurrentStoreID())
-    .collection('items')
-    .snapshots(); //TODO:  if this is already defined, then why fo i have to type into the search bar to get it to register the item of a new store?
+
 int searchFilter = 1;
 
 class ItemScreen extends StatefulWidget {
@@ -44,6 +38,16 @@ class ItemScreen extends StatefulWidget {
 }
 
 class _ItemScreenState extends State<ItemScreen> {
+
+  //  placing the Stream inside of the class forces it to call itself every time the page is rebuilt, (thus allowing it to automatically see if the store has been changed)
+  Stream<QuerySnapshot> streamQuery = db
+    .collection('Users')
+    .doc(currentUserUID)
+    .collection('stores')
+    .doc(Database().getCurrentStoreID()) //! this is calling current store id of previous logged in user and not giving me access to current users items
+    .collection('items')
+    .snapshots(); 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,10 +58,9 @@ class _ItemScreenState extends State<ItemScreen> {
 
       //!KNOWN ISSUES
       //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
-      //TODO: I have to typein the search bar before a new stores items appear after changing stores
 
       body: StreamBuilder<QuerySnapshot>(
-          stream:
+          stream: 
               streamQuery, // this streamQuery will change based on what is typed into the search bar
           builder: (context, snapshot) {
             if (!snapshot.hasData) {

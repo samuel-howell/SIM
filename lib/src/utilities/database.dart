@@ -193,11 +193,8 @@ class Database {
     quantity = (snapshot.get('quantity'));
     newQuantity = quantity + 1;
   });
-
     Map<String, dynamic> data = <String, dynamic>{
-      
       "quantity": newQuantity,
-      
     };
 
     await itemDocumentReferencer
@@ -218,6 +215,22 @@ class Database {
     return currentStoreID;
   }
 
+setDefaultStore()async{
+  print('currentuserid is ' + currentUserUID.toString());
+  print('current store id is ' + currentStoreID.toString());
+   DocumentReference itemDocumentReferencer = _userCollection
+        .doc(currentUserUID)
+        .collection('stores')
+        .doc(currentStoreID); //TODO:  if i log as a diff user, this current store id is still coming from the previous user, meaning the newly signed in user doesn't have access to their stores
+
+    
+      await itemDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
+        var defaultStore = (snapshot.get('storeID'));
+        Database.setcurrentStoreID(defaultStore);
+        print('defaultStore was set to ' + defaultStore);
+
+    });
+}
   //method to set a store id
   static setcurrentStoreID(String storeID) {
     currentStoreID = storeID;

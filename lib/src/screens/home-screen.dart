@@ -1,50 +1,77 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatelessWidget {
   final auth = FirebaseAuth.instance;
 
+  Stream<QuerySnapshot> storeListQuery =
+    FirebaseFirestore.instance.collection('Users').doc(currentUserUID).collection('stores').snapshots();
+
+
   @override
   Widget build(BuildContext context) {
+  
+  // Database().setDefaultStore();
+
     return Scaffold(
       //  import my custom navigation sidebar drawer widget and use as the drawer.
       drawer: NavigationDrawerWidget(),
       appBar: AppBar(title: Text("Home")),
       body: Center(
           child: Column(children: <Widget>[
-        Container(
-          margin: EdgeInsets.only(top: 200),
-          child: TextButton(
-            child: Text(
-              'Hello.  this is page 1',
-              style: TextStyle(fontSize: 20.0),
-            ),
-            onPressed: () {},
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.all(25),
-          child: TextButton(
-            child: Text(
-              'Sign Out',
-              style: TextStyle(fontSize: 20.0),
-            ),
-            onPressed: () async {
-              //  removes anything in shared pref forcing the user to relogin next time
-              final SharedPreferences sharedPreferences =
-                  await SharedPreferences.getInstance();
-              sharedPreferences.remove('email');
+        StreamBuilder<QuerySnapshot>(
+            stream: storeListQuery,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) 
+              {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } 
+              else {
+          return Center(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.all(25),
+                  child: Text('This is the home screen.', style: TextStyle(fontSize: 25))
+                ),
 
-              auth.signOut();
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => LoginScreen()));
-            },
-          ),
-        ),
-      ])),
+
+                Container(
+                  margin: EdgeInsets.all(25),
+                  child: TextButton(
+                    child: Text(
+                      'Sign Out',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    onPressed: () async {
+                      //  removes anything in shared pref forcing the user to relogin next time
+                      final SharedPreferences sharedPreferences =
+                          await SharedPreferences.getInstance();
+                      sharedPreferences.remove('email');
+
+                      auth.signOut();
+                      Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context) => LoginScreen()));
+                        },
+                      ),
+                    ),
+              
+                ]
+                )
+                );
+              }
+            }
+          )
+       ]
+      )
+      ),
     );
   }
 }
