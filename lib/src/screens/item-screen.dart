@@ -1,11 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:howell_capstone/src/widgets/add-item-form.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 
 import 'add-item-screen.dart';
@@ -32,6 +31,9 @@ double highSearchKey = 0;
 
 int searchFilter = 1;
 
+
+
+
 class ItemScreen extends StatefulWidget {
   @override
   State<ItemScreen> createState() => _ItemScreenState();
@@ -42,22 +44,25 @@ class _ItemScreenState extends State<ItemScreen> {
   //  placing the Stream inside of the class forces it to call itself every time the page is rebuilt, (thus allowing it to automatically see if the store has been changed)
   Stream<QuerySnapshot> streamQuery = db
     .collection('Users')
-    .doc(Database.getCurrentUserID().toString())
+    .doc(currentUserUID)
     .collection('stores')
-    .doc(Database().getCurrentStoreID()) //! this is calling current store id of previous logged in user and not giving me access to current users items
+    .doc(Database().getCurrentStoreID()) 
     .collection('items')
     .snapshots(); 
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          title: Text(Database().getCurrentStoreID().toString()),
+  
+    
+
+    try {
+          return Scaffold(
+          appBar: AppBar(
+          title: Text(Database().getStoreName().toString()), //TODO: thisis currently returning a <Future>String and not a String
           centerTitle: true,
           backgroundColor: Colors.black),
 
-      //!KNOWN ISSUES
-      //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of items pops up.
 
       body: StreamBuilder<QuerySnapshot>(
           stream: streamQuery, // this streamQuery will change based on what is typed into the search bar
@@ -66,7 +71,13 @@ class _ItemScreenState extends State<ItemScreen> {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else {
+            }
+            else if (snapshot.error == true){
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } 
+            else {
               return Container(
                   child: Column(children: <Widget>[
                 //this search bar filters out stores
@@ -151,7 +162,12 @@ class _ItemScreenState extends State<ItemScreen> {
         },
       ),
     );
+  
+    } catch (e) {//! this code isn't working.
+      return Center(child: Text('Please choose.'));
+    }
   }
+
 
   showSearchDialog() {
     switch (searchFilter) {
