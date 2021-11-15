@@ -59,6 +59,8 @@ class HomeScreen extends StatelessWidget {
                           await SharedPreferences.getInstance();
                       sharedPreferences.remove('email');
 
+                      Database().setStoreClicked(false); // sets the isStoreClicked to false so user has to choose a new store next time they login
+
                       auth.signOut();
                       Navigator.of(context).pushReplacement(
                           MaterialPageRoute(builder: (context) => LoginScreen()));

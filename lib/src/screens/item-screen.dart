@@ -59,7 +59,7 @@ class _ItemScreenState extends State<ItemScreen> {
     try {
           return Scaffold(
           appBar: AppBar(
-          title: Text(Database().getStoreName().toString()), //TODO: thisis currently returning a <Future>String and not a String
+          title: Text('Item Screen'), //TODO: thisis currently returning a <Future>String and not a String.  Perhaps wrap widget with a futureBuilder?
           centerTitle: true,
           backgroundColor: Colors.black),
 
@@ -72,11 +72,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 child: CircularProgressIndicator(),
               );
             }
-            else if (snapshot.error == true){
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } 
+    
             else {
               return Container(
                   child: Column(children: <Widget>[
@@ -119,6 +115,10 @@ class _ItemScreenState extends State<ItemScreen> {
                                       tappedIndex.toString());
 
                                   print(" ");
+
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => getItemInfo(doc.id),
+                                  ));
                                 }),
                             actions: <Widget>[
                               // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
@@ -405,6 +405,12 @@ class _ItemScreenState extends State<ItemScreen> {
       ],
     );
   }
+}
+
+getItemInfo(String itemDocID) {
+
+  //TODO:  find out how to pass this doc id to a different page focused speicifclaly on displaying the item data
+
 }
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY

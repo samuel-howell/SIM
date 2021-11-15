@@ -5,7 +5,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('QR Screen'),
+            title: Text('Settings Screen'),
             centerTitle: true,
             backgroundColor: Colors.black));
   }

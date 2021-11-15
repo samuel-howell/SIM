@@ -2,10 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
+import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/view-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
+import 'package:howell_capstone/src/utilities/database.dart';
 
 class NavigationDrawerWidget extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20);
@@ -110,10 +112,19 @@ class NavigationDrawerWidget extends StatelessWidget {
         break;
 
       case 4:
-        Navigator.of(context).push(MaterialPageRoute(
+
+      if(Database().getStoreClicked() == true){
+         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => ItemScreen(),
         ));
         break;
+      }
+      else{
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => PleaseChooseStoreScreen(),
+        ));
+        break;
+      }
     }
   }
 }

@@ -11,6 +11,9 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 String? currentUserUID = _auth.currentUser?.uid;
 
 
+bool storeIsClicked = false; // this is the value that determines whether the user has selected a store (thus determining whether the app directs to an custom error page or the item page.)
+String storeName = "null"; // this is the store name that will be assigned in some of the methods below
+
 getcurrentUserUIDUid() {
   print('Current user id is ' + _auth.currentUser!.uid);
 }
@@ -82,22 +85,6 @@ class Database {
         .catchError((e) => print(e));
   }
 
-//! we don't need this method because we could just call .emailVerified (see code in login-screen.dart) to see if the user has been verified
-//  method to update user email verification status
-  // static Future<void> updateUserVerification({
-  //   required String userID,
-  //   required bool emailVerified,
-  // }) async {
-  //   DocumentReference userDocumentReferencer = _userCollection.doc(userID);
-  //   Map<String, dynamic> data = <String, dynamic>{
-  //     "emailVerified": true,
-  //   };
-
-  //   await userDocumentReferencer
-  //       .update(data)
-  //       .whenComplete(() => print("Update User Verification complete"))
-  //       .catchError((e) => print(e));
-  // }
 
 
 //  method to delete a store
@@ -218,7 +205,6 @@ class Database {
   }
 
 //  method to update item count in database by one (called each time qr code is scanned)
-//! a store must be selected before this method is called. so eventually set a default store
   static Future<void> incrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
@@ -263,27 +249,59 @@ class Database {
     return currentUserID;
   }
 
-setDefaultStore()async{
-  String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
-  print('currentuserid is ' + currentUserUID.toString());
-  print('current store id is ' + currentStoreID.toString());
-   DocumentReference itemDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(currentStoreID); //TODO:  if i log as a diff user, this current store id is still coming from the previous user, meaning the newly signed in user doesn't have access to their stores
 
-    
-      await itemDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
-        var defaultStore = (snapshot.get('storeID'));
-        Database.setcurrentStoreID(defaultStore);
-        print('defaultStore was set to ' + defaultStore);
-
-    });
-}
   //method to set a store id
   static setcurrentStoreID(String storeID) {
     currentStoreID = storeID;
   }
+
+
+ //  sets whether store has been clicked
+ setStoreClicked(bool val){
+    storeIsClicked = val;
+  }
+
+ // gets whether store has been clicked
+ getStoreClicked() {
+   return storeIsClicked;
+ }
+
+
+
+//This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
+ Future<String> getSelectedStoreName() async {
+  String? currentUserUID = _auth.currentUser?.uid;
+  String storeName ="null";
+
+  DocumentReference storeDocumentReferencer = _userCollection
+        .doc(currentUserUID)
+        .collection('stores')
+        .doc(Database().getCurrentStoreID());
+        
+
+  await storeDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
+    storeName = (snapshot.get('name'));
+  });
+ 
+ print('THIS is THe STORE NAME ' + storeName);
+
+return storeName; //TODO: this is return Future Stirng 
+ }
+
+
+//TODO: cant return a Future<String> as a string. figure out a way to get around thus
+Future<String> getStoreName() async {
+  String storeName = "null at first";
+    print('storename started as ' + storeName);
+
+    await Database().getSelectedStoreName().then((value){
+      print('the value that is getSelectedStoreName is ' + value); // this is correct
+      storeName = value.toString();
+    });
+    print('storename ended as ' + storeName);
+    return storeName ;
+}
+ 
 
 }
 

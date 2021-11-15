@@ -23,7 +23,6 @@ var tappedIndex;
 String searchKey = "";
 int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
-//!String? currentUserID = _auth.currentUser?.uid;
 
 
 
@@ -53,7 +52,6 @@ class _StoreScreenState extends State<StoreScreen> {
             centerTitle: true,
             backgroundColor: Colors.black),
 
-        //TODO: Right now, if I log out and then log in as a different user, i have to reload the page before the newly logged in user's set of stores pops up.
         body: StreamBuilder<QuerySnapshot>(
             stream: streamQuery,
             builder: (context, snapshot) {
@@ -93,6 +91,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                     subtitle: Text(doc.get('address')),
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
+                                      Database().setStoreClicked(true); // now the user can access item screen.
 
                                       setState(() {
                                         tappedIndex =
