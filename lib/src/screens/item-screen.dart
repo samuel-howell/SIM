@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:howell_capstone/src/res/custom-colors.dart';
+import 'package:howell_capstone/src/screens/item-info-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,7 +12,6 @@ import 'add-item-screen.dart';
 
 //  gets the current user id
 final FirebaseAuth _auth = FirebaseAuth.instance;
-final currentUserUID = _auth.currentUser?.uid;
 
 //accesses the firebase database
 final db = FirebaseFirestore.instance;
@@ -41,25 +41,29 @@ class ItemScreen extends StatefulWidget {
 
 class _ItemScreenState extends State<ItemScreen> {
 
-  //  placing the Stream inside of the class forces it to call itself every time the page is rebuilt, (thus allowing it to automatically see if the store has been changed)
+
+  //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
+
+//declaring stream
   Stream<QuerySnapshot> streamQuery = db
     .collection('Users')
-    .doc(currentUserUID)
+    .doc(Database().getCurrentUserID())
     .collection('stores')
     .doc(Database().getCurrentStoreID()) 
     .collection('items')
     .snapshots(); 
 
 
+
   @override
   Widget build(BuildContext context) {
-  
     
+
 
     try {
           return Scaffold(
           appBar: AppBar(
-          title: Text('Item Screen'), //TODO: thisis currently returning a <Future>String and not a String.  Perhaps wrap widget with a futureBuilder?
+          title: Text('Item Screen'), 
           centerTitle: true,
           backgroundColor: Colors.black),
 
@@ -116,8 +120,9 @@ class _ItemScreenState extends State<ItemScreen> {
 
                                   print(" ");
 
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => getItemInfo(doc.id),
+                                  final data = Data(itemDocID: doc.id);
+
+                                  Navigator.push(context,MaterialPageRoute( builder: (context) => ItemInfoScreen(itemDocID: doc.id), // pass the doc id to the item infor screen page
                                   ));
                                 }),
                             actions: <Widget>[
@@ -185,6 +190,7 @@ class _ItemScreenState extends State<ItemScreen> {
         }
     }
   }
+  
 
   showchangeSearchDialog(BuildContext context) {
     //
@@ -246,7 +252,7 @@ class _ItemScreenState extends State<ItemScreen> {
   showItemIDSearch() {
     streamQuery = db
         .collection('Users')
-        .doc(currentUserUID)
+        .doc(Database().getCurrentUserID())
         .collection('stores')
         .doc(Database().getCurrentStoreID())
         .collection('items')
@@ -263,7 +269,7 @@ class _ItemScreenState extends State<ItemScreen> {
               //  this stream query matches the searchkey to the names of the stores in the db
               streamQuery = db
                   .collection('Users')
-                  .doc(currentUserUID)
+                  .doc(Database().getCurrentUserID())
                   .collection('stores')
                   .doc(Database().getCurrentStoreID())
                   .collection('items')
@@ -301,7 +307,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
                     .collection('Users')
-                    .doc(currentUserUID)
+                    .doc(Database().getCurrentUserID())
                     .collection('stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
@@ -331,7 +337,7 @@ class _ItemScreenState extends State<ItemScreen> {
   showPriceSearch() {
     streamQuery = db
         .collection('Users')
-        .doc(currentUserUID)
+        .doc(Database().getCurrentUserID())
         .collection('stores')
         .doc(Database().getCurrentStoreID())
         .collection('items')
@@ -347,7 +353,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
                     .collection('Users')
-                    .doc(currentUserUID)
+                    .doc(Database().getCurrentUserID())
                     .collection('stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
@@ -380,7 +386,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
                     .collection('Users')
-                    .doc(currentUserUID)
+                    .doc(Database().getCurrentUserID())
                     .collection('stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
@@ -407,10 +413,11 @@ class _ItemScreenState extends State<ItemScreen> {
   }
 }
 
-getItemInfo(String itemDocID) {
+//itemDocID class
+class Data{
+  String itemDocID;
 
-  //TODO:  find out how to pass this doc id to a different page focused speicifclaly on displaying the item data
-
+  Data({required this.itemDocID});
 }
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY

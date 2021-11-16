@@ -244,8 +244,8 @@ class Database {
     return currentStoreID;
   }
 
-   static String? getCurrentUserID() {
-    String? currentUserID = _auth.currentUser?.uid;
+   String getCurrentUserID() {
+    String currentUserID = _auth.currentUser!.uid;
     return currentUserID;
   }
 

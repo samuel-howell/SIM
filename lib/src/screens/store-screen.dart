@@ -35,7 +35,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   Stream<QuerySnapshot> streamQuery = db
     .collection('Users')
-    .doc(Database.getCurrentUserID().toString())
+    .doc(Database().getCurrentUserID().toString())
     .collection('stores')
     .snapshots();
 
@@ -48,7 +48,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
     return Scaffold(
         appBar: AppBar(
-            title: Text(Database.getCurrentUserID().toString()),
+            title: Text(Database().getCurrentUserID().toString()),
             centerTitle: true,
             backgroundColor: Colors.black),
 
