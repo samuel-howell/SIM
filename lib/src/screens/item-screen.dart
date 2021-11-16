@@ -117,6 +117,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                       snapshot.data!.docs.length.toString());
                                   print('tapped index is ' +
                                       tappedIndex.toString());
+                                  print('doc.id is ' + doc.id.toString());
 
                                   print(" ");
 

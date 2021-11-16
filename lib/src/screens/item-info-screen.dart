@@ -1,10 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
-import 'package:universal_html/html.dart';
 
 class ItemInfoScreen extends StatefulWidget {
     
@@ -20,7 +18,6 @@ class ItemInfoScreen extends StatefulWidget {
   
   
   final auth = FirebaseAuth.instance;
-  String? currentUserID = auth.currentUser?.uid;
 
 
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
@@ -29,53 +26,167 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String? currentUserID = auth.currentUser?.uid;
+
+    return Scaffold(
+    appBar: AppBar(
+            title: Text('Item Information Screen'),
+            centerTitle: true,
+            backgroundColor: Colors.black),
 
    
-    return new StreamBuilder(
+    body: StreamBuilder(
       stream: FirebaseFirestore.instance.collection('Users').doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()).collection("items").doc(widget.itemDocID).snapshots(), // widget.itemDocId is the document id that was passed form the previous page.
       builder: (context, snapshot) {
 
         if (!snapshot.hasData) {
-          return new Text("Loading");
+            return Center(
+                  child: CircularProgressIndicator(),
+                );
         }
         DocumentSnapshot? userDocument = snapshot.data as DocumentSnapshot<Object?>?; // by casting to document snapshot, we can call .get and get the individual fields from the document.
         return Scaffold(
 
-          body: Column(children: [ //TODO: format this better
-              Text(userDocument!.get('name'),
-              style: GoogleFonts.lato(
-              textStyle: TextStyle(color: Colors.grey, fontSize: 26))),
-              Text(userDocument.get('description'),
-              style: GoogleFonts.lato(
-              textStyle: TextStyle(color: Colors.grey, fontSize: 26))),
-              Text(userDocument.get('mostRecentScanIn'),
-              style: GoogleFonts.lato(
-              textStyle: TextStyle(color: Colors.grey, fontSize: 26))),
-          ],
-          )
+        body: Align(
+          alignment: Alignment.topLeft,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              double width = MediaQuery.of(context).size.width; // use this width to size text fontsize accordingly ex. fontSize: width * .2 //  TODO: implement scalable font size
+              return Column(
+                children: [
+                      Row(
+                        children:[ 
+                          Container(
+                          height: constraints.maxHeight / 6,
+                          width: MediaQuery.of(context).size.width,
+                          //color: Colors.red,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Item Name:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument!.get('name'), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+                        ]
+                      ),
+
+                      Row(
+                        children:[ 
+                          Container(
+                          height: constraints.maxHeight / 6,
+                          width: MediaQuery.of(context).size.width,
+                          //color: Colors.green,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Last Employee to Interact:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('LastEmployeeToInteract'), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+                        ]
+                      ),
+
+                      Row(
+                        children:[ 
+                          Container(
+                          height: constraints.maxHeight / 6,
+                          width: MediaQuery.of(context).size.width,
+                          //color: Colors.red,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Most Recent Scan In:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('mostRecentScanIn').toString(), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+                        ]
+                      ),
+
+                      Row(
+                        children:[ 
+                          Container(
+                          height: constraints.maxHeight / 4,
+                          width: MediaQuery.of(context).size.width / 2,
+                          //color: Colors.orange,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Item ID:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('id'), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+
+                          Container(
+                          height: constraints.maxHeight / 4,
+                          width: MediaQuery.of(context).size.width / 2,
+                          //color: Colors.purple,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Description:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('description'), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+                        ]
+                      ),
+
+
+                   
+
+
+                      Row(
+                        children:[ 
+                          Container(
+                          height: constraints.maxHeight / 4,
+                          width: MediaQuery.of(context).size.width / 2,
+                          //color: Colors.blue,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Price:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('price').toString(), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+
+                          Container(
+                          height: constraints.maxHeight / 4,
+                          width: MediaQuery.of(context).size.width / 2,
+                          //color: Colors.blue,
+
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Text('Quantity:', style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                                Text(userDocument.get('quantity').toString(), style: GoogleFonts.lato(textStyle: TextStyle(color: Colors.black, fontSize: 20))),
+                            ]
+                          )
+                          ),
+                        ]
+                      ),
+                    ]      
+                  );    
+                },
+              ),
+            ),
+   
         );
       }
+    )
   );
 
  
        
   }
 }
-
-// Future<Map<String,String>> getItemDetails() async{
-
-// DocumentReference<Map<String, dynamic>> itemDocumentReferencer = FirebaseFirestore.instance.collection('Users').doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()).collection("items").doc(widget.itemDocID);
-// String name = "";
-// String description = "";
-
-//   await itemDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
-//    name = (snapshot.get('name'));
-//    description = (snapshot.get('description'));
-//   });
-
-//   return { 
-//     'name':name,
-//     'description':description
-//   };
-
-//}

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _userCollection = _firestore.collection('Users');
@@ -179,7 +180,10 @@ class Database {
       required String description,
       required String itemDocID}) async {
 
+    
     String? currentUserUID = _auth.currentUser?.uid; // get the current user id at the moment the method has been triggered
+
+    //  this doc ref finds the item doc
     DocumentReference itemDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
@@ -188,13 +192,15 @@ class Database {
         .doc(
             itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
 
+  
+
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
       "price": price,
       "quantity": quantity,
       "tags": [],
       "description": description,
-      "LastEmployeeToInteract": currentUserUID, //TODO: change this to the user's name 
+      "LastEmployeeToInteract": await Database().getCurrentUserName(),
       "item-id": itemDocumentReferencer.id,
     };
 
@@ -208,6 +214,8 @@ class Database {
   static Future<void> incrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MM/dd/yyyy - HH:mm').format(now); // format the date like "11/15/2021 - 16:52"
 
     String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _userCollection
@@ -217,13 +225,16 @@ class Database {
         .collection('items')
         .doc(qrCode); // finds the document associate with the id read by the qr code scanner
 
-//TODO:  use this same code below to get the name of the current user, and insert that in the lastEMployeeToInteract 
   await itemDocumentReferencer.get().then((snapshot) { // this is how we get a DocumentSnapshot from a document reference
     quantity = (snapshot.get('quantity'));
     newQuantity = quantity + 1;
   });
     Map<String, dynamic> data = <String, dynamic>{
       "quantity": newQuantity,
+      "mostRecentScanIn" : formattedDate,
+      //"mostRecentScanIn" : DateTime.now(),
+
+      "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
     await itemDocumentReferencer
@@ -235,8 +246,7 @@ class Database {
 
 
 
-  static String currentStoreID =
-      ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen)
+  static String currentStoreID = ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen)
   static bool isSelected = false;
 
   //  method to get a currentStoreID
@@ -267,6 +277,22 @@ class Database {
  }
 
 
+//returns the first and last name of the current user
+Future<String> getCurrentUserName() async {
+      String? userFirstName = "";
+      String? userLastName = "";
+
+      String currentUserID =FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+      DocumentReference userDoc = _userCollection.doc(currentUserID);
+      await userDoc.get().then((snapshot){
+        userFirstName = snapshot.get('firstName');
+        userLastName = snapshot.get('lastName');
+      });
+
+
+    return userFirstName! + " " + userLastName!;
+  }
 
 //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
  Future<String> getSelectedStoreName() async {

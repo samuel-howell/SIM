@@ -37,6 +37,11 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+            title: Text('Scan Screen'),
+            centerTitle: true,
+            backgroundColor: Colors.black),
+
       body: Column(
         children: <Widget>[
           Expanded(flex: 4, child: _buildQrView(context)),
