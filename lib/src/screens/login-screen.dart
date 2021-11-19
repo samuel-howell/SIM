@@ -358,15 +358,12 @@ class _LoginScreenState extends State<LoginScreen> {
       //Success
       //TODO: add an && here below to chek if emailVerified is already trure.   If so, immediately push to home screen. if emailVerified is not = to true, make it equal to true, then push to home page
       if (userCredentials.user!.emailVerified) {
-
         //!  we technically don't need this because we could just call .emailVerified to find out if the user is verified or not.
         //updates user verification field in firebase
-        
-          // print('we hit the updateUserVerification method.');
-          //     await Database.updateUserVerification(
-          //   userID: userID, emailVerified: true); //! sets to email verified to ture every time the user logs into the app, which is an uneccesary write to the db
-        
-    
+
+        // print('we hit the updateUserVerification method.');
+        //     await Database.updateUserVerification(
+        //   userID: userID, emailVerified: true); //! sets to email verified to ture every time the user logs into the app, which is an uneccesary write to the db
 
         // TODO: set a default store so that the app doesn't crash if you immediately go to item page
 

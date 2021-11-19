@@ -23,35 +23,25 @@ var tappedIndex;
 String searchKey = "";
 int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
-
-
-
 class StoreScreen extends StatefulWidget {
   @override
   State<StoreScreen> createState() => _StoreScreenState();
 }
 
 class _StoreScreenState extends State<StoreScreen> {
-
   Stream<QuerySnapshot> streamQuery = db
-    .collection('Users')
-    .doc(Database().getCurrentUserID().toString())
-    .collection('stores')
-    .snapshots();
+      .collection('Users')
+      .doc(Database().getCurrentUserID().toString())
+      .collection('stores')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
-
-
-
-
-
     return Scaffold(
         appBar: AppBar(
             title: Text(Database().getCurrentUserID().toString()),
             centerTitle: true,
             backgroundColor: Colors.black),
-
         body: StreamBuilder<QuerySnapshot>(
             stream: streamQuery,
             builder: (context, snapshot) {
@@ -65,8 +55,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   //this search bar filters out stores
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:
-                        showSearchDialog(), 
+                    child: showSearchDialog(),
                   ),
 
                   Expanded(
@@ -75,7 +64,6 @@ class _StoreScreenState extends State<StoreScreen> {
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             DocumentSnapshot doc = snapshot.data!.docs[index];
-
 
                             // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                             return Slidable(
@@ -91,7 +79,8 @@ class _StoreScreenState extends State<StoreScreen> {
                                     subtitle: Text(doc.get('address')),
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
-                                      Database().setStoreClicked(true); // now the user can access item screen.
+                                      Database().setStoreClicked(
+                                          true); // now the user can access item screen.
 
                                       setState(() {
                                         tappedIndex =

@@ -100,10 +100,17 @@ class NavigationDrawerWidget extends StatelessWidget {
         break;
 
       case 2:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ScanScreen(),
-        ));
-        break;
+        if (Database().getStoreClicked() == true) {  // we will only allow access to scan screen once a store has been selected
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ScanScreen(),
+          ));
+          break;
+        } else {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PleaseChooseStoreScreen(),
+          ));
+          break;
+        }
 
       case 3:
         Navigator.of(context).push(MaterialPageRoute(
@@ -112,19 +119,17 @@ class NavigationDrawerWidget extends StatelessWidget {
         break;
 
       case 4:
-
-      if(Database().getStoreClicked() == true){
-         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ItemScreen(),
-        ));
-        break;
-      }
-      else{
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => PleaseChooseStoreScreen(),
-        ));
-        break;
-      }
+        if (Database().getStoreClicked() == true) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ItemScreen(),
+          ));
+          break;
+        } else {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PleaseChooseStoreScreen(),
+          ));
+          break;
+        }
     }
   }
 }

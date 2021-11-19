@@ -28,11 +28,7 @@ String searchKey = "";
 double lowSearchKey = 0; // have to be double because prices can be $24.99 etc.
 double highSearchKey = 0;
 
-
 int searchFilter = 1;
-
-
-
 
 class ItemScreen extends StatefulWidget {
   @override
@@ -40,140 +36,135 @@ class ItemScreen extends StatefulWidget {
 }
 
 class _ItemScreenState extends State<ItemScreen> {
-
-
   //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
 
 //declaring stream
   Stream<QuerySnapshot> streamQuery = db
-    .collection('Users')
-    .doc(Database().getCurrentUserID())
-    .collection('stores')
-    .doc(Database().getCurrentStoreID()) 
-    .collection('items')
-    .snapshots(); 
-
-
+      .collection('Users')
+      .doc(Database().getCurrentUserID())
+      .collection('stores')
+      .doc(Database().getCurrentStoreID())
+      .collection('items')
+      .snapshots();
 
   @override
   Widget build(BuildContext context) {
-    
-
-
     try {
-          return Scaffold(
-          appBar: AppBar(
-          title: Text('Item Screen'), 
-          centerTitle: true,
-          backgroundColor: Colors.black),
+      return Scaffold(
+        appBar: AppBar(
+            title: Text('Item Screen'),
+            centerTitle: true,
+            backgroundColor: Colors.black),
+        body: StreamBuilder<QuerySnapshot>(
+            stream:
+                streamQuery, // this streamQuery will change based on what is typed into the search bar
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                return Container(
+                    child: Column(children: <Widget>[
+                  //this search bar filters out stores
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: showSearchDialog(),
+                  ),
 
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot doc = snapshot.data!.docs[index];
 
-      body: StreamBuilder<QuerySnapshot>(
-          stream: streamQuery, // this streamQuery will change based on what is typed into the search bar
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-    
-            else {
-              return Container(
-                  child: Column(children: <Widget>[
-                //this search bar filters out stores
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: showSearchDialog(),
-                ),
+                          // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                          return Slidable(
+                              actionPane: SlidableDrawerActionPane(),
+                              actionExtentRatio: 0.25,
+                              child: ListTile(
+                                  tileColor: tappedIndex == index
+                                      ? Colors.greenAccent
+                                      : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
+                                  hoverColor:
+                                      hoverColor, //  adds some extra pizzazz if you're viewing it on the web
+                                  title: Text(doc.get('name')),
+                                  subtitle: Text(doc.get('description')),
+                                  onTap: () {
+                                    //TODO: open a new page and populate it with all item details from firebase
 
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot doc = snapshot.data!.docs[index];
+                                    //print out to console what the current store id, index, and list length and tapped index is.
+                                    print('the getCurrentStoreID is ' +
+                                        Database().getCurrentStoreID());
+                                    print('the current user id is ' +
+                                        _auth.currentUser!.uid.toString());
+                                    print('item index  is ' + index.toString());
+                                    print('list length  is ' +
+                                        snapshot.data!.docs.length.toString());
+                                    print('tapped index is ' +
+                                        tappedIndex.toString());
+                                    print('doc.id is ' + doc.id.toString());
 
-                        // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
-                        return Slidable(
-                            actionPane: SlidableDrawerActionPane(),
-                            actionExtentRatio: 0.25,
-                            child: ListTile(
-                                tileColor: tappedIndex == index
-                                    ? Colors.greenAccent
-                                    : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                                hoverColor:
-                                    hoverColor, //  adds some extra pizzazz if you're viewing it on the web
-                                title: Text(doc.get('name')),
-                                subtitle: Text(doc.get('description')),
-                                onTap: () {
-                                  //TODO: open a new page and populate it with all item details from firebase
+                                    print(" ");
 
-                                  //print out to console what the current store id, index, and list length and tapped index is.
-                                  print('the getCurrentStoreID is ' +
-                                      Database().getCurrentStoreID());
-                                  print('the current user id is ' +
-                                      _auth.currentUser!.uid.toString());
-                                  print('item index  is ' + index.toString());
-                                  print('list length  is ' +
-                                      snapshot.data!.docs.length.toString());
-                                  print('tapped index is ' +
-                                      tappedIndex.toString());
-                                  print('doc.id is ' + doc.id.toString());
+                                    final data = Data(itemDocID: doc.id);
 
-                                  print(" ");
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ItemInfoScreen(
+                                              itemDocID: doc
+                                                  .id), // pass the doc id to the item infor screen page
+                                        ));
+                                  }),
+                              actions: <Widget>[
+                                // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 
-                                  final data = Data(itemDocID: doc.id);
+                                // slide action to delete
+                                IconSlideAction(
+                                    caption: 'Delete',
+                                    color: Colors.red,
+                                    icon: Icons.delete_sharp,
+                                    onTap: () => {
+                                          showItemDeleteConfirmationAlertDialog(
+                                              context, doc.id),
+                                          print('item ' +
+                                              doc.id +
+                                              ' was deleted.')
+                                        }),
 
-                                  Navigator.push(context,MaterialPageRoute( builder: (context) => ItemInfoScreen(itemDocID: doc.id), // pass the doc id to the item infor screen page
-                                  ));
-                                }),
-                            actions: <Widget>[
-                              // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
-
-                              // slide action to delete
-                              IconSlideAction(
-                                  caption: 'Delete',
-                                  color: Colors.red,
-                                  icon: Icons.delete_sharp,
-                                  onTap: () => {
-                                        showItemDeleteConfirmationAlertDialog(
-                                            context, doc.id),
-                                        print(
-                                            'item ' + doc.id + ' was deleted.')
-                                      }),
-
-                              // slide action to edit
-                              IconSlideAction(
-                                  caption: 'Edit',
-                                  color: CustomColors.cblue,
-                                  icon: Icons.edit,
-                                  onTap: () => {
-                                        showEditItemDialog(context, doc.id),
-                                        print('item ' + doc.id + ' was edited')
-                                      }),
-                            ]);
-                      }),
-                )
-              ]));
-            }
-          }),
-
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.post_add),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        onPressed: () => {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => AddItemScreen(),
-          )) //
-        },
-      ),
-    );
-  
-    } catch (e) {//! this code isn't working.
+                                // slide action to edit
+                                IconSlideAction(
+                                    caption: 'Edit',
+                                    color: CustomColors.cblue,
+                                    icon: Icons.edit,
+                                    onTap: () => {
+                                          showEditItemDialog(context, doc.id),
+                                          print(
+                                              'item ' + doc.id + ' was edited')
+                                        }),
+                              ]);
+                        }),
+                  )
+                ]));
+              }
+            }),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.post_add),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          onPressed: () => {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddItemScreen(),
+            )) //
+          },
+        ),
+      );
+    } catch (e) {
+      //! this code isn't working.
       return Center(child: Text('Please choose.'));
     }
   }
-
 
   showSearchDialog() {
     switch (searchFilter) {
@@ -191,7 +182,6 @@ class _ItemScreenState extends State<ItemScreen> {
         }
     }
   }
-  
 
   showchangeSearchDialog(BuildContext context) {
     //
@@ -415,7 +405,7 @@ class _ItemScreenState extends State<ItemScreen> {
 }
 
 //itemDocID class
-class Data{
+class Data {
   String itemDocID;
 
   Data({required this.itemDocID});
