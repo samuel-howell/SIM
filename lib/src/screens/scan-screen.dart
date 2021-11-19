@@ -39,11 +39,11 @@ class _ScanScreenState extends State<ScanScreen> {
       case 0:
         await controller?.toggleFlash();
         break;
-      
+
       case 1:
         await controller?.flipCamera();
         break;
-      
+
       case 2:
         await controller?.pauseCamera();
         break;
@@ -61,30 +61,20 @@ class _ScanScreenState extends State<ScanScreen> {
           title: Text('Scan Screen'),
           centerTitle: true,
           backgroundColor: Colors.black,
-          actions:[
+          actions: [
             PopupMenuButton<int>(
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (context) =>[
-                  PopupMenuItem(
-                    child: Text('Toggle Flash'),
-                    value: 0 // this is the value that will be passed when we press on this popup menu item
-                    ),
-                  PopupMenuItem(
-                    child: Text('Flip Camera'),
-                    value: 1
-                  ),
-                  PopupMenuItem(
-                    child: Text('Pause Camera'),
-                    value: 2
-                  ),
-                  PopupMenuItem(
-                    child: Text('Resume Camera'),
-                    value: 3
-                  )
-
-              ])
-          ]
-          ),      
+                onSelected: (item) => onSelected(context, item),
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: Text('Toggle Flash'),
+                          value:
+                              0 // this is the value that will be passed when we press on this popup menu item
+                          ),
+                      PopupMenuItem(child: Text('Flip Camera'), value: 1),
+                      PopupMenuItem(child: Text('Pause Camera'), value: 2),
+                      PopupMenuItem(child: Text('Resume Camera'), value: 3)
+                    ])
+          ]),
       body: Column(
         children: <Widget>[
           Expanded(flex: 3, child: _buildQrView(context)),
@@ -103,71 +93,70 @@ class _ScanScreenState extends State<ScanScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
-                        flex:1,  // this flex value gives width priority to whatever widget Expanded is wrapped around.  since all widgets on row are set to 1, they are all equal in width
+                        flex:
+                            1, // this flex value gives width priority to whatever widget Expanded is wrapped around.  since all widgets on row are set to 1, they are all equal in width
                         child: Container(
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
-                            child:Text('Scan IN'),
-                              onPressed: () async {
-                                scanType = 0;
-                                print('SCANTYPE IS 0');
-                               },
-                              ),
+                            child: Text('Scan IN'),
+                            onPressed: () async {
+                              scanType = 0;
+                              print('SCANTYPE IS 0');
+                            },
+                          ),
                         ),
                       ),
                       Expanded(
-                        flex:1,
+                        flex: 1,
                         child: Container(
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
-                            child:Text('Scan OUT'),
-                              onPressed: () async {
-                                scanType = 1;
-                                print('SCANTYPE IS 1'); // TODO make this scanntype affect whether it increments or decrements
-                               },
-                              ),
+                            child: Text('Scan OUT'),
+                            onPressed: () async {
+                              scanType = 1;
+                              print(
+                                  'SCANTYPE IS 1'); // TODO make this scanntype affect whether it increments or decrements
+                            },
+                          ),
                         ),
                       ),
-
                     ],
                   ),
                   Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                      Expanded(
-                        flex:1,
-                        child: Container(
-                          margin: EdgeInsets.all(6),
-                          child: ElevatedButton(
-                            child:Text('Tally Count'),
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.all(6),
+                            child: ElevatedButton(
+                              child: Text('Tally Count'),
                               onPressed: () async {
                                 setState(() {});
-                               },
-                              ),
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                    Expanded(
-                        flex:1,
-                        child: Container(
-                          margin: EdgeInsets.all(6),
-                          child: ElevatedButton(
-                            child:Text('View'),
+                        Expanded(
+                          flex: 1,
+                          child: Container(
+                            margin: EdgeInsets.all(6),
+                            child: ElevatedButton(
+                              child: Text('View'),
                               onPressed: () async {
                                 setState(() {});
-                               },
-                              ),
-                        ),
-                      )
-                  ]
-                  )
+                              },
+                            ),
+                          ),
+                        )
+                      ])
                 ],
               ))
         ],
       ),
     );
   }
-
 
   Widget _buildQrView(BuildContext context) {
     // For this example we check how width or tall the device is and change the scanArea and overlay accordingly.
@@ -195,83 +184,84 @@ class _ScanScreenState extends State<ScanScreen> {
       this.controller = controller;
     });
 
+    switch (scanType) {
+      case 0:
+        print("YOU HIt the switch in case 0!!!!! the scanType is currently " +
+            scanType.toString());
 
-switch(scanType) {
-case 0:
-print("YOU HIt the switch in case 0!!!!! the scanType is currently " + scanType.toString());
-
-print('THE CASE IS CURRENTLY 0');
-  //##################################################################
+        print('THE CASE IS CURRENTLY 0');
+        //##################################################################
 
 // by using the DateTime below in the if statement, we put a 2 second interval delay between each time the state is set to the new ScanData, this prevents the stream from pushing a bunch of duplicate ScanData while the user hovers on a QR code
-    controller.scannedDataStream.listen((scanData) async {
-      final currentScan = DateTime.now();
-      if (lastScan == null ||
-          currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
-        lastScan = currentScan;
-        qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
+        controller.scannedDataStream.listen((scanData) async {
+          final currentScan = DateTime.now();
+          if (lastScan == null ||
+              currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
+            lastScan = currentScan;
+            qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
 
-        // if device has vibration capabilities, vibrate for 200 ms on successful scan
-        if (await Vibration.hasVibrator() != null) {
-          Vibration.vibrate(duration: 200);
-        } else {
-          Fluttertoast.showToast(
-              msg: 'QR was successfully scanned!',
-              gravity: ToastGravity
-                  .TOP); // this is for devices that don't have vibration
-        }
+            // if device has vibration capabilities, vibrate for 200 ms on successful scan
+            if (await Vibration.hasVibrator() != null) {
+              Vibration.vibrate(duration: 200);
+            } else {
+              Fluttertoast.showToast(
+                  msg: 'QR was successfully scanned!',
+                  gravity: ToastGravity
+                      .TOP); // this is for devices that don't have vibration
+            }
 
-        setState(() {
-          result = scanData;
-          print('the qr just read was ' +
-              scanData.code +
-              " qr count: " +
-              qrRead.toString());
+            setState(() {
+              result = scanData;
+              print('the qr just read was ' +
+                  scanData.code +
+                  " qr count: " +
+                  qrRead.toString());
 
-          Database.incrementItemQuantity(scanData.code);
+              Database.incrementItemQuantity(scanData.code);
+            });
+          }
         });
-      }
-    });
-  //##################################################################
+        //##################################################################
 
-    break; 
+        break;
 
-    //!!!!!!!!!!!!!
+      //!!!!!!!!!!!!!
 //TODO: this switch case doesn't work
-case 1:
-print("YOU HIt the switch in case 1!!!!! the scanType is currently " + scanType.toString());
+      case 1:
+        print("YOU HIt the switch in case 1!!!!! the scanType is currently " +
+            scanType.toString());
 
-print('THE CASE IS CURRENTLY 1');
+        print('THE CASE IS CURRENTLY 1');
 
-    controller.scannedDataStream.listen((scanData) async {
-      final currentScan = DateTime.now();
-      if (lastScan == null ||
-          currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
-        lastScan = currentScan;
-        qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
+        controller.scannedDataStream.listen((scanData) async {
+          final currentScan = DateTime.now();
+          if (lastScan == null ||
+              currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
+            lastScan = currentScan;
+            qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
 
-        // if device has vibration capabilities, vibrate for 200 ms on successful scan
-        if (await Vibration.hasVibrator() != null) {
-          Vibration.vibrate(duration: 200);
-        } else {
-          Fluttertoast.showToast(
-              msg: 'QR was successfully scanned!',
-              gravity: ToastGravity
-                  .TOP); // this is for devices that don't have vibration
-        }
+            // if device has vibration capabilities, vibrate for 200 ms on successful scan
+            if (await Vibration.hasVibrator() != null) {
+              Vibration.vibrate(duration: 200);
+            } else {
+              Fluttertoast.showToast(
+                  msg: 'QR was successfully scanned!',
+                  gravity: ToastGravity
+                      .TOP); // this is for devices that don't have vibration
+            }
 
-        setState(() {
-          result = scanData;
-          print('the qr just read was ' +
-              scanData.code +
-              " qr count: " +
-              qrRead.toString());
+            setState(() {
+              result = scanData;
+              print('the qr just read was ' +
+                  scanData.code +
+                  " qr count: " +
+                  qrRead.toString());
 
-          Database.decrementItemQuantity(scanData.code);
+              Database.decrementItemQuantity(scanData.code);
+            });
+          }
         });
-      }
-    });
-    break;
+        break;
     }
   }
 
@@ -289,6 +279,4 @@ print('THE CASE IS CURRENTLY 1');
     controller?.dispose();
     super.dispose();
   }
-
-
 }

@@ -100,7 +100,8 @@ class NavigationDrawerWidget extends StatelessWidget {
         break;
 
       case 2:
-        if (Database().getStoreClicked() == true) {  // we will only allow access to scan screen once a store has been selected
+        if (Database().getStoreClicked() == true) {
+          // we will only allow access to scan screen once a store has been selected
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ScanScreen(),
           ));

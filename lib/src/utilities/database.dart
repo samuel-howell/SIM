@@ -245,14 +245,10 @@ class Database {
         .catchError((e) => print(e));
   }
 
-
-
   //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
-    
-    
 
     String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _userCollection
@@ -270,7 +266,6 @@ class Database {
     });
     Map<String, dynamic> data = <String, dynamic>{
       "quantity": newQuantity,
-
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
@@ -279,8 +274,6 @@ class Database {
         .whenComplete(() => print("item quantity decreemeted in the database"))
         .catchError((e) => print(e));
   }
-
-
 
   static String currentStoreID =
       ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen)
