@@ -31,7 +31,7 @@ class NavigationDrawerWidget extends StatelessWidget {
               buildMenuItem(
                 text: 'ITEMS',
                 icon: Icons.article,
-                onClicked: () => selectedItem(context, 4),
+                onClicked: () => selectedItem(context, 3),
               ),
 
               const SizedBox(height: 15),
@@ -46,13 +46,6 @@ class NavigationDrawerWidget extends StatelessWidget {
                 text: 'SCAN QR',
                 icon: Icons.screenshot,
                 onClicked: () => selectedItem(context, 2),
-              ),
-
-              const SizedBox(height: 15),
-              buildMenuItem(
-                text: 'VIEW',
-                icon: Icons.info,
-                onClicked: () => selectedItem(context, 3),
               ),
 
               //  this is our divider
@@ -113,14 +106,11 @@ class NavigationDrawerWidget extends StatelessWidget {
           break;
         }
 
-      case 3:
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => ViewScreen(),
-        ));
-        break;
 
-      case 4:
+      case 3:
         if (Database().getStoreClicked() == true) {
+         // we will only allow access to item screen once a store has been selected
+
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ItemScreen(),
           ));

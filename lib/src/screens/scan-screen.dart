@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:howell_capstone/src/screens/item-info-screen.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:vibration/vibration.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -22,6 +23,14 @@ class _ScanScreenState extends State<ScanScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   int qrRead = 0;
   int scanType = 0;
+
+  // this determines which button turns green on click
+  bool isScanOutTapped = false;
+  bool isScanInTapped = false;
+  bool isTallyCountTapped = false;
+  bool isViewTapped = false;
+
+
 
   // In order to get hot reload to work we need to pause the camera if the platform
   @override
@@ -98,9 +107,18 @@ class _ScanScreenState extends State<ScanScreen> {
                         child: Container(
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: isScanInTapped? Colors.green : null
+                            ),
                             child: Text('Scan IN'),
                             onPressed: () async {
                               scanType = 0;
+                              setState(() { // depending on which one is selectd, it turns that button color green while wiping the others to default
+                                isTallyCountTapped = false;
+                                isScanInTapped = true;
+                                isScanOutTapped = false;
+                                isViewTapped = false;
+                              });
                             },
                           ),
                         ),
@@ -110,10 +128,20 @@ class _ScanScreenState extends State<ScanScreen> {
                         child: Container(
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                primary: isScanOutTapped? Colors.green : null
+                            ),
+
                             child: Text('Scan OUT'),
                             onPressed: () async {
                               scanType = 1; // this scan type determines what database procedure is carried out during the qr code read
-                              //TODO: change elevated buttons color to green when it is tapped. similar to the on tapped on store and list page
+                              
+                              setState(() {
+                                isScanInTapped = false;
+                                isScanOutTapped = true;
+                                isTallyCountTapped = false;
+                                isViewTapped = false;
+                              });
                             },
                           ),
                         ),
@@ -129,9 +157,19 @@ class _ScanScreenState extends State<ScanScreen> {
                           child: Container(
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: isTallyCountTapped? Colors.green : null
+                            ),
                               child: Text('Tally Count'),
                               onPressed: () async {
-                                scanType = 2; 
+                                scanType = 2;
+
+                                setState(() {
+                                  isTallyCountTapped = true;
+                                  isScanInTapped = false;
+                                  isScanOutTapped = false;
+                                  isViewTapped = false;
+                              });
                               },
                             ),
                           ),
@@ -141,9 +179,18 @@ class _ScanScreenState extends State<ScanScreen> {
                           child: Container(
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: isViewTapped? Colors.green : null
+                            ),
                               child: Text('View'),
                               onPressed: () async {
                                 scanType = 3;
+                                setState(() {
+                                  isTallyCountTapped = false;
+                                  isScanInTapped = false;
+                                  isScanOutTapped = false;
+                                  isViewTapped = true;
+                              });
                               },
                             ),
                           ),
@@ -216,7 +263,12 @@ class _ScanScreenState extends State<ScanScreen> {
                 break;
                 case 1: 
                 Database.decrementItemQuantity(scanData.code);
-                //TODO: add cases for 2 (tally count) and 3(view page - send the user to the items info page.)
+                break;
+                case 2: 
+                //TODO: Do something for the tally count here...
+                break;
+                case 3: 
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ItemInfoScreen(itemDocID: result!.code)));
 
               }
             });

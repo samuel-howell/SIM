@@ -91,7 +91,6 @@ class _ItemScreenState extends State<ItemScreen> {
                                   title: Text(doc.get('name')),
                                   subtitle: Text(doc.get('description')),
                                   onTap: () {
-                                    //TODO: open a new page and populate it with all item details from firebase
 
                                     //print out to console what the current store id, index, and list length and tapped index is.
                                     print('the getCurrentStoreID is ' +
@@ -109,6 +108,7 @@ class _ItemScreenState extends State<ItemScreen> {
 
                                     final data = Data(itemDocID: doc.id);
 
+                                    // navigate to the the item info screen, passing the the id of the item and using it to populate the screen with information specific to that item
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
