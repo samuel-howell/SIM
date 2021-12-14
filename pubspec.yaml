@@ -49,6 +49,9 @@ dependencies:
   screenshot: ^1.2.3
   google_fonts: ^2.1.0
   vibration: ^1.7.4-nullsafety.0
+  csv: ^5.0.1
+  file_picker: ^4.2.7
+  fl_chart: ^0.40.6
 
 
   
