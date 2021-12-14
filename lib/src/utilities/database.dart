@@ -23,12 +23,22 @@ getcurrentUserUIDUid() {
 class Database {
 //  method to  add an item
   static Future<void> addItem(
-      {required String name,
+      {
+      required String name,
       required double price,
       required int quantity,
       required String description,
       required String mostRecentScanIn,
-      required String id}) async {
+      required String id,
+      
+      }
+      ) async {
+
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
+    .format(now); // format the date like "11/15/2021 - 16:52"
+
+
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
     DocumentReference itemDocumentReferencer = _userCollection
@@ -51,10 +61,10 @@ class Database {
       "db-item-id": itemDocumentReferencer.id,
 
       "mostRecentScanIn": mostRecentScanIn,
+      "forQuantityGraph": [{"quantity" : quantity, "date" : formattedDate}],
       "LastEmployeeToInteract":
           currentUserUID, //this will be the user id of the last employee to either scan in or scan out the item
-      "tags":
-          [] //TODO: let the user add tags to id this item with. ideally add the tags as an array. when adding an item and editing, allow the user to edit and add tags
+      
     };
 
     await itemDocumentReferencer
@@ -63,6 +73,9 @@ class Database {
             Database.currentStoreID.toString()))
         .catchError((e) => print(e));
   }
+
+
+
 
 //  method to  add a user
   static Future<void> addUser({
@@ -235,6 +248,7 @@ class Database {
       "quantity": newQuantity,
       "mostRecentScanIn": formattedDate,
       //"mostRecentScanIn" : DateTime.now(),
+  
 
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
@@ -243,12 +257,22 @@ class Database {
         .update(data)
         .whenComplete(() => print("item quantity increemeted in the database"))
         .catchError((e) => print(e));
+
+//update the forQuantityGraph in firebase
+    await itemDocumentReferencer
+    .set
+    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": formattedDate}])}, SetOptions(merge: true))
+    .whenComplete(() => print("item quantitygraph in the database"))
+    .catchError((e) => print(e));
   }
 
   //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
     int quantity = 0;
     int newQuantity = 0;
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
+        .format(now); // format the date like "11/15/2021 - 16:52"
 
     String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _userCollection
@@ -273,7 +297,17 @@ class Database {
         .update(data)
         .whenComplete(() => print("item quantity decreemeted in the database"))
         .catchError((e) => print(e));
+
+    //update the forQuantityGraph array in firebase
+    await itemDocumentReferencer
+    .set
+    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": formattedDate}])}, SetOptions(merge: true))
+    .whenComplete(() => print("item quantitygraph in the database"))
+    .catchError((e) => print(e));
+  
   }
+
+  
 
   static String currentStoreID =
       ""; // making it static means it simply belongs to the class, so I don't have to have an instance of the class to call it in other .dart files (like store-screen)
@@ -320,37 +354,42 @@ class Database {
     return userFirstName! + " " + userLastName!;
   }
 
-//This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
-  Future<String> getSelectedStoreName() async {
-    String? currentUserUID = _auth.currentUser?.uid;
-    String storeName = "null";
 
-    DocumentReference storeDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(Database().getCurrentStoreID());
 
-    await storeDocumentReferencer.get().then((snapshot) {
-      // this is how we get a DocumentSnapshot from a document reference
-      storeName = (snapshot.get('name'));
-    });
 
-    print('THIS is THe STORE NAME ' + storeName);
 
-    return storeName; //TODO: this is return Future Stirng
-  }
 
-//TODO: cant return a Future<String> as a string. figure out a way to get around thus
-  Future<String> getStoreName() async {
-    String storeName = "null at first";
-    print('storename started as ' + storeName);
+// //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
+//   Future<String> getSelectedStoreName() async {
+//     String? currentUserUID = _auth.currentUser?.uid;
+//     String storeName = "null";
 
-    await Database().getSelectedStoreName().then((value) {
-      print('the value that is getSelectedStoreName is ' +
-          value); // this is correct
-      storeName = value.toString();
-    });
-    print('storename ended as ' + storeName);
-    return storeName;
-  }
+//     DocumentReference storeDocumentReferencer = _userCollection
+//         .doc(currentUserUID)
+//         .collection('stores')
+//         .doc(Database().getCurrentStoreID());
+
+//     await storeDocumentReferencer.get().then((snapshot) {
+//       // this is how we get a DocumentSnapshot from a document reference
+//       storeName = (snapshot.get('name'));
+//     });
+
+//     print('THIS is THe STORE NAME ' + storeName);
+
+//     return storeName; //TODO: this is return Future Stirng
+//   }
+
+// //TODO: cant return a Future<String> as a string. figure out a way to get around thus
+//   Future<String> getStoreName() async {
+//     String storeName = "null at first";
+//     print('storename started as ' + storeName);
+
+//     await Database().getSelectedStoreName().then((value) {
+//       print('the value that is getSelectedStoreName is ' +
+//           value); // this is correct
+//       storeName = value.toString();
+//     });
+//     print('storename ended as ' + storeName);
+//     return storeName;
+//   }
 }

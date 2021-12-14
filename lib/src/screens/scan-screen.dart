@@ -266,6 +266,13 @@ class _ScanScreenState extends State<ScanScreen> {
                 break;
                 case 2: 
                 //TODO: Do something for the tally count here...
+
+                /* 
+                Do something like this:
+
+                https://pusher.com/tutorials/local-data-flutter/
+                Store it locally
+                */
                 break;
                 case 3: 
                 Navigator.push(context, MaterialPageRoute(builder: (context) => ItemInfoScreen(itemDocID: result!.code)));

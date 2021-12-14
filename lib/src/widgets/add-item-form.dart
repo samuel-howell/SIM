@@ -140,11 +140,12 @@ class AddItemFormState extends State<AddItemForm> {
                 controller: _idController,
                 keyboardType: TextInputType.text,
                 validator: (value) {
-                  //TODO: create and call a method here that searches through every item in the store and looks for matching id value. if the id val is already in the store, reject using that string as an id again. perhaps pass _idController.text to a method similar to findItemByQR in the database.dart file. see if the id matches anything already in the database.
-                  // The validator receives the text that the user has entered.
+                  //!CANT USE FUTURES IN VALIDAOTR, SO PERHAPS PROVIDE A WARNING MESSAGE?
+                  //TODO: create and call a method here that searches through every item in the store and looks for matching id value. if the id val is already in the store, reject using that string as an id again. perhaps pass _idController.text to a method similar to findItemByQR in the database.dart file. see if the id matches anything already in the database. 
 
+                 
                   //way 2: calling regex created at beginning of file
-                  if (value == null || value.isEmpty) {
+                   if (value == null || value.isEmpty) {
                     return 'Please enter an ID';
                   }
                   return null;
