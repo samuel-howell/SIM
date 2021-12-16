@@ -15,6 +15,7 @@ import 'package:howell_capstone/src/widgets/line-chart-widget.dart';
 import 'package:howell_capstone/src/widgets/line-data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 class HomeScreen extends StatefulWidget {
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -98,7 +99,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontSize: 20.0),
               ),
               onPressed: () async {
+                  //List data = await Database().getLineData();
+                  //List<FLSpot> values
                   Database().getLineData();
+
               }))
 
               ]

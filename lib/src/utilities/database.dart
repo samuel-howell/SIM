@@ -383,11 +383,18 @@ class Database {
       print(DateTime.fromMillisecondsSinceEpoch(t.seconds * 1000));
 
       */
-      print('THIS IS THE MAP:    ');
+      print('THIS IS THE MAP and map2:    ');
 
+      // this map just shows how to convert to datetime
       var map = {};
       list.forEach((entry) => map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity']);
       print(map);
+
+
+      // this map is the map that we will need for the graph because we don't need datetime for x axis we just need milliseconds like how it is done https://dev.to/kamilpowalowski/stock-charts-with-flchart-library-1gd2
+      var map2 = {};
+      list.forEach((entry) => map2[    (entry['date'].seconds / 1000)  ] = entry['quantity']);
+      print(map2);
 
       
       //take that map and convert it to type QuantityDaily

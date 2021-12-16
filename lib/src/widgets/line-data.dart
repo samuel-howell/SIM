@@ -17,8 +17,7 @@ class LineData{
 
 class QuantityDaily{
 
-  //String date;
-  DateTime date;
+  DateTime date; // firebase returns timestamp so I converted it to datetime over in to the database.dart file
   int quantity;
 
 
