@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/widgets/line-data.dart';
 import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -118,7 +119,7 @@ class Database {
         storeDocID.toString());
   }
 
-  //  method to delete a store
+  //  method to delete a item
   static Future<void> deleteItem(String itemDocID) async {
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
@@ -261,7 +262,7 @@ class Database {
 //update the forQuantityGraph in firebase
     await itemDocumentReferencer
     .set
-    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": formattedDate}])}, SetOptions(merge: true))
+    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": now}])}, SetOptions(merge: true))
     .whenComplete(() => print("item quantitygraph in the database"))
     .catchError((e) => print(e));
   }
@@ -301,7 +302,7 @@ class Database {
     //update the forQuantityGraph array in firebase
     await itemDocumentReferencer
     .set
-    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": formattedDate}])}, SetOptions(merge: true))
+    ({"forQuantityGraph": FieldValue.arrayUnion([{"quantity": newQuantity, "date": now}])}, SetOptions(merge: true))
     .whenComplete(() => print("item quantitygraph in the database"))
     .catchError((e) => print(e));
   
@@ -356,6 +357,62 @@ class Database {
 
 
 
+  //returns the first and last name of the current user
+  Future<List> getLineData() async {
+    
+    List<dynamic> list;
+    List<QuantityDaily> q=[];
+
+    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()).collection('items').doc('he'); //TODO: change he to whatever doc id is clicked
+    await itemDoc.get().then((snapshot) {
+      
+      // get the list from firebase
+      list = snapshot.get('forQuantityGraph');
+      print('THIS IS THE LIST:    ');
+      print(list);
+
+      // convert that list to a map
+
+        /* 
+      NOTE: Firebase stores DateTime as a timestamp in the form Timestamp(seconds=1639583912, nanoseconds=473000000), so I have to do something like
+      below to convert the timestamp back to a DateTime 
+
+      var t = q[0].date   -- (which means something like var t = Timestamp(1639583912, 473000000);)
+      print(DateTime.fromMillisecondsSinceEpoch(t.seconds * 1000));
+
+      */
+      print('THIS IS THE MAP:    ');
+
+      var map = {};
+      list.forEach((entry) => map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity']);
+      print(map);
+
+      
+      //take that map and convert it to type QuantityDaily
+            print('THIS IS THE QUANTITY DAILY MAP:    ');
+
+      map.forEach((k,v) => q.add(QuantityDaily(k,v)));
+      print(q);
+
+    
+      print('THIS IS THE date val in the QUANTITY DAILY MAP in position 0:    ');
+      print(q[0].date);
+      print('THIS IS THE quantity val in the QUANTITY DAILY MAP in position 0:    ');
+      print(q[0].quantity);
+
+     });
+      
+      return q;
+    }
+    //);
+
+    
+  }
+
+
+
 
 
 
@@ -392,4 +449,4 @@ class Database {
 //     print('storename ended as ' + storeName);
 //     return storeName;
 //   }
-}
+

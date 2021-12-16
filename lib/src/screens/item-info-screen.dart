@@ -37,7 +37,7 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                 .doc(Database().getCurrentStoreID())
                 .collection("items")
                 .doc(widget.itemDocID)
-                .snapshots(), // widget.itemDocId is the document id that was passed form the previous page.
+                .snapshots(), // widget.itemDocId is the document id that was passed from the previous page.
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 return Center(

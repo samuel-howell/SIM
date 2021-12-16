@@ -10,7 +10,6 @@ class LineChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //TODO: referen the add item form page to figuue out how tot prevent oveflow on phoine 
     return LineChart(
       LineChartData(
         minX: 0,

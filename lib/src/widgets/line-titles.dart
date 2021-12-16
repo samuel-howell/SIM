@@ -24,7 +24,7 @@ class LineTitles {
         }
         return '';
       },
-      margin: 8,
+      margin: 22,
     ),
     leftTitles: SideTitles( // for y axis
       interval: 1,
