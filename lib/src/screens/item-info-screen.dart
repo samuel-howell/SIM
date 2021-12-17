@@ -106,20 +106,41 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
                               child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text('Most Recent Scan In:',
+                                    Expanded(
+                                      child: Text('Most Recent Scan In:',
+                                          style: GoogleFonts.lato(
+                                              textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20))),
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                          userDocument
+                                              .get('mostRecentScanIn')
+                                              .toString(),
+                                          style: GoogleFonts.lato(
+                                              textStyle: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20))),
+                                    ),
+
+                                    SizedBox(height: 25,),
+
+                                    Text('Most Recent Scan Out:',
                                         style: GoogleFonts.lato(
                                             textStyle: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 20))),
                                     Text(
                                         userDocument
-                                            .get('mostRecentScanIn')
+                                            .get('mostRecentScanOut')
                                             .toString(),
                                         style: GoogleFonts.lato(
                                             textStyle: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 20))),
                                   ])),
+                                  
                         ]),
                         Row(children: [
                           Container(
