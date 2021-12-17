@@ -322,7 +322,14 @@ class Database {
         await itemDocumentReferencer.get().then((snapshot) {
           // this is how we get a DocumentSnapshot from a document reference
           quantity = (snapshot.get('quantity'));
-          newQuantity = quantity - 1;
+          if(newQuantity == 0)
+          {
+            newQuantity = 0;  // prevents  a negative quantity val
+          }
+          else{
+            newQuantity = quantity - 1;
+          }
+          
         });
         Map<String, dynamic> data = <String, dynamic>{
           "quantity": newQuantity,
