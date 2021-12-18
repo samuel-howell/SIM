@@ -21,7 +21,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
 
 
-//! adapted from https://dev.to/kamilpowalowski/stock-charts-with-flchart-library-1gd2 and  https://github.com/kamilpowalowski/fluttersafari/blob/fl_chart/lib/line_chart.dart
 
   final int _divider = 25;
   final int _leftLabelsCount = 6;
@@ -37,7 +36,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   @override
   void initState() {
     super.initState();
-   _prepareQuantityData();
+   _prepareQuantityData();  // putting it in the init state calls it once on the first build 
   }
 
   void _prepareQuantityData() async {
@@ -48,12 +47,16 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       double maxY = double.minPositive;
 
       _values = data.map((entry) {
-      if (minY > (entry.quantity)) minY = entry.quantity.toDouble();
-      if (maxY < (entry.quantity )) maxY = entry.quantity.toDouble();
-              //   print(entry.date.millisecondsSinceEpoch.toDouble().toString());
+      if (minY > (entry.quantity)) minY = entry.quantity;
+      if (maxY < (entry.quantity )) maxY = entry.quantity;
+                 print(entry.date.millisecondsSinceEpoch.toDouble().toString());
+                 print(entry.quantity.toString());
+                 print('miny is ' + minY.toString());
+                 print('maxy is ' + maxY.toString());
+
       return FlSpot(
         entry.date.millisecondsSinceEpoch.toDouble(),
-        entry.quantity.toDouble(),
+        entry.quantity,
       );
       
     }).toList();
@@ -80,6 +83,8 @@ class _LineChartWidgetState extends State<LineChartWidget> {
         titlesData: FlTitlesData(
           bottomTitles: _bottomTitles(),
           leftTitles: _leftTitles(),
+          rightTitles: SideTitles(showTitles: false),
+          topTitles: SideTitles(showTitles: false),
         ),
         borderData: FlBorderData(
           border: Border.all(color: Colors.white12, width: 1),
@@ -119,11 +124,11 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white54,
+        color:  Color(0xFF5620FF),
         fontSize: 14,
       ),
-      getTitles: (value) =>
-          NumberFormat.compactCurrency(symbol: '\$').format(value),
+      // getTitles: (value) =>                                          // we leave getTitles out if we jsut want it to display the base value with no formatting
+      //     NumberFormat.compactCurrency(symbol: '\$').format(value),
       reservedSize: 28,
       margin: 12,
       interval: _leftTitlesInterval,
@@ -134,7 +139,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white54,
+        color:  Color(0xFF5620FF),
         fontSize: 14,
       ),
       getTitles: (value) {
@@ -145,7 +150,10 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       margin: 8,
       interval: (_maxX - _minX) / 6,
     );
+    
   }
+
+
 
   FlGridData _gridData() {
     return FlGridData(
@@ -169,7 +177,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
   @override
   Widget build(BuildContext context) {
-    
+
     return AspectRatio(
       aspectRatio: 1.70,
       child: Padding(

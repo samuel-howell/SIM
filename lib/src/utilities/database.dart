@@ -428,7 +428,7 @@ class Database {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc('9uKUPDoTjYFzb2yCJqat') // TODO: change this store id to Database().getCurrentStoreID()
     .collection('items').doc('he').collection('graphData').doc('quantityDaily'); //TODO: change he to whatever doc id is clicked
 
     // Map<String, dynamic> data = <String, dynamic>{
@@ -477,13 +477,12 @@ class Database {
          //   print('THIS IS THE QUANTITY DAILY MAP:    ');
 
       map.forEach((k,v) => q.add(QuantityDaily(k,v)));
-      //print(q);
 
     
-     // print('THIS IS THE date val in the QUANTITY DAILY MAP in position 1:    ');
-     /// print(q[1].date);
-     // print('THIS IS THE quantity val in the QUANTITY DAILY MAP in position 1:    ');
-     // print(q[1].quantity);
+     print('THIS IS THE date val in milliseconds in the QUANTITY DAILY MAP in position 1:    ');
+      print(q[1].date.millisecondsSinceEpoch.toDouble().toString());
+     print('THIS IS THE quantity val in the QUANTITY DAILY MAP in position 1:    ');
+     print(q[1].quantity);
 
      });
       

@@ -17,8 +17,9 @@ class LineData{
 
 class QuantityDaily{
 
-  DateTime date; // firebase returns timestamp so I converted it to datetime over in to the database.dart file
-  int quantity;
+
+  DateTime date; // firebase returns timestamp so I converted it to datetime, thein i convert it to millisecondsSinceEpoch.toDouble()
+  double quantity;
 
 
   QuantityDaily(this.date, this.quantity);
