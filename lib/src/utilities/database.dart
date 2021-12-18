@@ -421,7 +421,7 @@ class Database {
    }
 
   //returns line data list
-  Future<List> getLineData() async {
+  Future<List<QuantityDaily>> getLineData() async {
     
     List<dynamic> list;
     List<QuantityDaily> q=[];
@@ -431,23 +431,23 @@ class Database {
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
     .collection('items').doc('he').collection('graphData').doc('quantityDaily'); //TODO: change he to whatever doc id is clicked
 
-    Map<String, dynamic> data = <String, dynamic>{
-      "forQuantityGraph": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
-    };
+    // Map<String, dynamic> data = <String, dynamic>{
+    //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
+    // };
 
-    await itemDoc
-            .update(data)
-            .whenComplete(() => print("item quantity daily increemeted in the database"))
-            .catchError((e) => print(e));
+    // await itemDoc
+    //         .update(data)
+    //         .whenComplete(() => print("item quantity daily increemeted in the database"))
+    //         .catchError((e) => print(e));
     
     
     
     await itemDoc.get().then((snapshot) {
       
       // get the list from firebase
-      list = snapshot.get('forQuantityGraph');
-      print('THIS IS THE LIST:    ');
-      print(list);
+      list = snapshot.get('dataPoints');
+      //print('THIS IS THE LIST:    ');
+      //print(list);
 
       // convert that list to a map
 
@@ -459,35 +459,36 @@ class Database {
       print(DateTime.fromMillisecondsSinceEpoch(t.seconds * 1000));
 
       */
-      print('THIS IS THE MAP and map2:    ');
+      //print('THIS IS THE MAP and map2:    ');
 
       // this map just shows how to convert to datetime
       var map = {};
       list.forEach((entry) => map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity']);
-      print(map);
+     // print(map);
 
 
       // this map is the map that we will need for the graph because we don't need datetime for x axis we just need milliseconds like how it is done https://dev.to/kamilpowalowski/stock-charts-with-flchart-library-1gd2
       var map2 = {};
       list.forEach((entry) => map2[    (entry['date'].seconds / 1000)  ] = entry['quantity']);
-      print(map2);
+     // print(map2);
 
       
       //take that map and convert it to type QuantityDaily
-            print('THIS IS THE QUANTITY DAILY MAP:    ');
+         //   print('THIS IS THE QUANTITY DAILY MAP:    ');
 
       map.forEach((k,v) => q.add(QuantityDaily(k,v)));
-      print(q);
+      //print(q);
 
     
-      print('THIS IS THE date val in the QUANTITY DAILY MAP in position 0:    ');
-      print(q[0].date);
-      print('THIS IS THE quantity val in the QUANTITY DAILY MAP in position 0:    ');
-      print(q[0].quantity);
+     // print('THIS IS THE date val in the QUANTITY DAILY MAP in position 1:    ');
+     /// print(q[1].date);
+     // print('THIS IS THE quantity val in the QUANTITY DAILY MAP in position 1:    ');
+     // print(q[1].quantity);
 
      });
       
       return q;
+
     }
     //);
 

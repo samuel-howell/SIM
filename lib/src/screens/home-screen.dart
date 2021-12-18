@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                   //List data = await Database().getLineData();
                   //List<FLSpot> values
-                  Database().getLineData();
+                  //Database().getLineData();
 
               }))
 
