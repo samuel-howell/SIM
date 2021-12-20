@@ -6,6 +6,11 @@ import 'package:howell_capstone/src/widgets/line-titles.dart';
 import 'package:intl/intl.dart';
 
 class LineChartWidget extends StatefulWidget {
+
+  final String itemID;
+
+  LineChartWidget({Key? key, required this.itemID}) : super(key: key);
+
   @override
   State<LineChartWidget> createState() => _LineChartWidgetState();
 }
@@ -40,7 +45,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   }
 
   void _prepareQuantityData() async {
-      final List<QuantityDaily> data = await Database().getLineData();
+      final List<QuantityDaily> data = await Database().getLineData(widget.itemID);
       //print('hit the _prepareQuantity method');
 
       double minY = double.maxFinite;

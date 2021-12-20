@@ -86,7 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 height: MediaQuery.of(context).size.height/2,
                 width: MediaQuery.of(context).size.width,
-                child: LineChartWidget()),
+                child: Text('placeholder')), /*
+                *///TODO: works on login, but _values go away on page reload.  perhps something to do with preparing the data in init state? I know that I can't call prepare date in the build method or it will cause repeats.  Most likely, this will resolve when I link the graphs to individual item pages.
               ]
               )
               ),
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                   //List data = await Database().getLineData();
                   //List<FLSpot> values
-                  //Database().getLineData();
+
 
               }))
 

@@ -421,15 +421,15 @@ class Database {
    }
 
   //returns line data list
-  Future<List<QuantityDaily>> getLineData() async {
+  Future<List<QuantityDaily>> getLineData(String itemID) async {
     
     List<dynamic> list;
     List<QuantityDaily> q=[];
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc('9uKUPDoTjYFzb2yCJqat') // TODO: change this store id to Database().getCurrentStoreID()
-    .collection('items').doc('he').collection('graphData').doc('quantityDaily'); //TODO: change he to whatever doc id is clicked
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) // TODO: change this store id to Database().getCurrentStoreID()
+    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); //TODO: change he to whatever doc id is clicked
 
     // Map<String, dynamic> data = <String, dynamic>{
     //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
@@ -463,7 +463,7 @@ class Database {
 
       // this map just shows how to convert to datetime
       var map = {};
-      list.forEach((entry) => map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity']);
+      list.forEach((entry) => map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity'].toDouble()); // cast the int quantity in database to double
      // print(map);
 
 

@@ -17,6 +17,7 @@ class LineData{
 
 class QuantityDaily{
 
+//our flspot data has to be in the form <double, double>
 
   DateTime date; // firebase returns timestamp so I converted it to datetime, thein i convert it to millisecondsSinceEpoch.toDouble()
   double quantity;
