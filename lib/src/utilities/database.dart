@@ -428,8 +428,8 @@ class Database {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) // TODO: change this store id to Database().getCurrentStoreID()
-    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); //TODO: change he to whatever doc id is clicked
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
+    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
 
     // Map<String, dynamic> data = <String, dynamic>{
     //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
@@ -467,7 +467,7 @@ class Database {
      // print(map);
 
 
-      // this map is the map that we will need for the graph because we don't need datetime for x axis we just need milliseconds like how it is done https://dev.to/kamilpowalowski/stock-charts-with-flchart-library-1gd2
+      //! map2 is just for testing. can be removed eventually
       var map2 = {};
       list.forEach((entry) => map2[    (entry['date'].seconds / 1000)  ] = entry['quantity']);
      // print(map2);
@@ -489,9 +489,59 @@ class Database {
       return q;
 
     }
-    //);
+
+
+    //method that returns all quantity datapoints from a specific month
+
+    Future<List<QuantityDaily>> getMonthLineData(String itemID, int month) async {
+
+
+
+    List<dynamic> list;
+    List<QuantityDaily> q=[];
+
+    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
+    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
+
+
+    await itemDoc.get().then((snapshot) {
+      
+      // get the list from firebase
+      list = snapshot.get('dataPoints');
+      
+      // from that list, only add entries that match the month passed in as a paremeter to the map
+      var map = {};
+      list.forEach((entry) {
+        if( DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).month.compareTo(month) == 0 )// compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
+        {
+            map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity'].toDouble();
+        }
+
+      }); 
+     // print(map);
+
 
     
+
+      
+      //take that map and convert it to type QuantityDaily
+            print('THIS IS THE MAP FOR MONTH ' + month.toString());
+
+      map.forEach((k,v) => q.add(QuantityDaily(k,v)));
+
+    
+     print('THIS IS THE date val in position 1:    ');
+      print(q[1].date..toString());
+     print('THIS IS THE quantity val  position 1:    ');
+     print(q[1].quantity);
+
+     });
+      
+      return q;
+
+    }
   }
 
 

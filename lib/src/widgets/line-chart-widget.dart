@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:howell_capstone/src/widgets/graphYMD-dropdown.dart';
 import 'package:howell_capstone/src/widgets/line-data.dart';
 import 'package:howell_capstone/src/widgets/line-titles.dart';
 import 'package:intl/intl.dart';
@@ -11,11 +12,12 @@ class LineChartWidget extends StatefulWidget {
 
   LineChartWidget({Key? key, required this.itemID}) : super(key: key);
 
+
   @override
   State<LineChartWidget> createState() => _LineChartWidgetState();
 }
 
-class _LineChartWidgetState extends State<LineChartWidget> {
+class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAliveClientMixin {
   final List<Color> _gradientColors = [
     const Color(0xFF6FFF7C),
     const Color(0xFF0087FF),
@@ -23,7 +25,9 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   ];
 
 
-
+  //  the AutomaticKeepAliveClientMixin coupled with this override keeps that graph from refreshing everytime the tab is swiped to on the item info page.
+  @override
+  bool get wantKeepAlive => true;
 
 
 
@@ -45,7 +49,10 @@ class _LineChartWidgetState extends State<LineChartWidget> {
   }
 
   void _prepareQuantityData() async {
-      final List<QuantityDaily> data = await Database().getLineData(widget.itemID);
+      //final List<QuantityDaily> data = await Database().getLineData(widget.itemID);    // this gets line data based on all data points
+          
+      final List<QuantityDaily> data = await Database().getMonthLineData(widget.itemID, int.parse(GraphYMDDropdownItem().getSelectedMonth())); // this gets line data for a specific month
+
       //print('hit the _prepareQuantity method');
 
       double minY = double.maxFinite;
@@ -54,10 +61,11 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       _values = data.map((entry) {
       if (minY > (entry.quantity)) minY = entry.quantity;
       if (maxY < (entry.quantity )) maxY = entry.quantity;
-                 print(entry.date.millisecondsSinceEpoch.toDouble().toString());
-                 print(entry.quantity.toString());
-                 print('miny is ' + minY.toString());
-                 print('maxy is ' + maxY.toString());
+                //  print(entry.date.millisecondsSinceEpoch.toDouble().toString());
+                //  print(entry.quantity.toString());
+                //  print('miny is ' + minY.toString());
+                //  print('maxy is ' + maxY.toString());
+                print('graph built');
 
       return FlSpot(
         entry.date.millisecondsSinceEpoch.toDouble(),
@@ -78,7 +86,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     setState(() {});
   }
 
-  
   
   LineChartData _mainData() {
  
@@ -102,7 +109,7 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       );
     }
 
-    LineChartBarData _lineBarData() {
+  LineChartBarData _lineBarData() {
     return LineChartBarData(
       spots: _values,
       colors: _gradientColors,
@@ -121,9 +128,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
       ),
     );
   }
-
-
-
 
   SideTitles _leftTitles() {
     return SideTitles(
@@ -158,8 +162,6 @@ class _LineChartWidgetState extends State<LineChartWidget> {
     
   }
 
-
-
   FlGridData _gridData() {
     return FlGridData(
       show: true,
@@ -179,92 +181,79 @@ class _LineChartWidgetState extends State<LineChartWidget> {
 
 
 
-
   @override
   Widget build(BuildContext context) {
-
     return AspectRatio(
+
       aspectRatio: 1.70,
       child: Padding(
         padding:
             const EdgeInsets.only(right: 18.0, left: 12.0, top: 24, bottom: 12),
-        child: _values.isEmpty ? Placeholder() : LineChart(_mainData()),
+        child: getWidgets()
+
+
       ),
     );
   }
+
+//getWidget is basically just an extended if else for  the child property 
+  Widget getWidgets() {
+       if(_values.isEmpty){
+          return Scaffold(
+
+          body: 
+          Align(
+            alignment: Alignment.topLeft,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints){
+          return SingleChildScrollView(
+            child: Column( children: [
+              GraphYMDDropdownItem(),
+              Container(
+                height: constraints.maxHeight/1.1,
+                width: constraints.maxWidth,
+                
+                child: Placeholder())
+            
+                    ]
+                  ),
+                );
+              }
+            )
+              
+            )
+          ) ;
+        }
+        else{
+
+          return Scaffold(
+          body: 
+          Align(
+            alignment: Alignment.topLeft,
+            child: LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints){
+          return SingleChildScrollView(
+            child: Column( children: [
+              GraphYMDDropdownItem(),
+              Container(
+                height: constraints.maxHeight/1.1,
+                width: constraints.maxWidth,
+                child: LineChart(_mainData())
+                      )
+                    ]
+                  ),
+                );
+              }
+            )
+              
+            )
+          ) ;
+        }
+}
+
+//TODO: force the graph widget to rebuild whenver the dropdown changes.
+
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-//! ////////////////////////////////////////////////////////////////////////////////////
-  // @override
-  // Widget build(BuildContext context) {
-
-  //   return LineChart(
-  //     LineChartData(
-  //       minX: 0,
-  //       maxX: 11,
-  //       minY: 0,
-  //       maxY: 6,
-  //       titlesData: LineTitles.getTitleData(),
-  //       gridData: FlGridData(
-  //         verticalInterval: 1,
-  //         horizontalInterval: 1,
-  //         show: true,
-  //         getDrawingHorizontalLine: (value) {
-  //           return FlLine(
-  //               color: const Color(0xff23cfe6),
-  //               strokeWidth: 1, // thickness of horizontal lines
-  //           );
-  //         },
-  //         drawVerticalLine: true,
-  //         getDrawingVerticalLine: (value) {
-  //           return FlLine(
-  //               color: const Color(0xff23cfe6),
-  //               strokeWidth: 1, // thickness of vertical lines
-  //           );
-  //         },
-    
-  //       ),
-  //       borderData: FlBorderData(
-  //         show: true,
-  //         border: Border.all(color: const Color(0xff23cfe6), width: 2),
-  //       ),
-  //       lineBarsData: [
-  //         LineChartBarData(
-  //           spots:[
-  //              FlSpot(0, 3),
-  //               FlSpot(2.6, 2),
-  //               FlSpot(4.9, 5),
-  //               FlSpot(6.8, 2.5),
-  //               FlSpot(8, 4),
-  //               FlSpot(9.5, 3),
-  //               FlSpot(11, 4),
-  //         ],
-  //         isCurved: true,
-  //         colors: _gradientColors,
-  //         barWidth: 5,
-  //         belowBarData: BarAreaData(
-  //           show: true,
-  //           colors: _gradientColors.map((color) => color.withOpacity(0.3)).toList(),
-  //         )
-  //         )
-  //       ]
-  //     ),
-  //     swapAnimationDuration: Duration(milliseconds: 150), // Optional
-  //     swapAnimationCurve: Curves.linear,
-  //   );
-  // }
-  //}
 
