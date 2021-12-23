@@ -527,15 +527,18 @@ class Database {
 
       
       //take that map and convert it to type QuantityDaily
-            print('THIS IS THE MAP FOR MONTH ' + month.toString());
-
       map.forEach((k,v) => q.add(QuantityDaily(k,v)));
 
-    
-     print('THIS IS THE date val in position 1:    ');
-      print(q[1].date..toString());
-     print('THIS IS THE quantity val  position 1:    ');
-     print(q[1].quantity);
+      print('THIS IS THE MAP FOR MONTH ' + month.toString());
+
+
+    if(map.isNotEmpty){ //! for debugging
+      print('THIS IS THE date val in position 0:    ');
+      print(q[0].date..toString());
+      print('THIS IS THE quantity val  position 0:    ');
+      print(q[0].quantity);
+    }
+  
 
      });
       

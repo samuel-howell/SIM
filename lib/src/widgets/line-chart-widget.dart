@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
-import 'package:howell_capstone/src/widgets/graphYMD-dropdown.dart';
 import 'package:howell_capstone/src/widgets/line-data.dart';
 import 'package:howell_capstone/src/widgets/line-titles.dart';
 import 'package:intl/intl.dart';
@@ -45,45 +44,50 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
-   _prepareQuantityData();  // putting it in the init state calls it once on the first build 
+   prepareQuantityData();  // putting it in the init state calls it once on the first build 
   }
 
-  void _prepareQuantityData() async {
+  void prepareQuantityData() async {
       //final List<QuantityDaily> data = await Database().getLineData(widget.itemID);    // this gets line data based on all data points
           
-      final List<QuantityDaily> data = await Database().getMonthLineData(widget.itemID, int.parse(GraphYMDDropdownItem().getSelectedMonth())); // this gets line data for a specific month
+      final List<QuantityDaily> data = await Database().getMonthLineData(widget.itemID, int.parse(getSelectedMonth())); // this gets line data for a specific month
 
       //print('hit the _prepareQuantity method');
 
       double minY = double.maxFinite;
       double maxY = double.minPositive;
 
-      _values = data.map((entry) {
-      if (minY > (entry.quantity)) minY = entry.quantity;
-      if (maxY < (entry.quantity )) maxY = entry.quantity;
-                //  print(entry.date.millisecondsSinceEpoch.toDouble().toString());
-                //  print(entry.quantity.toString());
-                //  print('miny is ' + minY.toString());
-                //  print('maxy is ' + maxY.toString());
-                print('graph built');
+      // we only want to map to _values if the data list is not empty.
+      if(data.isNotEmpty){
 
-      return FlSpot(
-        entry.date.millisecondsSinceEpoch.toDouble(),
-        entry.quantity,
-      );
-      
-    }).toList();
+            _values = data.map((entry) {
+            if (minY > (entry.quantity)) minY = entry.quantity;
+            if (maxY < (entry.quantity )) maxY = entry.quantity;
+                      //  print(entry.date.millisecondsSinceEpoch.toDouble().toString());
+                      //  print(entry.quantity.toString());
+                      //  print('miny is ' + minY.toString());
+                      //  print('maxy is ' + maxY.toString());
+                      print('graph built');
+
+            return FlSpot(
+              entry.date.millisecondsSinceEpoch.toDouble(),
+              entry.quantity,
+            );
+            
+          }).toList();
+            
 
 
+          _minX = _values.first.x;
+          _maxX = _values.last.x;
+          _minY = (minY / _divider).floorToDouble() * _divider;
+          _maxY = (maxY / _divider).ceilToDouble() * _divider;
+          _leftTitlesInterval =
+              ((_maxY - _minY) / (_leftLabelsCount - 1)).floorToDouble();
 
-    _minX = _values.first.x;
-    _maxX = _values.last.x;
-    _minY = (minY / _divider).floorToDouble() * _divider;
-    _maxY = (maxY / _divider).ceilToDouble() * _divider;
-    _leftTitlesInterval =
-        ((_maxY - _minY) / (_leftLabelsCount - 1)).floorToDouble();
-
-    setState(() {});
+          setState(() {
+          });
+      }
   }
 
   
@@ -140,7 +144,7 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
       //     NumberFormat.compactCurrency(symbol: '\$').format(value),
       reservedSize: 28,
       margin: 12,
-      interval: _leftTitlesInterval,
+      interval: _leftTitlesInterval > 0 ? _leftTitlesInterval : 1, // prevents us from getting "sidetitles = 0 error"  ins the event we only have 1 datapoint in the map
     );
   }
 
@@ -157,7 +161,7 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
         return DateFormat.MMM().format(date);
       },
       margin: 8,
-      interval: (_maxX - _minX) / 6,
+      interval: ((_maxX - _minX) / 6) > 0 ? (_maxX - _minX) / 6 : 1, // prevents us from getting "sidetitles = 0 error"  ins the event we only have 1 datapoint in the map
     );
     
   }
@@ -199,8 +203,10 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
 //getWidget is basically just an extended if else for  the child property 
   Widget getWidgets() {
        if(_values.isEmpty){
+         print(' ');
+         print('VALUES IS EMPTY');
+         print(' ');
           return Scaffold(
-
           body: 
           Align(
             alignment: Alignment.topLeft,
@@ -208,12 +214,12 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
               builder: (BuildContext context, BoxConstraints constraints){
           return SingleChildScrollView(
             child: Column( children: [
-              GraphYMDDropdownItem(),
+              monthDropdownBtn(context),
               Container(
                 height: constraints.maxHeight/1.1,
                 width: constraints.maxWidth,
                 
-                child: Placeholder())
+                child: Placeholder()) //TODO: change this placeholder to a custom graphic
             
                     ]
                   ),
@@ -225,7 +231,10 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
           ) ;
         }
         else{
-
+          print(' ');
+         print('VALUES IS NOT EMPTY');
+         print(_values.toString());
+         print(' ');
           return Scaffold(
           body: 
           Align(
@@ -234,11 +243,16 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
               builder: (BuildContext context, BoxConstraints constraints){
           return SingleChildScrollView(
             child: Column( children: [
-              GraphYMDDropdownItem(),
+              //GraphYMDDropdownItem(),
+              monthDropdownBtn(context),
               Container(
                 height: constraints.maxHeight/1.1,
                 width: constraints.maxWidth,
-                child: LineChart(_mainData())
+                // child: LineChart(_mainData())
+                child: LineChart(
+                  _mainData(),
+                  swapAnimationDuration: Duration(milliseconds: 150), //TODO: make these animations actually work
+                  )
                       )
                     ]
                   ),
@@ -251,9 +265,60 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
         }
 }
 
-//TODO: force the graph widget to rebuild whenver the dropdown changes.
+
+
+//  below is the dropdown buttone widget, which chooses to the month
+
+ String selectedMonth = "0"; // this is the default month
+  
+Widget monthDropdownBtn (BuildContext context) {
+    return DropdownButton(
+      value: selectedMonth,
+      style: TextStyle(color: Color(0xFF5620FF),fontSize: 30),
+      onChanged: (String? month){
+        setState(() {
+          selectedMonth = month!;
+          _values = []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
+          // if(_values.isNotEmpty)
+          // {
+            
+          // }
+          prepareQuantityData(); // this forces a rebuild of the graph
+        });
+      },
+      items: dropdownItems
+      );
+}
+
+
+
+List<DropdownMenuItem<String>> get dropdownItems{
+  List<DropdownMenuItem<String>> menuItems = [
+    DropdownMenuItem(child: Text("Select Month"),value: "0"), // we have to give a default val that will never actually be a month for the selectedMonth to initialize to.
+    DropdownMenuItem(child: Text("January"),value: "1"),
+    DropdownMenuItem(child: Text("February"),value: "2"),
+    DropdownMenuItem(child: Text("March"),value: "3"),
+    DropdownMenuItem(child: Text("April"),value: "4"),
+    DropdownMenuItem(child: Text("May"),value: "5"),
+    DropdownMenuItem(child: Text("June"),value: "6"),
+    DropdownMenuItem(child: Text("July"),value: "7"),
+    DropdownMenuItem(child: Text("August"),value: "8"),
+    DropdownMenuItem(child: Text("September"),value: "9"),
+    DropdownMenuItem(child: Text("October"),value: "10"),
+    DropdownMenuItem(child: Text("November"),value: "11"),
+    DropdownMenuItem(child: Text("December"),value: "12"),
+  ];
+  return menuItems;
+}
+
+String getSelectedMonth() {
+ print('the selected month is ' + selectedMonth);
+  return selectedMonth;
+}
 
 }
+
+
 
 
 
