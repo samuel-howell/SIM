@@ -6,16 +6,17 @@ import 'package:universal_html/js.dart';
 
 class LineData{
   String itemID;
-  List<QuantityDaily> quantityDaily;
+  List<QuantityOverMonth> quantityOverMonth;
 
 
-  LineData(this.itemID, this.quantityDaily);
+  LineData(this.itemID, this.quantityOverMonth);
 }
 
 
 
 
-class QuantityDaily{
+
+class QuantityOverMonth{
 
 //our flspot data has to be in the form <double, double>
 
@@ -23,7 +24,7 @@ class QuantityDaily{
   double quantity;
 
 
-  QuantityDaily(this.date, this.quantity);
+  QuantityOverMonth(this.date, this.quantity);
 
 
 

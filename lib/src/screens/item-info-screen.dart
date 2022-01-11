@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/item-info-widget.dart';
-import 'package:howell_capstone/src/widgets/line-chart-widget.dart';
+import 'package:howell_capstone/src/widgets/line-chart-day/line-chart-widget-day.dart';
+import 'package:howell_capstone/src/widgets/line-chart-month/line-chart-widget-month.dart';
 
 class ItemInfoScreen extends StatefulWidget {
   // by initializing the itemdocid, and then requiring it in the const below, you are effectivley making it a parameter
@@ -23,7 +24,8 @@ final auth = FirebaseAuth.instance;
 
 final _tabs = <Widget>[ 
     Tab(text: 'INFO'),
-    Tab(text: 'GRAPHS'),
+    Tab(text: 'GRAPHS-M'),
+    Tab(text: 'GRAPHS-D'),
   ];
 
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
@@ -44,7 +46,8 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
 
           body: TabBarView(children: <Widget>[
             ItemInfoWidget(itemDocID: widget.itemDocID),
-            LineChartWidget(itemID: widget.itemDocID)
+            LineChartWidgetMonth(itemID: widget.itemDocID),
+            LineChartWidgetDay(itemID: widget.itemDocID)
 
           ])
           

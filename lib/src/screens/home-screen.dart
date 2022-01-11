@@ -11,8 +11,8 @@ import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 
-import 'package:howell_capstone/src/widgets/line-chart-widget.dart';
-import 'package:howell_capstone/src/widgets/line-data.dart';
+import 'package:howell_capstone/src/widgets/line-chart-month/line-chart-widget-month.dart';
+import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 

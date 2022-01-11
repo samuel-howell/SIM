@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/widgets/line-data.dart';
+import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
+import 'package:howell_capstone/src/widgets/line-chart-day/line-data-day.dart';
 import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -56,8 +54,8 @@ class Database {
             .doc(
                 id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
 
-        DocumentReference quantityDailyDoc = _userCollection.doc(currentUserUID).collection('stores').doc(Database.currentStoreID)
-        .collection('items').doc(id).collection('graphData').doc('quantityDaily'); 
+        DocumentReference QuantityOverMonthDoc = _userCollection.doc(currentUserUID).collection('stores').doc(Database.currentStoreID)
+        .collection('items').doc(id).collection('graphData').doc('QuantityOverMonth'); 
 
         Map<String, dynamic> data = <String, dynamic>{
           "name": name,
@@ -82,7 +80,7 @@ class Database {
         "dataPoints": [{"quantity" : quantity, "date" : now}],
     };
 
-        await quantityDailyDoc
+        await QuantityOverMonthDoc
             .set(firstQuantityDataPoint)
             .whenComplete(() => print("added firstQuantityDataPoint"))
             .catchError((e) => print(e));
@@ -288,9 +286,9 @@ class Database {
             .catchError((e) => print(e));
 
 
-  // update the data points map array in the graphData collection in the quantityDaily column
+  // update the data points map array in the graphData collection in the QuantityOverMonth column
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
-    .collection('items').doc(qrCode).collection('graphData').doc('quantityDaily'); 
+    .collection('items').doc(qrCode).collection('graphData').doc('QuantityOverMonth'); 
 
     await itemDoc
       .set
@@ -342,9 +340,9 @@ class Database {
             .whenComplete(() => print("item quantity decreemeted in the database"))
             .catchError((e) => print(e));
 
-    // update the data points map array in the graphData collection in the quantityDaily column
+    // update the data points map array in the graphData collection in the QuantityOverMonth column
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
-    .collection('items').doc(qrCode).collection('graphData').doc('quantityDaily'); 
+    .collection('items').doc(qrCode).collection('graphData').doc('QuantityOverMonth'); 
 
     await itemDoc
       .set
@@ -421,15 +419,15 @@ class Database {
    }
 
   //returns line data list
-  Future<List<QuantityDaily>> getLineData(String itemID) async {
+  Future<List<QuantityOverMonth>> getLineData(String itemID) async {
     
     List<dynamic> list;
-    List<QuantityDaily> q=[];
+    List<QuantityOverMonth> q=[];
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
-    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
+    .collection('items').doc(itemID).collection('graphData').doc('QuantityOverMonth'); 
 
     // Map<String, dynamic> data = <String, dynamic>{
     //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
@@ -473,10 +471,10 @@ class Database {
      // print(map2);
 
       
-      //take that map and convert it to type QuantityDaily
+      //take that map and convert it to type QuantityOverMonth
          //   print('THIS IS THE QUANTITY DAILY MAP:    ');
 
-      map.forEach((k,v) => q.add(QuantityDaily(k,v)));
+      map.forEach((k,v) => q.add(QuantityOverMonth(k,v)));
 
     
      print('THIS IS THE date val in milliseconds in the QUANTITY DAILY MAP in position 1:    ');
@@ -493,12 +491,12 @@ class Database {
 
     //method that returns all quantity datapoints from a specific month
 
-    Future<List<QuantityDaily>> getMonthLineData(String itemID, int month) async {
+    Future<List<QuantityOverMonth>> getMonthLineData(String itemID, int month) async {
 
 
 
     List<dynamic> list;
-    List<QuantityDaily> q=[];
+    List<QuantityOverMonth> q=[];
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
@@ -526,8 +524,8 @@ class Database {
     
 
       
-      //take that map and convert it to type QuantityDaily
-      map.forEach((k,v) => q.add(QuantityDaily(k,v)));
+      //take that map and convert it to type QuantityOverMonth
+      map.forEach((k,v) => q.add(QuantityOverMonth(k,v)));
 
       print('THIS IS THE MAP FOR MONTH ' + month.toString());
 
@@ -545,9 +543,62 @@ class Database {
       return q;
 
     }
-  }
+  
+
+// method that returns all quantity datapoints from a specific day
+Future<List<QuantityOverDay>> getDayLineData(String itemID, int month, int day) async {
 
 
+
+    List<dynamic> list;
+    List<QuantityOverDay> q=[];
+
+    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+    DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
+    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
+
+
+    await itemDoc.get().then((snapshot) {
+      
+      // get the list from firebase
+      list = snapshot.get('dataPoints');
+      
+      // from that list, only add entries that match the month and day passed in as a paremeter to the map
+      var map = {};
+      list.forEach((entry) {
+        if( DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).month.compareTo(month) == 0 && DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).day.compareTo(day) == 0)// compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
+        {
+            map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity'].toDouble();
+        }
+
+      }); 
+     // print(map);
+
+    
+    
+
+      
+      //take that map and convert it to type QuantityOverDay
+      map.forEach((k,v) => q.add(QuantityOverDay(k,v)));
+
+      print('THIS IS THE MAP FOR THE DATE' + month.toString() + " / " + day.toString());
+
+
+    if(map.isNotEmpty){ //! for debugging
+      print('THIS IS THE date val in position 0:    ');
+      print(q[0].date..toString());
+      print('THIS IS THE quantity val  position 0:    ');
+      print(q[0].quantity);
+    }
+  
+
+     });
+      
+      return q;
+
+    }
+}
 
 
 

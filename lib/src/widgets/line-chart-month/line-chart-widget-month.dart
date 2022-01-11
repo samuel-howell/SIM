@@ -1,22 +1,21 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
-import 'package:howell_capstone/src/widgets/line-data.dart';
-import 'package:howell_capstone/src/widgets/line-titles.dart';
+import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
 import 'package:intl/intl.dart';
 
-class LineChartWidget extends StatefulWidget {
+class LineChartWidgetMonth extends StatefulWidget {
 
   final String itemID;
 
-  LineChartWidget({Key? key, required this.itemID}) : super(key: key);
+  LineChartWidgetMonth({Key? key, required this.itemID}) : super(key: key);
 
 
   @override
-  State<LineChartWidget> createState() => _LineChartWidgetState();
+  State<LineChartWidgetMonth> createState() => _LineChartWidgetMonthState();
 }
 
-class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAliveClientMixin {
+class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with AutomaticKeepAliveClientMixin {
   final List<Color> _gradientColors = [
     const Color(0xFF6FFF7C),
     const Color(0xFF0087FF),
@@ -50,7 +49,7 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
   void prepareQuantityData() async {
       //final List<QuantityDaily> data = await Database().getLineData(widget.itemID);    // this gets line data based on all data points
           
-      final List<QuantityDaily> data = await Database().getMonthLineData(widget.itemID, int.parse(getSelectedMonth())); // this gets line data for a specific month
+      final List<QuantityOverMonth> data = await Database().getMonthLineData(widget.itemID, int.parse(getSelectedMonth())); // this gets line data for a specific month
 
       //print('hit the _prepareQuantity method');
 
@@ -103,7 +102,12 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
           topTitles: SideTitles(showTitles: false),
         ),
         borderData: FlBorderData(
-          border: Border.all(color: Colors.white12, width: 1),
+          border: const Border( 
+          bottom: BorderSide(color: Color(0xff4e4965), width: 4),
+          left: BorderSide(color: Colors.transparent),
+          right: BorderSide(color: Colors.transparent),
+          top: BorderSide(color: Colors.transparent),
+          ),
         ),
         minX: _minX,
         maxX: _maxX,
@@ -120,7 +124,7 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
       colorStops: const [0.25, 0.5, 0.75],
       gradientFrom: const Offset(0.5, 0),
       gradientTo: const Offset(0.5, 1),
-      barWidth: 2,
+      barWidth: 5,
       isStrokeCapRound: true,
       dotData: FlDotData(show: false),
       belowBarData: BarAreaData(
@@ -158,7 +162,7 @@ class _LineChartWidgetState extends State<LineChartWidget> with AutomaticKeepAli
       getTitles: (value) {
         final DateTime date =
             DateTime.fromMillisecondsSinceEpoch(value.toInt());
-        return DateFormat.MMM().format(date);
+        return DateFormat.d().format(date); // this changes what the x label shows
       },
       margin: 8,
       interval: ((_maxX - _minX) / 6) > 0 ? (_maxX - _minX) / 6 : 1, // prevents us from getting "sidetitles = 0 error"  ins the event we only have 1 datapoint in the map
