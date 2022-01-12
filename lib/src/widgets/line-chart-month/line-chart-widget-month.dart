@@ -17,9 +17,8 @@ class LineChartWidgetMonth extends StatefulWidget {
 
 class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with AutomaticKeepAliveClientMixin {
   final List<Color> _gradientColors = [
-    const Color(0xFF6FFF7C),
-    const Color(0xFF0087FF),
-    const Color(0xFF5620FF),
+    const Color(0xFFD870FA),
+    const Color(0xFF3FC9F8),
   ];
 
 
@@ -30,7 +29,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
 
 
   final int _divider = 25;
-  final int _leftLabelsCount = 6;
+  final int _leftLabelsCount = 4;
   
   List<FlSpot> _values = [];
 
@@ -103,7 +102,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
         ),
         borderData: FlBorderData(
           border: const Border( 
-          bottom: BorderSide(color: Color(0xff4e4965), width: 4),
+          bottom: BorderSide(color:Color(0xFFD870FA), width: 4),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -127,13 +126,13 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
       barWidth: 5,
       isStrokeCapRound: true,
       dotData: FlDotData(show: false),
-      belowBarData: BarAreaData(
-        show: true,
-        colors: _gradientColors.map((color) => color.withOpacity(0.3)).toList(),
-        gradientColorStops: const [0.25, 0.5, 0.75],
-        gradientFrom: const Offset(0.5, 0),
-        gradientTo: const Offset(0.5, 1),
-      ),
+      // belowBarData: BarAreaData(
+      //   show: true,
+      //   colors: _gradientColors.map((color) => color.withOpacity(0.3)).toList(),
+      //   gradientColorStops: const [0.25, 0.5, 0.75],
+      //   gradientFrom: const Offset(0.5, 0),
+      //   gradientTo: const Offset(0.5, 1),
+      // ),
     );
   }
 
@@ -141,7 +140,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color:  Color(0xFF5620FF),
+        color:  Colors.white70,
         fontSize: 14,
       ),
       // getTitles: (value) =>                                          // we leave getTitles out if we jsut want it to display the base value with no formatting
@@ -156,7 +155,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color:  Color(0xFF5620FF),
+        color:  Colors.white,
         fontSize: 14,
       ),
       getTitles: (value) {
@@ -188,86 +187,99 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
 
 
 
-
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
+      aspectRatio: 1.23,
+      child: Container(
 
-      aspectRatio: 1.70,
-      child: Padding(
-        padding:
-            const EdgeInsets.only(right: 18.0, left: 12.0, top: 24, bottom: 12),
-        child: getWidgets()
+        decoration: const BoxDecoration(
+           
+          gradient: LinearGradient(
+            colors: [
+              Color(0xffEF709B),
+              Color(0xffFA9372),
+            ],
+            begin: Alignment.bottomCenter,
+            end: Alignment.topCenter,
+          ),
+        ),
+        
+
+          child: Stack(
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(
+                  height: 37,
+                ),
+                const Text(
+                  'Monthly Quantity',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(
+                  height: 17,
+                ),
+
+                 monthDropdownBtn(context),
+            
+                const SizedBox(
+                  height: 17,
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      RotatedBox(quarterTurns: 3, child: Text('Quantity', 
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        letterSpacing: 2,
+                  ),)),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 35.0, left: 5.0),
+                          child: _values.isNotEmpty ? LineChart(_mainData()) : Placeholder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  'Day',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    letterSpacing: 2,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ],
+                ),
+
 
 
       ),
     );
   }
 
-//getWidget is basically just an extended if else for  the child property 
-  Widget getWidgets() {
-       if(_values.isEmpty){
-         print(' ');
-         print('VALUES IS EMPTY');
-         print(' ');
-          return Scaffold(
-          body: 
-          Align(
-            alignment: Alignment.topLeft,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints){
-          return SingleChildScrollView(
-            child: Column( children: [
-              monthDropdownBtn(context),
-              Container(
-                height: constraints.maxHeight/1.1,
-                width: constraints.maxWidth,
-                
-                child: Placeholder()) //TODO: change this placeholder to a custom graphic
-            
-                    ]
-                  ),
-                );
-              }
-            )
-              
-            )
-          ) ;
-        }
-        else{
-          print(' ');
-         print('VALUES IS NOT EMPTY');
-         print(_values.toString());
-         print(' ');
-          return Scaffold(
-          body: 
-          Align(
-            alignment: Alignment.topLeft,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints){
-          return SingleChildScrollView(
-            child: Column( children: [
-              //GraphYMDDropdownItem(),
-              monthDropdownBtn(context),
-              Container(
-                height: constraints.maxHeight/1.1,
-                width: constraints.maxWidth,
-                // child: LineChart(_mainData())
-                child: LineChart(
-                  _mainData(),
-                  swapAnimationDuration: Duration(milliseconds: 150), //TODO: make these animations actually work
-                  )
-                      )
-                    ]
-                  ),
-                );
-              }
-            )
-              
-            )
-          ) ;
-        }
-}
+
 
 
 
@@ -276,22 +288,23 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth> with Automa
  String selectedMonth = "0"; // this is the default month
   
 Widget monthDropdownBtn (BuildContext context) {
-    return DropdownButton(
-      value: selectedMonth,
-      style: TextStyle(color: Color(0xFF5620FF),fontSize: 30),
-      onChanged: (String? month){
-        setState(() {
-          selectedMonth = month!;
-          _values = []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
-          // if(_values.isNotEmpty)
-          // {
-            
-          // }
-          prepareQuantityData(); // this forces a rebuild of the graph
-        });
-      },
-      items: dropdownItems
-      );
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        DropdownButton(
+          value: selectedMonth,
+          style: TextStyle(color: Color(0xFFD870FA) ,fontSize: 30),
+          onChanged: (String? month){
+            setState(() {
+              selectedMonth = month!;
+              _values = []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
+              prepareQuantityData(); // this forces a rebuild of the graph
+            });
+          },
+          items: dropdownItems
+          ),
+      ],
+    );
 }
 
 

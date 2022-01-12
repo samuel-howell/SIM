@@ -24,8 +24,8 @@ final auth = FirebaseAuth.instance;
 
 final _tabs = <Widget>[ 
     Tab(text: 'INFO'),
-    Tab(text: 'GRAPHS-M'),
-    Tab(text: 'GRAPHS-D'),
+    Tab(text: 'DAY'),
+    Tab(text: 'MONTH'),
   ];
 
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
@@ -40,14 +40,15 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
           appBar: AppBar(
               title: Text('Item Information Screen'),
               centerTitle: true,
-              backgroundColor: Colors.black,
+              backgroundColor: Color(0xffFA9370),
               bottom:TabBar(tabs: _tabs),
           ),
 
           body: TabBarView(children: <Widget>[
             ItemInfoWidget(itemDocID: widget.itemDocID),
+            LineChartWidgetDay(itemID: widget.itemDocID),
             LineChartWidgetMonth(itemID: widget.itemDocID),
-            LineChartWidgetDay(itemID: widget.itemDocID)
+            
 
           ])
           

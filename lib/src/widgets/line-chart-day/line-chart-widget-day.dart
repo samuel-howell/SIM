@@ -48,7 +48,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay> with AutomaticK
 
   void prepareQuantityData() async {
           
-      final List<QuantityOverDay> data = await Database().getDayLineData(widget.itemID, int.parse(getSelectedMonth()), int.parse(getSelectedDay())); // this gets line data for a specific day
+      final List<QuantityOverDay> data = await Database().getDayLineData(widget.itemID, int.parse(getSelectedMonth()), int.parse(getSelectedDay()), int.parse(getSelectedYear())); // this gets line data for a specific day
 
       //print('hit the _prepareQuantity method');
 
@@ -126,7 +126,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay> with AutomaticK
       gradientTo: const Offset(0.5, 1),
       barWidth: 5,
       isStrokeCapRound: true,
-      dotData: FlDotData(show: false),
+      dotData: FlDotData(show: true),
       belowBarData: BarAreaData(
         show: false,
         colors: _gradientColors.map((color) => color.withOpacity(0.3)).toList(),
@@ -220,7 +220,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay> with AutomaticK
                   height: 37,
                 ),
                 const Text(
-                  'Daily Sales',
+                  'Daily Quantity',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 32,
@@ -229,16 +229,19 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay> with AutomaticK
                   ),
                   textAlign: TextAlign.center,
                 ),
-                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
-                    child: monthAndDayDropdownBtn(context),
-                  ),
+
+                const SizedBox(
+                  height: 17,
                 ),
+
+                 monthAndDayDropdownBtn(context),
             
+                const SizedBox(
+                  height: 17,
+                ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, left: 6.0),
+                    padding: const EdgeInsets.only(right: 35.0, left: 5.0),
                     child: _values.isNotEmpty ? LineChart(_mainData()) : Placeholder(),
                   ),
                 ),
@@ -264,7 +267,10 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay> with AutomaticK
 
  String selectedMonth = "0"; // this is the default month
  String selectedDay = "0";
+ String selectedYear = "0";
 
+
+//TODO: convert this to a datetime picker widget from pub.dev so you can include the year too
 Widget monthAndDayDropdownBtn (BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -294,8 +300,11 @@ Widget monthAndDayDropdownBtn (BuildContext context) {
           },
           items: dayDropdownItems
           ),
-      ],
+               ],
     );
+
+       
+ 
 }
 
 
@@ -366,6 +375,11 @@ String getSelectedMonth() {
 String getSelectedDay() {
  print('the selected day is ' + selectedDay);
   return selectedDay;
+}
+
+String getSelectedYear() {
+  print('the selected year is ' + selectedYear);
+  return selectedYear;
 }
 
 }

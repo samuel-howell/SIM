@@ -55,7 +55,7 @@ class Database {
                 id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
 
         DocumentReference QuantityOverMonthDoc = _userCollection.doc(currentUserUID).collection('stores').doc(Database.currentStoreID)
-        .collection('items').doc(id).collection('graphData').doc('QuantityOverMonth'); 
+        .collection('items').doc(id).collection('graphData').doc('quantity'); 
 
         Map<String, dynamic> data = <String, dynamic>{
           "name": name,
@@ -69,7 +69,7 @@ class Database {
           "db-item-id": itemDocumentReferencer.id,
 
           "mostRecentScanIn": mostRecentScanIn,
-          "mostRecentScanOut": null,  // initiliaze to null until first scan out 
+          "mostRecentScanOut": "",  // initiliaze to null until first scan out 
           
           "LastEmployeeToInteract":
               currentUserUID, //this will be the user id of the last employee to either scan in or scan out the item
@@ -288,7 +288,7 @@ class Database {
 
   // update the data points map array in the graphData collection in the QuantityOverMonth column
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
-    .collection('items').doc(qrCode).collection('graphData').doc('QuantityOverMonth'); 
+    .collection('items').doc(qrCode).collection('graphData').doc('quantity'); 
 
     await itemDoc
       .set
@@ -320,7 +320,7 @@ class Database {
         await itemDocumentReferencer.get().then((snapshot) {
           // this is how we get a DocumentSnapshot from a document reference
           quantity = (snapshot.get('quantity'));
-          if(newQuantity == 0)
+          if(quantity == 0)
           {
             newQuantity = 0;  // prevents  a negative quantity val
           }
@@ -342,7 +342,7 @@ class Database {
 
     // update the data points map array in the graphData collection in the QuantityOverMonth column
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID())
-    .collection('items').doc(qrCode).collection('graphData').doc('QuantityOverMonth'); 
+    .collection('items').doc(qrCode).collection('graphData').doc('quantity'); 
 
     await itemDoc
       .set
@@ -427,7 +427,7 @@ class Database {
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
-    .collection('items').doc(itemID).collection('graphData').doc('QuantityOverMonth'); 
+    .collection('items').doc(itemID).collection('graphData').doc('quantity'); 
 
     // Map<String, dynamic> data = <String, dynamic>{
     //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
@@ -501,7 +501,7 @@ class Database {
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
-    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
+    .collection('items').doc(itemID).collection('graphData').doc('quantity'); 
 
 
     await itemDoc.get().then((snapshot) {
@@ -546,7 +546,7 @@ class Database {
   
 
 // method that returns all quantity datapoints from a specific day
-Future<List<QuantityOverDay>> getDayLineData(String itemID, int month, int day) async {
+Future<List<QuantityOverDay>> getDayLineData(String itemID, int month, int day, int year) async {
 
 
 
@@ -556,7 +556,7 @@ Future<List<QuantityOverDay>> getDayLineData(String itemID, int month, int day) 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
     DocumentReference itemDoc = _userCollection.doc(currentUserID).collection('stores').doc(Database().getCurrentStoreID()) 
-    .collection('items').doc(itemID).collection('graphData').doc('quantityDaily'); 
+    .collection('items').doc(itemID).collection('graphData').doc('quantity'); 
 
 
     await itemDoc.get().then((snapshot) {
@@ -567,7 +567,7 @@ Future<List<QuantityOverDay>> getDayLineData(String itemID, int month, int day) 
       // from that list, only add entries that match the month and day passed in as a paremeter to the map
       var map = {};
       list.forEach((entry) {
-        if( DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).month.compareTo(month) == 0 && DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).day.compareTo(day) == 0)// compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
+        if( DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).month.compareTo(month) == 0 && DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000).day.compareTo(day) == 0 )// compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
         {
             map[   DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)     ] = entry['quantity'].toDouble();
         }
