@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/widgets/sign-up-form.dart';
 
 class SignUpScreen extends StatefulWidget {

@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/res/custom-colors.dart';
+import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
+import 'package:howell_capstone/theme/custom-colors.dart';
 
 //  init firesbase auth
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,10 +39,11 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: NavigationDrawerWidget(),
         appBar: AppBar(
-            title: Text(Database().getCurrentUserID().toString()),
+            title: Text('MY STORES'),
             centerTitle: true,
-            backgroundColor: Colors.black),
+            ),
         body: StreamBuilder<QuerySnapshot>(
             stream: streamQuery,
             builder: (context, snapshot) {
@@ -136,8 +138,6 @@ class _StoreScreenState extends State<StoreScreen> {
             }),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.post_add),
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
           onPressed: () => {
             showAddStoreDialog(context),
           },

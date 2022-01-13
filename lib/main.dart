@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
+import 'package:howell_capstone/theme/custom-themes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -14,7 +15,9 @@ void main() async {
       'Shared Preferences shows that the current email is ' + email.toString());
   //runApp(App());
   runApp(MaterialApp(
-      title: 'SIM', home: email == null ? LoginScreen() : HomeScreen()));
+      title: 'SIM', 
+      theme: CustomTheme.lightTheme,
+      home: email == null ? LoginScreen() : HomeScreen()));
 }
 
 //TODO:  run "flutter format lib" in the terminal to autoformat all the code documents in lib folder. lib can be changed out for any directory.

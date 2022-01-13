@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
+import 'package:howell_capstone/src/widgets/line-chart-year/line-data-year.dart';
 import 'package:intl/intl.dart';
 
 class LineChartWidgetYear extends StatefulWidget {
@@ -45,7 +46,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
   void prepareQuantityData() async {
     //final List<QuantityDaily> data = await Database().getLineData(widget.itemID);    // this gets line data based on all data points
 
-    final List<QuantityOverMonth> data = await Database().getYearLineData(
+    final List<QuantityOverYear> data = await Database().getYearLineData(
         widget.itemID,
       int.parse(getSelectedYear())); // this gets line data for a specific month
 
@@ -154,7 +155,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
       getTitles: (value) {
         final DateTime date =
             DateTime.fromMillisecondsSinceEpoch(value.toInt());
-        return DateFormat.MMMM()
+        return DateFormat.MMM()
             .format(date); // this changes what the x label shows
       },
       margin: 8,

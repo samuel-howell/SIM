@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:howell_capstone/theme/custom-colors.dart';
 
 class StoreDeleteConfirmationDialog extends StatelessWidget {
   const StoreDeleteConfirmationDialog({Key? key}) : super(key: key);
@@ -390,7 +390,7 @@ showEditItemDialog(BuildContext context, String itemDocID) {
                         },
                       ),
 
-                      //text field for item description
+                      //text field for item descriptionP
                       TextFormField(
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),

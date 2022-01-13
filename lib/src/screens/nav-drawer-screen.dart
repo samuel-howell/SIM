@@ -1,6 +1,7 @@
 //  THIS PAGE IS A NAVIGATION OVERLAY WIDGET THAT DISPLAYS OVER OTHER SCREENS
 
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
@@ -22,30 +23,36 @@ class NavigationDrawerWidget extends StatelessWidget {
               //  each of these is an item in the nav drawer
               const SizedBox(height: 50),
               buildMenuItem(
+                text: 'HOME',
+                icon: Icons.home,
+                onClicked: () => selectedItem(context, 0),
+              ),
+              const SizedBox(height: 15),
+              buildMenuItem(
                 text: 'STORE',
                 icon: Icons.store,
-                onClicked: () => selectedItem(context, 0),
+                onClicked: () => selectedItem(context, 1),
               ),
 
               const SizedBox(height: 15),
               buildMenuItem(
                 text: 'ITEMS',
                 icon: Icons.article,
-                onClicked: () => selectedItem(context, 3),
+                onClicked: () => selectedItem(context, 2),
               ),
 
               const SizedBox(height: 15),
               buildMenuItem(
                 text: 'QR CODE',
                 icon: Icons.qr_code_2,
-                onClicked: () => selectedItem(context, 1),
+                onClicked: () => selectedItem(context, 3),
               ),
 
               const SizedBox(height: 15),
               buildMenuItem(
                 text: 'SCAN QR',
                 icon: Icons.screenshot,
-                onClicked: () => selectedItem(context, 2),
+                onClicked: () => selectedItem(context, 4),
               ),
 
               //  this is our divider
@@ -82,17 +89,23 @@ class NavigationDrawerWidget extends StatelessWidget {
     switch (index) {
       case 0:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => StoreScreen(),
+          builder: (context) => HomeScreen(),
         ));
         break;
 
       case 1:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => QRScreen(),
+          builder: (context) => StoreScreen(),
         ));
         break;
 
       case 2:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => QRScreen(),
+        ));
+        break;
+
+      case 3:
         if (Database().getStoreClicked() == true) {
           // we will only allow access to scan screen once a store has been selected
           Navigator.of(context).push(MaterialPageRoute(
@@ -106,7 +119,7 @@ class NavigationDrawerWidget extends StatelessWidget {
           break;
         }
 
-      case 3:
+      case 4:
         if (Database().getStoreClicked() == true) {
           // we will only allow access to item screen once a store has been selected
 

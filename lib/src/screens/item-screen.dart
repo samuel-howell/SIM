@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/screens/item-info-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
+import 'package:howell_capstone/theme/custom-colors.dart';
 
 import 'add-item-screen.dart';
 

@@ -15,10 +15,27 @@ class ItemInfoWidget extends StatefulWidget {
 
 final auth = FirebaseAuth.instance;
 
+
+double storeTotalProfit = 1;
+
+
+
+
+
+
 class _ItemInfoWidgetState extends State<ItemInfoWidget> {
+
   @override
   Widget build(BuildContext context) {
     String? currentUserID = auth.currentUser?.uid;
+
+    //* this is how I assign a future to a var that I can actually use in the build 
+    //TODO: do this same method to pull in the name fo the store on the main page.
+    //! I still have to comepletely exit and reenter the page before I see the new totalProfits.
+     Database().getStoreTotalProfits().then((profit) {
+      storeTotalProfit = profit;
+      print('THE TOTAl STORE PROFIT IS ' + profit.toString());} );
+
 
     return Scaffold(
         body: StreamBuilder(
@@ -98,6 +115,29 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
                                                 color: Colors.white,
                                                 fontSize: 25))),
                                     customDivider(context),
+
+
+                                    const Text(
+                                      'Store Total Profits: ',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 2,
+                                      ),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                    Text(
+                                        storeTotalProfit.toString(),
+                                        style: GoogleFonts.lato(
+                                            textStyle: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25))),
+                                    customDivider(context),
+
+
+
+
                                     const Text(
                                       'Quantity: ',
                                       style: TextStyle(
@@ -220,4 +260,5 @@ Widget customDivider(BuildContext context) {
       SizedBox(height: 10),
     ],
   );
+
 }

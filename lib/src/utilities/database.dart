@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:howell_capstone/src/utilities/store-data-classes.dart';
 import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
 import 'package:howell_capstone/src/widgets/line-chart-day/line-data-day.dart';
+import 'package:howell_capstone/src/widgets/line-chart-year/line-data-year.dart';
 import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -44,7 +46,7 @@ class Database {
         .doc(
             id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
 
-    DocumentReference QuantityOverMonthDoc = _userCollection
+    DocumentReference quantityDoc = _userCollection
         .doc(currentUserUID)
         .collection('stores')
         .doc(Database.currentStoreID)
@@ -77,7 +79,7 @@ class Database {
       ],
     };
 
-    await QuantityOverMonthDoc.set(firstQuantityDataPoint)
+    await quantityDoc.set(firstQuantityDataPoint)
         .whenComplete(() => print("added firstQuantityDataPoint"))
         .catchError((e) => print(e));
 
@@ -117,12 +119,15 @@ class Database {
     required String name,
     required String address,
   }) async {
+    DateTime now = DateTime.now();
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
     DocumentReference storeDocumentReferencer = _userCollection
         .doc(currentUserUID)
         .collection('stores')
         .doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+
+        
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -131,6 +136,7 @@ class Database {
       "lowercaseAddress": address.toLowerCase(),
       "storeID": storeDocumentReferencer.id,
     };
+
 
     await storeDocumentReferencer
         .set(data)
@@ -272,7 +278,7 @@ class Database {
         .whenComplete(() => print("item quantity increemeted in the database"))
         .catchError((e) => print(e));
 
-    // update the data points map array in the graphData collection in the QuantityOverMonth column
+    // update the data points map array in the graphData collection in the quantity column
     DocumentReference itemDoc = _userCollection
         .doc(currentUserID)
         .collection('stores')
@@ -294,6 +300,8 @@ class Database {
 
 //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
+    double profit = 0;
+
     int quantity = 0;
     int newQuantity = 0;
     DateTime now = DateTime.now();
@@ -314,6 +322,8 @@ class Database {
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
       quantity = (snapshot.get('quantity'));
+      profit = (snapshot.get('price'));
+      
       if (quantity == 0) {
         newQuantity = 0; // prevents  a negative quantity val
       } else {
@@ -328,10 +338,10 @@ class Database {
 
     await itemDocumentReferencer
         .update(data)
-        .whenComplete(() => print("item quantity decreemeted in the database"))
+        .whenComplete(() => print("item quantity decremented in the database"))
         .catchError((e) => print(e));
 
-    // update the data points map array in the graphData collection in the QuantityOverMonth column
+    // update the data points map array in the graphData collection in the quantity column
     DocumentReference itemDoc = _userCollection
         .doc(currentUserID)
         .collection('stores')
@@ -345,6 +355,24 @@ class Database {
         .set({
           "dataPoints": FieldValue.arrayUnion([
             {"quantity": newQuantity, "date": now}
+          ])
+        }, SetOptions(merge: true))
+        .whenComplete(() => print("updated item quantitygraph in the database"))
+        .catchError((e) => print(e));
+
+
+    //  update the sales data point for the store
+    DocumentReference salesDoc = _userCollection
+        .doc(currentUserUID)
+        .collection('stores')
+        .doc(Database.currentStoreID)
+        .collection('storeData')
+        .doc('sales');
+
+    await salesDoc
+        .set({
+          "dataPoints": FieldValue.arrayUnion([
+            {"profit": profit, "date": now, "itemID": qrCode}
           ])
         }, SetOptions(merge: true))
         .whenComplete(() => print("updated item quantitygraph in the database"))
@@ -549,15 +577,10 @@ class Database {
   }
 
 
-
-
-
-
-
-   Future<List<QuantityOverMonth>> getYearLineData(
+   Future<List<QuantityOverYear>> getYearLineData(
       String itemID, int year) async {
     List<dynamic> list;
-    List<QuantityOverMonth> q = [];
+    List<QuantityOverYear> q = [];
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
@@ -589,7 +612,7 @@ class Database {
       // print(map);
 
       //take that map and convert it to type QuantityOverMonth
-      map.forEach((k, v) => q.add(QuantityOverMonth(k, v)));
+      map.forEach((k, v) => q.add(QuantityOverYear(k, v)));
 
       print('THIS IS THE MAP FOR THE YEAR ' + year.toString());
 
@@ -604,13 +627,6 @@ class Database {
 
     return q;
   }
-
-
-
-
-
-
-
 
 
 // method that returns all quantity datapoints from a specific day
@@ -678,7 +694,38 @@ class Database {
 
     return q;
   }
-}
+
+
+
+Future<double> getStoreTotalProfits() async {
+    List<dynamic> list;
+    double totalProfits = 0;
+
+    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+    DocumentReference itemDoc = _userCollection
+        .doc(currentUserID)
+        .collection('stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('storeData')
+        .doc('sales');
+        
+
+    await itemDoc.get().then((snapshot) {
+      // get the list of all sales from firebase
+      list = snapshot.get('dataPoints');
+
+      // from that list,  add all entries to map
+      list.forEach((entry) 
+        {
+           totalProfits += entry['profit'].toDouble();
+        }
+      );
+    });
+      return totalProfits;
+}    
+
+
 
 // //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
 //   Future<String> getSelectedStoreName() async {
@@ -700,16 +747,4 @@ class Database {
 //     return storeName; //TODO: this is return Future Stirng
 //   }
 
-// //TODO: cant return a Future<String> as a string. figure out a way to get around thus
-//   Future<String> getStoreName() async {
-//     String storeName = "null at first";
-//     print('storename started as ' + storeName);
-
-//     await Database().getSelectedStoreName().then((value) {
-//       print('the value that is getSelectedStoreName is ' +
-//           value); // this is correct
-//       storeName = value.toString();
-//     });
-//     print('storename ended as ' + storeName);
-//     return storeName;
-//   }
+}

@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/screens/confirm-email-screen.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:howell_capstone/theme/custom-colors.dart';
 import 'package:intl/intl.dart';
 
 // Define a custom Form widget.

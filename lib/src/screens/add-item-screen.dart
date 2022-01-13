@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/res/custom-colors.dart';
 import 'package:howell_capstone/src/widgets/add-item-form.dart';
 
 class AddItemScreen extends StatefulWidget {
