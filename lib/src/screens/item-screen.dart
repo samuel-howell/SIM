@@ -91,7 +91,6 @@ class _ItemScreenState extends State<ItemScreen> {
                                   title: Text(doc.get('name')),
                                   subtitle: Text(doc.get('description')),
                                   onTap: () {
-
                                     //print out to console what the current store id, index, and list length and tapped index is.
                                     print('the getCurrentStoreID is ' +
                                         Database().getCurrentStoreID());

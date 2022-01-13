@@ -106,10 +106,9 @@ class NavigationDrawerWidget extends StatelessWidget {
           break;
         }
 
-
       case 3:
         if (Database().getStoreClicked() == true) {
-         // we will only allow access to item screen once a store has been selected
+          // we will only allow access to item screen once a store has been selected
 
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => ItemScreen(),

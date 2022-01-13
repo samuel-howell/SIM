@@ -30,8 +30,6 @@ class _ScanScreenState extends State<ScanScreen> {
   bool isTallyCountTapped = false;
   bool isViewTapped = false;
 
-
-
   // In order to get hot reload to work we need to pause the camera if the platform
   @override
   void reassemble() {
@@ -108,12 +106,12 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: isScanInTapped? Colors.green : null
-                            ),
+                                primary: isScanInTapped ? Colors.green : null),
                             child: Text('Scan IN'),
                             onPressed: () async {
                               scanType = 0;
-                              setState(() { // depending on which one is selectd, it turns that button color green while wiping the others to default
+                              setState(() {
+                                // depending on which one is selectd, it turns that button color green while wiping the others to default
                                 isTallyCountTapped = false;
                                 isScanInTapped = true;
                                 isScanOutTapped = false;
@@ -129,13 +127,12 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: isScanOutTapped? Colors.green : null
-                            ),
-
+                                primary: isScanOutTapped ? Colors.green : null),
                             child: Text('Scan OUT'),
                             onPressed: () async {
-                              scanType = 1; // this scan type determines what database procedure is carried out during the qr code read
-                              
+                              scanType =
+                                  1; // this scan type determines what database procedure is carried out during the qr code read
+
                               setState(() {
                                 isScanInTapped = false;
                                 isScanOutTapped = true;
@@ -158,8 +155,8 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: isTallyCountTapped? Colors.green : null
-                            ),
+                                  primary:
+                                      isTallyCountTapped ? Colors.green : null),
                               child: Text('Tally Count'),
                               onPressed: () async {
                                 scanType = 2;
@@ -169,7 +166,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                   isScanInTapped = false;
                                   isScanOutTapped = false;
                                   isViewTapped = false;
-                              });
+                                });
                               },
                             ),
                           ),
@@ -180,8 +177,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                primary: isViewTapped? Colors.green : null
-                            ),
+                                  primary: isViewTapped ? Colors.green : null),
                               child: Text('View'),
                               onPressed: () async {
                                 scanType = 3;
@@ -190,7 +186,7 @@ class _ScanScreenState extends State<ScanScreen> {
                                   isScanInTapped = false;
                                   isScanOutTapped = false;
                                   isViewTapped = true;
-                              });
+                                });
                               },
                             ),
                           ),
@@ -229,61 +225,60 @@ class _ScanScreenState extends State<ScanScreen> {
       this.controller = controller;
     });
 
-
 // by using the DateTime below in the if statement, we put a 2 second interval delay between each time the state is set to the new ScanData, this prevents the stream from pushing a bunch of duplicate ScanData while the user hovers on a QR code
-        controller.scannedDataStream.listen((scanData) async {
-          final currentScan = DateTime.now();
-          if (lastScan == null ||
-              currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
-            lastScan = currentScan;
-            qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
+    controller.scannedDataStream.listen((scanData) async {
+      final currentScan = DateTime.now();
+      if (lastScan == null ||
+          currentScan.difference(lastScan!) > const Duration(seconds: 2)) {
+        lastScan = currentScan;
+        qrRead++; // just a tracker to see how quick the scanner is reading codes with the delay in place
 
-            // if device has vibration capabilities, vibrate for 200 ms on successful scan
-            if (await Vibration.hasVibrator() != null) {
-              Vibration.vibrate(duration: 200);
-            } else {
-              Fluttertoast.showToast(
-                  msg: 'QR was successfully scanned!',
-                  gravity: ToastGravity
-                      .TOP); // this is for devices that don't have vibration
-            }
+        // if device has vibration capabilities, vibrate for 200 ms on successful scan
+        if (await Vibration.hasVibrator() != null) {
+          Vibration.vibrate(duration: 200);
+        } else {
+          Fluttertoast.showToast(
+              msg: 'QR was successfully scanned!',
+              gravity: ToastGravity
+                  .TOP); // this is for devices that don't have vibration
+        }
 
-            setState(() {
-              result = scanData;
-              print('the qr just read was ' +
-                  scanData.code +
-                  " qr count: " +
-                  qrRead.toString());
+        setState(() {
+          result = scanData;
+          print('the qr just read was ' +
+              scanData.code +
+              " qr count: " +
+              qrRead.toString());
 
-              //  depending on whether scan in, scan out, tally count, or view was selected (represented by scan type), call the appropriate method
-              switch(scanType)
-              {
-                case 0: 
-                Database.incrementItemQuantity(scanData.code);
-                break;
-                case 1: 
-                Database.decrementItemQuantity(scanData.code);
-                break;
-                case 2: 
-                //TODO: Do something for the tally count here...
+          //  depending on whether scan in, scan out, tally count, or view was selected (represented by scan type), call the appropriate method
+          switch (scanType) {
+            case 0:
+              Database.incrementItemQuantity(scanData.code);
+              break;
+            case 1:
+              Database.decrementItemQuantity(scanData.code);
+              break;
+            case 2:
+              //TODO: Do something for the tally count here...
 
-                /* 
+              /* 
                 Do something like this:
 
                 https://pusher.com/tutorials/local-data-flutter/
                 Store it locally
                 */
-                break;
-                case 3: 
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ItemInfoScreen(itemDocID: result!.code)));
-
-              }
-            });
+              break;
+            case 3:
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ItemInfoScreen(itemDocID: result!.code)));
           }
         });
-
+      }
+    });
   }
-
 
   void _onPermissionSet(BuildContext context, QRViewController ctrl, bool p) {
     log('${DateTime.now().toIso8601String()}_onPermissionSet $p');

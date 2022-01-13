@@ -6,6 +6,7 @@ import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/item-info-widget.dart';
 import 'package:howell_capstone/src/widgets/line-chart-day/line-chart-widget-day.dart';
 import 'package:howell_capstone/src/widgets/line-chart-month/line-chart-widget-month.dart';
+import 'package:howell_capstone/src/widgets/line-chart-year/line-chart-widget-year.dart';
 
 class ItemInfoScreen extends StatefulWidget {
   // by initializing the itemdocid, and then requiring it in the const below, you are effectivley making it a parameter
@@ -22,11 +23,12 @@ class ItemInfoScreen extends StatefulWidget {
 
 final auth = FirebaseAuth.instance;
 
-final _tabs = <Widget>[ 
-    Tab(text: 'INFO'),
-    Tab(text: 'DAY'),
-    Tab(text: 'MONTH'),
-  ];
+final _tabs = <Widget>[
+  Tab(text: 'INFO'),
+  Tab(text: 'DAY'),
+  Tab(text: 'MONTH'),
+  Tab(text: 'YEAR'),
+];
 
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
   @override
@@ -38,21 +40,17 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
       initialIndex: 0,
       child: Scaffold(
           appBar: AppBar(
-              title: Text('Item Information Screen'),
-              centerTitle: true,
-              backgroundColor: Color(0xffFA9370),
-              bottom:TabBar(tabs: _tabs),
+            title: Text('Item Information Screen'),
+            centerTitle: true,
+            backgroundColor: Color(0xffFA9370),
+            bottom: TabBar(tabs: _tabs),
           ),
-
           body: TabBarView(children: <Widget>[
             ItemInfoWidget(itemDocID: widget.itemDocID),
             LineChartWidgetDay(itemID: widget.itemDocID),
             LineChartWidgetMonth(itemID: widget.itemDocID),
-            
-
-          ])
-          
-              ),
+            LineChartWidgetYear(itemID: widget.itemDocID),
+          ])),
     );
   }
 }

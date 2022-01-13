@@ -5,16 +5,16 @@ import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/line-chart-month/line-data-month.dart';
 import 'package:intl/intl.dart';
 
-class LineChartWidgetMonth extends StatefulWidget {
+class LineChartWidgetYear extends StatefulWidget {
   final String itemID;
 
-  LineChartWidgetMonth({Key? key, required this.itemID}) : super(key: key);
+  LineChartWidgetYear({Key? key, required this.itemID}) : super(key: key);
 
   @override
-  State<LineChartWidgetMonth> createState() => _LineChartWidgetMonthState();
+  State<LineChartWidgetYear> createState() => _LineChartWidgetYearState();
 }
 
-class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
+class _LineChartWidgetYearState extends State<LineChartWidgetYear>
     with AutomaticKeepAliveClientMixin {
   final List<Color> _gradientColors = [
     const Color(0xFFD870FA),
@@ -45,15 +45,14 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
   void prepareQuantityData() async {
     //final List<QuantityDaily> data = await Database().getLineData(widget.itemID);    // this gets line data based on all data points
 
-    final List<QuantityOverMonth> data = await Database().getMonthLineData(
+    final List<QuantityOverMonth> data = await Database().getYearLineData(
         widget.itemID,
-        int.parse(
-            getSelectedMonth()), int.parse(getSelectedYear())); // this gets line data for a specific month
+      int.parse(getSelectedYear())); // this gets line data for a specific month
 
     //print('hit the _prepareQuantity method');
 
     double minY = double.maxFinite;
-    double maxY = double.minPositive;
+    double maxY = double.minPositive; 
 
     // we only want to map to _values if the data list is not empty.
     if (data.isNotEmpty) {
@@ -155,7 +154,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
       getTitles: (value) {
         final DateTime date =
             DateTime.fromMillisecondsSinceEpoch(value.toInt());
-        return DateFormat.d()
+        return DateFormat.MMMM()
             .format(date); // this changes what the x label shows
       },
       margin: 8,
@@ -205,7 +204,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                   height: 37,
                 ),
                 const Text(
-                  'Monthly Quantity',
+                  'Yearly Quantity',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 32,
@@ -217,7 +216,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 const SizedBox(
                   height: 17,
                 ),
-                monthDropdownBtn(context),
+                yearDropdownBtn(context),
                 const SizedBox(
                   height: 17,
                 ),
@@ -231,8 +230,8 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
-                              fontWeight: FontWeight.bold,
                               letterSpacing: 2,
+                              fontWeight: FontWeight.bold,
                             ),
                           )),
                       Expanded(
@@ -251,7 +250,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                   height: 10,
                 ),
                 const Text(
-                  'Day',
+                  'Month',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 14,
@@ -273,10 +272,9 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
 
 //  below is the dae picker button widget, which chooses to the month
 
-  String selectedMonth = "0"; // this is the default month
-  String selectedYear = "0";
+  String selectedYear = "0"; // this is the default year
 
-  Widget monthDropdownBtn(BuildContext context) {
+  Widget yearDropdownBtn(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -284,7 +282,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
     onPressed: () {
         DatePicker.showPicker(context,
                               showTitleActions: true,
-                              pickerModel: CustomMonthPicker(
+                              pickerModel: CustomYearPicker(
                               minTime: DateTime(2000, 1, 1),
                               maxTime: DateTime.now(),
                               locale: LocaleType.en,
@@ -293,7 +291,6 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                               onConfirm: (date) {
                             print('confirm $date');
                             setState(() {
-                              selectedMonth = date.month.toString();
                               selectedYear = date.year.toString();
                               _values =
                                   []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
@@ -302,7 +299,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                           }) ;
     },
     child: Text(
-        'CHOOSE MONTH',
+        'CHOOSE YEAR',
         style: TextStyle(color: Colors.blue),
     )),
     
@@ -312,12 +309,6 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
   }
 
 
-
-  String getSelectedMonth() {
-    print('the selected month is ' + selectedMonth);
-    return selectedMonth;
-  }
-
   String getSelectedYear() {
     print('the selected year is ' + selectedYear);
     return selectedYear;
@@ -326,15 +317,15 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
 }
 
 // creates a custom date pickerclass that only shows the month and the year
-class CustomMonthPicker extends DatePickerModel {
+class CustomYearPicker extends DatePickerModel {
 
-  CustomMonthPicker(
+  CustomYearPicker(
     {required DateTime currentTime, required DateTime minTime, required DateTime maxTime,
     required LocaleType locale}) : super(locale: locale, minTime: minTime, maxTime:
   maxTime, currentTime: currentTime);
 
   @override
   List<int> layoutProportions() {
-    return [1, 1, 0];
+    return [1, 0, 0];
   }
 }

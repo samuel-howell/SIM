@@ -6,19 +6,19 @@ import 'package:universal_html/js.dart';
 
 class LineData {
   String itemID;
-  List<QuantityOverMonth> quantityOverMonth;
+  List<QuantityOverYear> quantityOverYear;
 
-  LineData(this.itemID, this.quantityOverMonth);
+  LineData(this.itemID, this.quantityOverYear);
 }
 
-class QuantityOverMonth {
+class QuantityOverYear {
 //our flspot data has to be in the form <double, double>
 
   DateTime
       date; // firebase returns timestamp so I converted it to datetime, thein i convert it to millisecondsSinceEpoch.toDouble()
   double quantity;
 
-  QuantityOverMonth(this.date, this.quantity);
+  QuantityOverYear(this.date, this.quantity);
 
   @override
   String toString() {

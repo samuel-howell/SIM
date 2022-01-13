@@ -52,6 +52,7 @@ dependencies:
   csv: ^5.0.1
   file_picker: ^4.2.7
   fl_chart: ^0.40.6
+  flutter_datetime_picker: ^1.5.1
 
 
   
