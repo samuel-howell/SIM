@@ -1,17 +1,21 @@
 //  THIS PAGE IS A NAVIGATION OVERLAY WIDGET THAT DISPLAYS OVER OTHER SCREENS
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
+import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/view-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavigationDrawerWidget extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20);
+  final auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -38,28 +42,49 @@ class NavigationDrawerWidget extends StatelessWidget {
               buildMenuItem(
                 text: 'ITEMS',
                 icon: Icons.article,
-                onClicked: () => selectedItem(context, 2),
+                onClicked: () => selectedItem(context, 4),
               ),
 
               const SizedBox(height: 15),
               buildMenuItem(
                 text: 'QR CODE',
                 icon: Icons.qr_code_2,
-                onClicked: () => selectedItem(context, 3),
+                onClicked: () => selectedItem(context, 2),
               ),
 
               const SizedBox(height: 15),
               buildMenuItem(
                 text: 'SCAN QR',
                 icon: Icons.screenshot,
-                onClicked: () => selectedItem(context, 4),
+                onClicked: () => selectedItem(context, 3),
               ),
 
               //  this is our divider
               const SizedBox(height: 24),
               Divider(color: Colors.white70),
               const SizedBox(height: 24),
-            ])));
+
+
+              buildMenuItem(
+                text: 'SIGN OUT',
+                icon: Icons.logout,
+                onClicked: ()  async {
+                  //  removes anything in shared pref forcing the user to relogin next time
+                  final SharedPreferences sharedPreferences =
+                      await SharedPreferences.getInstance();
+                  sharedPreferences.remove('email');
+
+                  Database().setStoreClicked(
+                      false); // sets the isStoreClicked to false so user has to choose a new store next time they login
+
+                  auth.signOut();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => LoginScreen()));
+                },
+              ),
+            ]),
+
+            ));
   }
 
   //  build a widget method for custom listTile items
