@@ -15,7 +15,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final db = FirebaseFirestore.instance;
 
 //hovercolor for web on store list
-final hoverColor = Colors.indigo[50];
+//final hoverColor = Colors.indigo[50];
 
 //  this var will store the index of the store that is currently highlighted in the Listview.builder
 var tappedIndex;
@@ -73,12 +73,17 @@ class _StoreScreenState extends State<StoreScreen> {
                                 actionExtentRatio: 0.25,
                                 child: ListTile(
                                     tileColor: tappedIndex == index
-                                        ? Colors.greenAccent
+                                        ? Colors.green[400]
                                         : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                                    hoverColor:
-                                        hoverColor, //  adds some extra pizzazz if you're viewing it on the web
-                                    title: Text(doc.get('name')),
-                                    subtitle: Text(doc.get('address')),
+                                    title: Text(
+                                      doc.get('name'),
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ) ),
+                                    subtitle: Text(doc.get('address'),
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                        )),
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
                                       Database().setStoreClicked(
@@ -88,6 +93,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                         tappedIndex =
                                             index; //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                       });
+                                      
 
                                       //print out to console what the current store id, index, and list length and tapped index is.
                                       print('the getCurrentStoreID is ' +
@@ -122,7 +128,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                   // slide action to edit
                                   IconSlideAction(
                                       caption: 'Edit',
-                                      color: CustomColors.cblue,
+                                      color: CustomColors.red,
                                       icon: Icons.edit,
                                       onTap: () => {
                                             showEditStoreDialog(
@@ -226,15 +232,14 @@ class _StoreScreenState extends State<StoreScreen> {
               labelText: "Address Search",
               hintText: "Address Search",
               prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              border: OutlineInputBorder()),
         ),
       ),
       TextButton(
           onPressed: () {
             showchangeSearchDialog(context);
           },
-          child: Icon(Icons.filter_alt_rounded))
+          child: Icon(Icons.filter_alt_sharp))
     ]);
   }
 
@@ -264,15 +269,14 @@ class _StoreScreenState extends State<StoreScreen> {
                 labelText: "Name Search",
                 hintText: "Name Search",
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                border: OutlineInputBorder()),
           ),
         ),
         TextButton(
             onPressed: () {
               showchangeSearchDialog(context);
             },
-            child: Icon(Icons.filter_alt_rounded))
+            child: Icon(Icons.filter_alt_sharp))
       ],
     );
   }

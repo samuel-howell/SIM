@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
-import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/theme/custom-themes.dart';
 import 'package:howell_capstone/theme/theme_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,7 +51,8 @@ class MyApp extends StatelessWidget {
           builder: (context, ThemeModel themeNotifier, child) {
         return MaterialApp(
           title: 'SIM',
-          theme: themeNotifier.isDark ? ThemeData.dark() : ThemeData.light(),
+          // theme: themeNotifier.isDark ? CustomTheme.darkTheme : CustomTheme.lightTheme, 
+          theme: themeNotifier.isDark ? FlexThemeData.dark(scheme: FlexScheme.outerSpace) : FlexThemeData.light(scheme: FlexScheme.outerSpace),
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
         );

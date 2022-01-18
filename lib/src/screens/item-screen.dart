@@ -8,7 +8,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
 
-import 'add-item-screen.dart';
 
 //  gets the current user id
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -16,8 +15,7 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 //accesses the firebase database
 final db = FirebaseFirestore.instance;
 
-//hovercolor for web on store list
-final hoverColor = Colors.indigo[50];
+
 
 //  this var will store the index of the store that is currently highlighted in the Listview.builder
 var tappedIndex;
@@ -52,9 +50,9 @@ class _ItemScreenState extends State<ItemScreen> {
     try {
       return Scaffold(
         appBar: AppBar(
-            title: Text('Item Screen'),
+            title: Text('MY ITEMS'),
             centerTitle: true,
-            backgroundColor: Colors.black),
+            ),
         body: StreamBuilder<QuerySnapshot>(
             stream:
                 streamQuery, // this streamQuery will change based on what is typed into the search bar
@@ -83,13 +81,14 @@ class _ItemScreenState extends State<ItemScreen> {
                               actionPane: SlidableDrawerActionPane(),
                               actionExtentRatio: 0.25,
                               child: ListTile(
+                                isThreeLine: true,
                                   tileColor: tappedIndex == index
                                       ? Colors.greenAccent
                                       : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                                  hoverColor:
-                                      hoverColor, //  adds some extra pizzazz if you're viewing it on the web
-                                  title: Text(doc.get('name')),
-                                  subtitle: Text(doc.get('description')),
+                                  title: Text(doc.get('name'),
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                                  subtitle: Text('ID: ' + doc.get('id') + '\n' + 'PRICE: \$' + doc.get('price').toString(),
+                                      style: TextStyle(fontSize: 15)),
                                   onTap: () {
                                     //print out to console what the current store id, index, and list length and tapped index is.
                                     print('the getCurrentStoreID is ' +
@@ -135,7 +134,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 // slide action to edit
                                 IconSlideAction(
                                     caption: 'Edit',
-                                    color: CustomColors.cblue,
+                                    color: CustomColors.red,
                                     icon: Icons.edit,
                                     onTap: () => {
                                           showEditItemDialog(context, doc.id),
@@ -150,12 +149,8 @@ class _ItemScreenState extends State<ItemScreen> {
             }),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.post_add),
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
           onPressed: () => {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddItemScreen(),
-            )) //
+            showAddItemDialog(context) 
           },
         ),
       );
@@ -272,8 +267,7 @@ class _ItemScreenState extends State<ItemScreen> {
               labelText: "Item ID Search",
               hintText: "Item ID Search",
               prefixIcon: Icon(Icons.search),
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+              border: OutlineInputBorder()),
         ),
       ),
       TextButton(
@@ -310,8 +304,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 labelText: "Name Search",
                 hintText: "Name Search",
                 prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                border: OutlineInputBorder()),
           ),
         ),
         TextButton(
@@ -356,8 +349,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 labelText: "Low",
                 hintText: "insert lower NUMBER bound",
                 prefixIcon: Icon(Icons.attach_money_rounded),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                border: OutlineInputBorder()),
           ),
         ),
 
@@ -389,8 +381,7 @@ class _ItemScreenState extends State<ItemScreen> {
                 labelText: "High",
                 hintText: "insert higher NUMBER bound",
                 prefixIcon: Icon(Icons.attach_money_rounded),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25.0)))),
+                border: OutlineInputBorder()),
           ),
         ),
         TextButton(

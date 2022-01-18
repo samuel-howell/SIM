@@ -151,7 +151,7 @@ class SignUpFormState extends State<SignUpForm> {
                   padding: const EdgeInsets.all(16.0),
                   child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      CustomColors.cblue,
+                      CustomColors.red,
                     ),
                   ),
                 )
@@ -160,7 +160,7 @@ class SignUpFormState extends State<SignUpForm> {
                   child: ElevatedButton(
                     style: ButtonStyle(
                       backgroundColor: MaterialStateProperty.all(
-                        CustomColors.cpink,
+                        CustomColors.red,
                       ),
                       shape: MaterialStateProperty.all(
                         RoundedRectangleBorder(

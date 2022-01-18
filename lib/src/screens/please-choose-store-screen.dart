@@ -5,10 +5,7 @@ class PleaseChooseStoreScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text('Confirm Email Screen'),
-            centerTitle: true,
-            backgroundColor: Colors.black),
+        appBar: AppBar(),
         body: Center(
           child: Text('You must first select a store to access this page.',
               style: GoogleFonts.lato(

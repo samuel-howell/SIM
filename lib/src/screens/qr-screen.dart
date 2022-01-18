@@ -31,8 +31,7 @@ class _QRScreenState extends State<QRScreen> {
     return Scaffold(
         appBar: AppBar(
             title: Text('QR Screen'),
-            centerTitle: true,
-            backgroundColor: Colors.black),
+            centerTitle: true,),
         body: Center(
             child: SingleChildScrollView(
                 padding: EdgeInsets.all(24),
@@ -58,19 +57,18 @@ class _QRScreenState extends State<QRScreen> {
 
   Widget buildTextField(BuildContext context) => TextField(
       controller: qrTextController,
-      style: TextStyle(
-          color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+      
       decoration: InputDecoration(
           hintText: 'Enter the item ID ',
           hintStyle: TextStyle(color: Colors.grey),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide(
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
           suffixIcon: IconButton(
-            color: Theme.of(context).accentColor,
+            color: Theme.of(context).colorScheme.secondary,
             icon: Icon(Icons.done, size: 30),
             onPressed: () => setState(() {
               qr = qrTextController
@@ -87,7 +85,6 @@ class _QRScreenState extends State<QRScreen> {
           SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
                   child: Text('Download QR'),
                   onPressed: () async {
                     //this code "wraps" the qr widget into an image format
@@ -146,7 +143,7 @@ class _QRScreenState extends State<QRScreen> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Color(0xFF73AEF5)),
+                
                 child: Text('Share'),
                 onPressed: () async {
                   try {
