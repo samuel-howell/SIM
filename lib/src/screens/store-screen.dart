@@ -41,7 +41,6 @@ class _StoreScreenState extends State<StoreScreen> {
     return Scaffold(
       drawer: NavigationDrawerWidget(),
         appBar: AppBar(
-            title: Text('MY STORES'),
             centerTitle: true,
             ),
         body: StreamBuilder<QuerySnapshot>(
@@ -71,44 +70,53 @@ class _StoreScreenState extends State<StoreScreen> {
                             return Slidable(
                                 actionPane: SlidableDrawerActionPane(),
                                 actionExtentRatio: 0.25,
-                                child: ListTile(
-                                    tileColor: tappedIndex == index
-                                        ? Colors.green[400]
-                                        : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                                    title: Text(
-                                      doc.get('name'),
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ) ),
-                                    subtitle: Text(doc.get('address'),
-                                      style: TextStyle(
-                                          fontSize: 15,
-                                        )),
-                                    onTap: () {
-                                      Database.setcurrentStoreID(doc.id);
-                                      Database().setStoreClicked(
-                                          true); // now the user can access item screen.
+                                child: 
+                                
+                                
+                            
+                                
 
-                                      setState(() {
-                                        tappedIndex =
-                                            index; //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
-                                      });
-                                      
+                                 GestureDetector(
+                                child: Container(
+                                      height: 100.0,
+                                      margin: new EdgeInsets.all(10.0),
+                                      decoration: new BoxDecoration(borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+                                          border: Border.all(color: tappedIndex == index ? (Colors.green[400])! : (Colors.red[200])! , width: 4), // color of border will change based on which store is selected.
+                                          gradient: new LinearGradient(colors: [Theme.of(context).primaryColor, Theme.of(context).colorScheme.secondary],
+                                              begin: Alignment.centerLeft, end: Alignment.centerRight, tileMode: TileMode.clamp)),
+                                      child: new Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                                            //child: new CircleAvatar(radius: 35.0, backgroundImage: NetworkImage('https://wallpapercave.com/wp/wp2365076.jpg'),)
+                                          ),
+                                          new Expanded(child: new Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              new Text(doc.get('name'), style: new TextStyle(fontSize: 20.0, color: Colors.white70, fontWeight: FontWeight.bold),),
+                                              new SizedBox(height: 8.0,),
+                                              new Text(doc.get('address').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white70),),
+                                              new SizedBox(height: 10.0,),
+                                              new Row(children: <Widget>[
+                              
+                                              ],)
+                                            ],)),
+                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                                            )
+                              
+                                        ],),
+                              
+                                ),
+                                onTap: () {
+                                          Database.setcurrentStoreID(doc.id);
+                                          Database().setStoreClicked(true); // now the user can access item screen.
 
-                                      //print out to console what the current store id, index, and list length and tapped index is.
-                                      print('the getCurrentStoreID is ' +
-                                          Database().getCurrentStoreID());
-                                      print('the current user id is ' +
-                                          _auth.currentUser!.uid.toString());
-                                      print(
-                                          'item index  is ' + index.toString());
-                                      print('list length  is ' +
-                                          snapshot.data!.docs.length
-                                              .toString());
-                                      print('tapped index is ' +
-                                          tappedIndex.toString());
-                                      print(" ");
-                                    }),
+                                          setState(() { tappedIndex =index;  }); //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile               
+                                }
+                                
+                              ),
+                              
                                 actions: <Widget>[
                                   // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 

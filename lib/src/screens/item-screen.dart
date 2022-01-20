@@ -45,12 +45,13 @@ class _ItemScreenState extends State<ItemScreen> {
       .collection('items')
       .snapshots();
 
+
+
   @override
   Widget build(BuildContext context) {
     try {
       return Scaffold(
         appBar: AppBar(
-            title: Text('MY ITEMS'),
             centerTitle: true,
             ),
         body: StreamBuilder<QuerySnapshot>(
@@ -80,41 +81,56 @@ class _ItemScreenState extends State<ItemScreen> {
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
                               actionExtentRatio: 0.25,
-                              child: ListTile(
-                                isThreeLine: true,
-                                  tileColor: tappedIndex == index
-                                      ? Colors.greenAccent
-                                      : null, // if the tappedIndex is the index of the list tile, adda  green accent to it, otherwise do nothing
-                                  title: Text(doc.get('name'),
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                                  subtitle: Text('ID: ' + doc.get('id') + '\n' + 'PRICE: \$' + doc.get('price').toString(),
-                                      style: TextStyle(fontSize: 15)),
-                                  onTap: () {
-                                    //print out to console what the current store id, index, and list length and tapped index is.
-                                    print('the getCurrentStoreID is ' +
-                                        Database().getCurrentStoreID());
-                                    print('the current user id is ' +
-                                        _auth.currentUser!.uid.toString());
-                                    print('item index  is ' + index.toString());
-                                    print('list length  is ' +
-                                        snapshot.data!.docs.length.toString());
-                                    print('tapped index is ' +
-                                        tappedIndex.toString());
-                                    print('doc.id is ' + doc.id.toString());
+                              child: 
+                              
 
-                                    print(" ");
-
-                                    final data = Data(itemDocID: doc.id);
-
-                                    // navigate to the the item info screen, passing the the id of the item and using it to populate the screen with information specific to that item
-                                    Navigator.push(
+                              GestureDetector(
+                                child: Container(
+                                      height: 100.0,
+                                      margin: new EdgeInsets.all(10.0),
+                                      decoration: new BoxDecoration(borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
+                                          gradient: new LinearGradient(colors: [Theme.of(context).primaryColor, Theme.of(context).colorScheme.secondary],
+                                              begin: Alignment.centerLeft, end: Alignment.centerRight, tileMode: TileMode.clamp)),
+                                      child: new Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                                            //child: new CircleAvatar(radius: 35.0, backgroundImage: NetworkImage('https://wallpapercave.com/wp/wp2365076.jpg'),)
+                                          ),
+                                          new Expanded(child: new Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              new Text(doc.get('name'), style: new TextStyle(fontSize: 20.0, color: Colors.white70, fontWeight: FontWeight.bold),),
+                                              new SizedBox(height: 8.0,),
+                                              new Text('\$' + doc.get('price').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white70),),
+                                              new SizedBox(height: 10.0,),
+                                              new Row(children: <Widget>[
+                              
+                                              ],)
+                                            ],)),
+                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                                            child: new Column(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: <Widget>[
+                                              new Text('ID: ' + doc.get('id').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white70),),
+                                            ],))
+                              
+                                        ],),
+                              
+                                ),
+                                onTap: () => {
+                                  Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ItemInfoScreen(
                                               itemDocID: doc
                                                   .id), // pass the doc id to the item infor screen page
-                                        ));
-                                  }),
+                                        ))
+                                }
+                              ),
+
+
                               actions: <Widget>[
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 
@@ -274,7 +290,7 @@ class _ItemScreenState extends State<ItemScreen> {
           onPressed: () {
             showchangeSearchDialog(context);
           },
-          child: Icon(Icons.filter_alt_rounded))
+          child: Icon(Icons.filter_alt_sharp))
     ]);
   }
 
@@ -311,7 +327,7 @@ class _ItemScreenState extends State<ItemScreen> {
             onPressed: () {
               showchangeSearchDialog(context);
             },
-            child: Icon(Icons.filter_alt_rounded))
+            child: Icon(Icons.filter_alt_sharp))
       ],
     );
   }

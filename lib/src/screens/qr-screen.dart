@@ -30,7 +30,6 @@ class _QRScreenState extends State<QRScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('QR Screen'),
             centerTitle: true,),
         body: Center(
             child: SingleChildScrollView(
@@ -50,14 +49,15 @@ class _QRScreenState extends State<QRScreen> {
                         ),
                       ),
                       SizedBox(height: 40),
-                      buildTextField(context),
+                      SizedBox(child: buildTextField(context), width: 300,),
+                      SizedBox(height: 40), //!!!    //TODO: this sized box isn't registering
                       buildExportQRBtn(context, qr, key, file),
                     ]))));
   }
 
   Widget buildTextField(BuildContext context) => TextField(
       controller: qrTextController,
-      
+      textAlign: TextAlign.center,
       decoration: InputDecoration(
           hintText: 'Enter the item ID ',
           hintStyle: TextStyle(color: Colors.grey),
@@ -83,8 +83,11 @@ class _QRScreenState extends State<QRScreen> {
       child: Column(
         children: [
           SizedBox(
-              width: double.infinity,
+              width: 200,
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(75,75)
+                ),
                   child: Text('Download QR'),
                   onPressed: () async {
                     //this code "wraps" the qr widget into an image format
@@ -140,10 +143,13 @@ class _QRScreenState extends State<QRScreen> {
                       //TODO: do ios version of download to device method shown above for android and web
                     }
                   })),
+          SizedBox(height: 20), // acts as a spacer
           SizedBox(
-            width: double.infinity,
+            width: 100,
             child: ElevatedButton(
-                
+                style: ElevatedButton.styleFrom(
+                    minimumSize: Size(75, 75)
+                ),
                 child: Text('Share'),
                 onPressed: () async {
                   try {
@@ -185,4 +191,3 @@ class _QRScreenState extends State<QRScreen> {
   }
 }
 
-//TODO:  See if you can integrate this https://codereis.com/posts/multi-image-pdf/ onto this page.  take the qr, turn it into an image, multiply that image x number of times on a pdf page.

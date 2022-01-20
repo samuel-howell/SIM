@@ -141,6 +141,9 @@ showAddStoreDialog(BuildContext context) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(75, 75)
+                              ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.
@@ -242,6 +245,9 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
+                               style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(75, 75)
+                              ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.
@@ -482,6 +488,9 @@ showAddItemDialog(BuildContext context) {
                           : Container(
                             width: MediaQuery.of(context).size.width * 0.5,
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(75, 75)
+                              ),
                               onPressed: () async {
                                 // Validate returns true if the form is valid, or false otherwise.
                                 if (_formKey.currentState!.validate()) {
@@ -632,7 +641,9 @@ showEditItemDialog(BuildContext context, String itemDocID) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
-                              
+                               style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(75, 75)
+                              ),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.

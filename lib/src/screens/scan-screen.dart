@@ -65,9 +65,6 @@ class _ScanScreenState extends State<ScanScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Scan Screen'),
-          centerTitle: true,
-          backgroundColor: Colors.black,
           actions: [
             PopupMenuButton<int>(
                 onSelected: (item) => onSelected(context, item),
@@ -94,7 +91,7 @@ class _ScanScreenState extends State<ScanScreen> {
                     Text(
                         'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
                   else
-                    Text('Scan a code'),
+                    Text('SELECT SCAN TYPE THEN BEGIN SCAN'),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,6 +103,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
+                              minimumSize: Size(99,99), 
                                 primary: isScanInTapped ? Colors.green : null),
                             child: Text('Scan IN'),
                             onPressed: () async {
@@ -127,7 +125,8 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                primary: isScanOutTapped ? Colors.green : null),
+                                minimumSize: Size(99,99), 
+                                primary: isScanOutTapped ? Colors.green[400] : null),
                             child: Text('Scan OUT'),
                             onPressed: () async {
                               scanType =
@@ -155,6 +154,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                minimumSize: Size(99,99), 
                                   primary:
                                       isTallyCountTapped ? Colors.green : null),
                               child: Text('Tally Count'),
@@ -177,6 +177,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
+                                minimumSize: Size(99,99), 
                                   primary: isViewTapped ? Colors.green : null),
                               child: Text('View'),
                               onPressed: () async {
