@@ -8,14 +8,11 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
 
-
 //  gets the current user id
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 //accesses the firebase database
 final db = FirebaseFirestore.instance;
-
-
 
 //  this var will store the index of the store that is currently highlighted in the Listview.builder
 var tappedIndex;
@@ -45,15 +42,13 @@ class _ItemScreenState extends State<ItemScreen> {
       .collection('items')
       .snapshots();
 
-
-
   @override
   Widget build(BuildContext context) {
     try {
       return Scaffold(
         appBar: AppBar(
-            centerTitle: true,
-            ),
+          centerTitle: true,
+        ),
         body: StreamBuilder<QuerySnapshot>(
             stream:
                 streamQuery, // this streamQuery will change based on what is typed into the search bar
@@ -81,55 +76,91 @@ class _ItemScreenState extends State<ItemScreen> {
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
                               actionExtentRatio: 0.25,
-                              child: 
-                              
-
-                              GestureDetector(
-                                child: Container(
-                                      height: 100.0,
-                                      margin: new EdgeInsets.all(10.0),
-                                      decoration: new BoxDecoration(borderRadius: new BorderRadius.all(new Radius.circular(10.0)),
-                                          gradient: new LinearGradient(colors: [Theme.of(context).primaryColor, Theme.of(context).colorScheme.secondary],
-                                              begin: Alignment.centerLeft, end: Alignment.centerRight, tileMode: TileMode.clamp)),
-                                      child: new Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
-                                          ),
-                                          new Expanded(child: new Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              new Text(doc.get('name'), style: new TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),),
-                                              new SizedBox(height: 8.0,),
-                                              new Text('\$' + doc.get('price').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white),),
-                                              new SizedBox(height: 10.0,),
-                                              new Row(children: <Widget>[
-                              
-                                              ],)
-                                            ],)),
-                                          new Padding(padding: new EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: GestureDetector(
+                                  child: Container(
+                                    height: 100.0,
+                                    margin: new EdgeInsets.all(10.0),
+                                    decoration: new BoxDecoration(
+                                        borderRadius: new BorderRadius.all(
+                                            new Radius.circular(10.0)),
+                                        gradient: new LinearGradient(
+                                            colors: [
+                                              Theme.of(context).primaryColor,
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary
+                                            ],
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.centerRight,
+                                            tileMode: TileMode.clamp)),
+                                    child: new Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: <Widget>[
+                                        new Padding(
+                                          padding: new EdgeInsets.only(
+                                              left: 10.0, right: 10.0),
+                                        ),
+                                        new Expanded(
                                             child: new Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            new Text(
+                                              doc.get('name'),
+                                              style: new TextStyle(
+                                                  fontSize: 20.0,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            new SizedBox(
+                                              height: 8.0,
+                                            ),
+                                            new Text(
+                                              '\$' +
+                                                  doc.get('price').toString(),
+                                              style: new TextStyle(
+                                                  fontSize: 17.0,
+                                                  color: Colors.white),
+                                            ),
+                                            new SizedBox(
+                                              height: 10.0,
+                                            ),
+                                            new Row(
+                                              children: <Widget>[],
+                                            )
+                                          ],
+                                        )),
+                                        new Padding(
+                                            padding: new EdgeInsets.only(
+                                                left: 10.0, right: 10.0),
+                                            child: new Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: <Widget>[
-                                              new Text('ID: ' + doc.get('id').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white70),),
-                                            ],))
-                              
-                                        ],),
-                              
-                                ),
-                                onTap: () => {
-                                  Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => ItemInfoScreen(
-                                              itemDocID: doc
-                                                  .id), // pass the doc id to the item infor screen page
-                                        ))
-                                }
-                              ),
-
-
+                                                new Text(
+                                                  'ID: ' +
+                                                      doc.get('id').toString(),
+                                                  style: new TextStyle(
+                                                      fontSize: 17.0,
+                                                      color: Colors.white70),
+                                                ),
+                                              ],
+                                            ))
+                                      ],
+                                    ),
+                                  ),
+                                  onTap: () => {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => ItemInfoScreen(
+                                                  itemDocID: doc
+                                                      .id), // pass the doc id to the item infor screen page
+                                            ))
+                                      }),
                               actions: <Widget>[
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 
@@ -164,9 +195,7 @@ class _ItemScreenState extends State<ItemScreen> {
             }),
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.post_add),
-          onPressed: () => {
-            showAddItemDialog(context) 
-          },
+          onPressed: () => {showAddItemDialog(context)},
         ),
       );
     } catch (e) {

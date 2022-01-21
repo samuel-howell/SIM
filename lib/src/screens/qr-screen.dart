@@ -30,7 +30,8 @@ class _QRScreenState extends State<QRScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            centerTitle: true,),
+          centerTitle: true,
+        ),
         body: Center(
             child: SingleChildScrollView(
                 padding: EdgeInsets.all(24),
@@ -49,8 +50,13 @@ class _QRScreenState extends State<QRScreen> {
                         ),
                       ),
                       SizedBox(height: 40),
-                      SizedBox(child: buildTextField(context), width: 300,),
-                      SizedBox(height: 40), //!!!    //TODO: this sized box isn't registering
+                      SizedBox(
+                        child: buildTextField(context),
+                        width: 300,
+                      ),
+                      SizedBox(
+                          height:
+                              40), //!!!    //TODO: this sized box isn't registering
                       buildExportQRBtn(context, qr, key, file),
                     ]))));
   }
@@ -85,9 +91,7 @@ class _QRScreenState extends State<QRScreen> {
           SizedBox(
               width: 200,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: Size(75,75)
-                ),
+                  style: ElevatedButton.styleFrom(minimumSize: Size(75, 75)),
                   child: Text('Download QR'),
                   onPressed: () async {
                     //this code "wraps" the qr widget into an image format
@@ -147,9 +151,7 @@ class _QRScreenState extends State<QRScreen> {
           SizedBox(
             width: 100,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    minimumSize: Size(75, 75)
-                ),
+                style: ElevatedButton.styleFrom(minimumSize: Size(75, 75)),
                 child: Text('Share'),
                 onPressed: () async {
                   try {
@@ -190,4 +192,3 @@ class _QRScreenState extends State<QRScreen> {
     );
   }
 }
-

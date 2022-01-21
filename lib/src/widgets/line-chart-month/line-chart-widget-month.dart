@@ -43,8 +43,9 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
 
     final List<QuantityOverMonth> data = await Database().getMonthLineData(
         widget.itemID,
+        int.parse(getSelectedMonth()),
         int.parse(
-            getSelectedMonth()), int.parse(getSelectedYear())); // this gets line data for a specific month
+            getSelectedYear())); // this gets line data for a specific month
 
     //print('hit the _prepareQuantity method');
 
@@ -90,7 +91,9 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
       ),
       borderData: FlBorderData(
         border: const Border(
-          bottom: BorderSide(color: Colors.transparent,),
+          bottom: BorderSide(
+            color: Colors.transparent,
+          ),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -177,17 +180,15 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
 
   @override
   Widget build(BuildContext context) {
-
-            // load the current themes colors into the gradient colors list to be used with the graph.
-     _gradientColors = [
-    Theme.of(context).colorScheme.onBackground,
-    Theme.of(context).colorScheme.secondaryVariant,
-  ];
+    // load the current themes colors into the gradient colors list to be used with the graph.
+    _gradientColors = [
+      Theme.of(context).colorScheme.onBackground,
+      Theme.of(context).colorScheme.secondaryVariant,
+    ];
 
     return AspectRatio(
       aspectRatio: 1.23,
       child: Container(
-  
         child: Stack(
           children: <Widget>[
             Column(
@@ -196,7 +197,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 const SizedBox(
                   height: 37,
                 ),
-                 Text(
+                Text(
                   'Monthly Quantity',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondaryVariant,
@@ -242,7 +243,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 const SizedBox(
                   height: 10,
                 ),
-                 Text(
+                Text(
                   'Day',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
@@ -268,7 +269,8 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
   String selectedMonth = "0"; // this is the default month
   String selectedYear = "0";
 
-  String firstPageLoad = "CHOOSE MONTH";  // this is what will show in the datepicker container on the first page load
+  String firstPageLoad =
+      "CHOOSE MONTH"; // this is what will show in the datepicker container on the first page load
   bool isMonthChosen = false;
 
   Widget monthDropdownBtn(BuildContext context) {
@@ -276,41 +278,42 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-    onPressed: () {
-        DatePicker.showPicker(context,
-                              showTitleActions: true,
-                              pickerModel: CustomMonthPicker(
-                              minTime: DateTime(2000, 1, 1),
-                              maxTime: DateTime.now(),
-                              locale: LocaleType.en,
-                              currentTime: DateTime.now()), 
-                              onChanged: (date) {}, 
-                              onConfirm: (date) {
-                            print('confirm $date');
-                            setState(() {
-                              isMonthChosen = true;
-                              selectedMonth = date.month.toString();
-                              selectedYear = date.year.toString();
-                              _values =
-                                  []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
-                              prepareQuantityData(); // this forces a rebuild of the graph
-                            });
-                          }) ;
-    },
-    child: Container(
-      padding: EdgeInsets.all(5.0),
-      decoration:  BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.secondaryVariant,), borderRadius: BorderRadius.all(new Radius.circular(10.0))),
-      child: Text(
-          isMonthChosen ? selectedMonth + " / " + selectedYear : firstPageLoad,
-      ),
-    )),
-    
-       
+            onPressed: () {
+              DatePicker.showPicker(context,
+                  showTitleActions: true,
+                  pickerModel: CustomMonthPicker(
+                      minTime: DateTime(2000, 1, 1),
+                      maxTime: DateTime.now(),
+                      locale: LocaleType.en,
+                      currentTime: DateTime.now()),
+                  onChanged: (date) {}, onConfirm: (date) {
+                print('confirm $date');
+                setState(() {
+                  isMonthChosen = true;
+                  selectedMonth = date.month.toString();
+                  selectedYear = date.year.toString();
+                  _values =
+                      []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
+                  prepareQuantityData(); // this forces a rebuild of the graph
+                });
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondaryVariant,
+                  ),
+                  borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+              child: Text(
+                isMonthChosen
+                    ? selectedMonth + " / " + selectedYear
+                    : firstPageLoad,
+              ),
+            )),
       ],
     );
   }
-
-
 
   String getSelectedMonth() {
     print('the selected month is ' + selectedMonth);
@@ -321,16 +324,20 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
     print('the selected year is ' + selectedYear);
     return selectedYear;
   }
-  
 }
 
 // creates a custom date pickerclass that only shows the month and the year
 class CustomMonthPicker extends DatePickerModel {
-
   CustomMonthPicker(
-    {required DateTime currentTime, required DateTime minTime, required DateTime maxTime,
-    required LocaleType locale}) : super(locale: locale, minTime: minTime, maxTime:
-  maxTime, currentTime: currentTime);
+      {required DateTime currentTime,
+      required DateTime minTime,
+      required DateTime maxTime,
+      required LocaleType locale})
+      : super(
+            locale: locale,
+            minTime: minTime,
+            maxTime: maxTime,
+            currentTime: currentTime);
 
   @override
   List<int> layoutProportions() {

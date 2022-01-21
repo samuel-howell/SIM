@@ -17,7 +17,6 @@ class LineChartWidgetYear extends StatefulWidget {
 
 class _LineChartWidgetYearState extends State<LineChartWidgetYear>
     with AutomaticKeepAliveClientMixin {
-
   List<Color> _gradientColors = [];
 
   //  the AutomaticKeepAliveClientMixin coupled with this override keeps that graph from refreshing everytime the tab is swiped to on the item info page.
@@ -39,9 +38,6 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
   void initState() {
     super.initState();
     prepareQuantityData(); // putting it in the init state calls it once on the first build
-
-
-
   }
 
   void prepareQuantityData() async {
@@ -49,12 +45,13 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
 
     final List<QuantityOverYear> data = await Database().getYearLineData(
         widget.itemID,
-      int.parse(getSelectedYear())); // this gets line data for a specific month
+        int.parse(
+            getSelectedYear())); // this gets line data for a specific month
 
     //print('hit the _prepareQuantity method');
 
     double minY = double.maxFinite;
-    double maxY = double.minPositive; 
+    double maxY = double.minPositive;
 
     // we only want to map to _values if the data list is not empty.
     if (data.isNotEmpty) {
@@ -94,8 +91,10 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
         topTitles: SideTitles(showTitles: false),
       ),
       borderData: FlBorderData(
-        border:  Border(
-          bottom: BorderSide(color: Colors.transparent,),
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.transparent,
+          ),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -182,17 +181,15 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
 
   @override
   Widget build(BuildContext context) {
-
-        // load the current themes colors into the gradient colors list to be used with the graph.
-     _gradientColors = [
-    Theme.of(context).colorScheme.onBackground,
-    Theme.of(context).colorScheme.secondaryVariant,
-  ];
+    // load the current themes colors into the gradient colors list to be used with the graph.
+    _gradientColors = [
+      Theme.of(context).colorScheme.onBackground,
+      Theme.of(context).colorScheme.secondaryVariant,
+    ];
 
     return AspectRatio(
       aspectRatio: 1.23,
       child: Container(
-     
         child: Stack(
           children: <Widget>[
             Column(
@@ -247,7 +244,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                 const SizedBox(
                   height: 10,
                 ),
-                 Text(
+                Text(
                   'Month',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
@@ -272,7 +269,8 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
 
   String selectedYear = "0"; // this is the default year
 
-  String firstPageLoad = "CHOOSE YEAR";  // this is what will show in the datepicker container on the first page load
+  String firstPageLoad =
+      "CHOOSE YEAR"; // this is what will show in the datepicker container on the first page load
   bool isYearChosen = false;
 
   Widget yearDropdownBtn(BuildContext context) {
@@ -280,54 +278,58 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-    onPressed: () {
-        DatePicker.showPicker(context,
-                              showTitleActions: true,
-                              pickerModel: CustomYearPicker(
-                              minTime: DateTime(2000, 1, 1),
-                              maxTime: DateTime.now(),
-                              locale: LocaleType.en,
-                              currentTime: DateTime.now()), 
-                              onChanged: (date) {}, 
-                              onConfirm: (date) {
-                            print('confirm $date');
-                            setState(() {
-                              isYearChosen = true;
-                              selectedYear = date.year.toString();
-                              _values =
-                                  []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
-                              prepareQuantityData(); // this forces a rebuild of the graph
-                            });
-                          }) ;
-    },
-    child: Container(
-      padding: EdgeInsets.all(5.0),
-      decoration:  BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.secondaryVariant,), borderRadius: BorderRadius.all(new Radius.circular(10.0))),
-      child: Text(
-          isYearChosen ? selectedYear : firstPageLoad,
-      ),
-    )),
-    
-       
+            onPressed: () {
+              DatePicker.showPicker(context,
+                  showTitleActions: true,
+                  pickerModel: CustomYearPicker(
+                      minTime: DateTime(2000, 1, 1),
+                      maxTime: DateTime.now(),
+                      locale: LocaleType.en,
+                      currentTime: DateTime.now()),
+                  onChanged: (date) {}, onConfirm: (date) {
+                print('confirm $date');
+                setState(() {
+                  isYearChosen = true;
+                  selectedYear = date.year.toString();
+                  _values =
+                      []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
+                  prepareQuantityData(); // this forces a rebuild of the graph
+                });
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.secondaryVariant,
+                  ),
+                  borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+              child: Text(
+                isYearChosen ? selectedYear : firstPageLoad,
+              ),
+            )),
       ],
     );
   }
-
 
   String getSelectedYear() {
     print('the selected year is ' + selectedYear);
     return selectedYear;
   }
-  
 }
 
 // creates a custom date pickerclass that only shows the month and the year
 class CustomYearPicker extends DatePickerModel {
-
   CustomYearPicker(
-    {required DateTime currentTime, required DateTime minTime, required DateTime maxTime,
-    required LocaleType locale}) : super(locale: locale, minTime: minTime, maxTime:
-  maxTime, currentTime: currentTime);
+      {required DateTime currentTime,
+      required DateTime minTime,
+      required DateTime maxTime,
+      required LocaleType locale})
+      : super(
+            locale: locale,
+            minTime: minTime,
+            maxTime: maxTime,
+            currentTime: currentTime);
 
   @override
   List<int> layoutProportions() {

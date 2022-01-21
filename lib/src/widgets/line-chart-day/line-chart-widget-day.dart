@@ -16,7 +16,6 @@ class LineChartWidgetDay extends StatefulWidget {
 
 class _LineChartWidgetDayState extends State<LineChartWidgetDay>
     with AutomaticKeepAliveClientMixin {
-      
   List<Color> _gradientColors = [];
 
   //  the AutomaticKeepAliveClientMixin coupled with this override keeps that graph from refreshing everytime the tab is swiped to on the item info page.
@@ -92,7 +91,9 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
       ),
       borderData: FlBorderData(
         border: const Border(
-          bottom: BorderSide(color: Colors.transparent,),
+          bottom: BorderSide(
+            color: Colors.transparent,
+          ),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -182,17 +183,15 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
 
   @override
   Widget build(BuildContext context) {
-
-            // load the current themes colors into the gradient colors list to be used with the graph.
-     _gradientColors = [
-    Theme.of(context).colorScheme.onBackground,
-    Theme.of(context).colorScheme.secondaryVariant,
-  ];
+    // load the current themes colors into the gradient colors list to be used with the graph.
+    _gradientColors = [
+      Theme.of(context).colorScheme.onBackground,
+      Theme.of(context).colorScheme.secondaryVariant,
+    ];
 
     return AspectRatio(
       aspectRatio: 1.23,
       child: Container(
-  
         child: Stack(
           children: <Widget>[
             Column(
@@ -201,7 +200,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
                 const SizedBox(
                   height: 37,
                 ),
-                 Text(
+                Text(
                   'Daily Quantity',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondaryVariant,
@@ -218,7 +217,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
                 const SizedBox(
                   height: 17,
                 ),
-                 Expanded(
+                Expanded(
                   child: Row(
                     children: [
                       RotatedBox(
@@ -244,10 +243,10 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
                     ],
                   ),
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
-                 Text(
+                Text(
                   'Time',
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
@@ -274,7 +273,8 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
   String selectedDay = "0";
   String selectedYear = "0";
 
-  String firstPageLoad = "CHOOSE DAY";  // this is what will show in the datepicker container on the first page load
+  String firstPageLoad =
+      "CHOOSE DAY"; // this is what will show in the datepicker container on the first page load
   bool isDayChosen = false;
 
   Widget monthAndDayBtn(BuildContext context) {
@@ -282,37 +282,40 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         TextButton(
-    onPressed: () {
-        DatePicker.showDatePicker(context,
-                              showTitleActions: true,
-                              minTime: DateTime(2000, 1, 1),
-                              maxTime: DateTime.now(), onChanged: (date) {
-                          }, onConfirm: (date) {
-                            print('confirm $date');
-                            setState(() {
-                              isDayChosen = true; // now that isDayChosen is true, we will show that date in the datepicker container
-                              selectedMonth = date.month.toString();
-                              selectedDay = date.day.toString();
-                              selectedYear = date.year.toString();
-                              _values =
-                                  []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
-                              prepareQuantityData(); // this forces a rebuild of the graph
-                            });
-                          }, currentTime: DateTime.now(), locale: LocaleType.en);
-    },
-    child: Container(
-      padding: EdgeInsets.all(5.0),
-      decoration:  BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.secondaryVariant), borderRadius: BorderRadius.all(new Radius.circular(10.0))),
-      child: Text(
-          isDayChosen ? selectedMonth + " / " + selectedDay + " / " + selectedYear : firstPageLoad,
-      ),
-    )),
-    
-       
+            onPressed: () {
+              DatePicker.showDatePicker(context,
+                  showTitleActions: true,
+                  minTime: DateTime(2000, 1, 1),
+                  maxTime: DateTime.now(),
+                  onChanged: (date) {}, onConfirm: (date) {
+                print('confirm $date');
+                setState(() {
+                  isDayChosen =
+                      true; // now that isDayChosen is true, we will show that date in the datepicker container
+                  selectedMonth = date.month.toString();
+                  selectedDay = date.day.toString();
+                  selectedYear = date.year.toString();
+                  _values =
+                      []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
+                  prepareQuantityData(); // this forces a rebuild of the graph
+                });
+              }, currentTime: DateTime.now(), locale: LocaleType.en);
+            },
+            child: Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      color: Theme.of(context).colorScheme.secondaryVariant),
+                  borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+              child: Text(
+                isDayChosen
+                    ? selectedMonth + " / " + selectedDay + " / " + selectedYear
+                    : firstPageLoad,
+              ),
+            )),
       ],
     );
   }
-
 
   String getSelectedMonth() {
     print('the selected month is ' + selectedMonth);

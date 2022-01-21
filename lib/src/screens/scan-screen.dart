@@ -64,21 +64,20 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          actions: [
-            PopupMenuButton<int>(
-                onSelected: (item) => onSelected(context, item),
-                itemBuilder: (context) => [
-                      PopupMenuItem(
-                          child: Text('Toggle Flash'),
-                          value:
-                              0 // this is the value that will be passed when we press on this popup menu item
-                          ),
-                      PopupMenuItem(child: Text('Flip Camera'), value: 1),
-                      PopupMenuItem(child: Text('Pause Camera'), value: 2),
-                      PopupMenuItem(child: Text('Resume Camera'), value: 3)
-                    ])
-          ]),
+      appBar: AppBar(actions: [
+        PopupMenuButton<int>(
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                      child: Text('Toggle Flash'),
+                      value:
+                          0 // this is the value that will be passed when we press on this popup menu item
+                      ),
+                  PopupMenuItem(child: Text('Flip Camera'), value: 1),
+                  PopupMenuItem(child: Text('Pause Camera'), value: 2),
+                  PopupMenuItem(child: Text('Resume Camera'), value: 3)
+                ])
+      ]),
       body: Column(
         children: <Widget>[
           Expanded(flex: 3, child: _buildQrView(context)),
@@ -103,7 +102,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(50,50), 
+                                minimumSize: Size(50, 50),
                                 primary: isScanInTapped ? Colors.green : null),
                             child: Text('Scan IN'),
                             onPressed: () async {
@@ -125,8 +124,9 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                minimumSize: Size(50,50), 
-                                primary: isScanOutTapped ? Colors.green[400] : null),
+                                minimumSize: Size(50, 50),
+                                primary:
+                                    isScanOutTapped ? Colors.green[400] : null),
                             child: Text('Scan OUT'),
                             onPressed: () async {
                               scanType =
@@ -154,7 +154,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(50,50), 
+                                  minimumSize: Size(50, 50),
                                   primary:
                                       isTallyCountTapped ? Colors.green : null),
                               child: Text('Tally Count'),
@@ -177,7 +177,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(50,50), 
+                                  minimumSize: Size(50, 50),
                                   primary: isViewTapped ? Colors.green : null),
                               child: Text('View'),
                               onPressed: () async {

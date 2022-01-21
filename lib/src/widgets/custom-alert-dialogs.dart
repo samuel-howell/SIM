@@ -141,9 +141,8 @@ showAddStoreDialog(BuildContext context) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(75, 75)
-                              ),
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.
@@ -214,7 +213,7 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                       ),
 
                       SizedBox(height: 20),
-                      
+
                       //text field for store address
                       TextFormField(
                         decoration: InputDecoration(
@@ -245,9 +244,8 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
-                               style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(75, 75)
-                              ),
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.
@@ -278,8 +276,7 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                   ),
                 ),
               ));
-        }
-        );
+        });
       });
 }
 
@@ -338,10 +335,8 @@ showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {
   );
 }
 
-
-
 showAddItemDialog(BuildContext context) {
-   final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
   bool _isProcessing = false;
 
@@ -365,14 +360,13 @@ showAddItemDialog(BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
               title: Center(child: Text("Add Item")),
-              content:Form(
-              key: _formKey,
+              content: Form(
+                key: _formKey,
 
-              // wrapping in expanded, container, and listview prevents overflow
-              child: SingleChildScrollView(
-                child: Column(
+                // wrapping in expanded, container, and listview prevents overflow
+                child: SingleChildScrollView(
+                  child: Column(
                     children: <Widget>[
-              
                       //text field for item name
                       TextFormField(
                         decoration: InputDecoration(
@@ -391,7 +385,7 @@ showAddItemDialog(BuildContext context) {
                         },
                       ),
                       SizedBox(height: 20),
-              
+
                       // text field for item description
                       TextFormField(
                         minLines: 1,
@@ -411,7 +405,7 @@ showAddItemDialog(BuildContext context) {
                         },
                       ),
                       SizedBox(height: 20),
-              
+
                       // text field for item price
                       TextFormField(
                         decoration: InputDecoration(
@@ -422,7 +416,7 @@ showAddItemDialog(BuildContext context) {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           // The validator receives the text that the user has entered.
-              
+
                           //* way 1 of declaring a regex
                           RegExp regex = new RegExp(
                               r'[0-9]'); //!:  allows ` . its should not allow that character. shouldn't be a problem on phones tho, since they will only have access to number keyboard.
@@ -434,7 +428,7 @@ showAddItemDialog(BuildContext context) {
                         },
                       ),
                       SizedBox(height: 20),
-              
+
                       // text field for quantity
                       TextFormField(
                         decoration: InputDecoration(
@@ -445,7 +439,7 @@ showAddItemDialog(BuildContext context) {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           // The validator receives the text that the user has entered.
-              
+
                           //way 2: calling regex created at beginning of file
                           if (!numbersOnlyRegex.hasMatch(value!)) {
                             return 'Please enter a valid number amount';
@@ -454,7 +448,7 @@ showAddItemDialog(BuildContext context) {
                         },
                       ),
                       SizedBox(height: 20),
-              
+
                       // text field for item id
                       TextFormField(
                         decoration: InputDecoration(
@@ -466,7 +460,7 @@ showAddItemDialog(BuildContext context) {
                         validator: (value) {
                           //!CANT USE FUTURES IN VALIDAOTR, SO PERHAPS PROVIDE A WARNING MESSAGE?
                           //TODO: create and call a method here that searches through every item in the store and looks for matching id value. if the id val is already in the store, reject using that string as an id again. perhaps pass _idController.text to a method similar to findItemByQR in the database.dart file. see if the id matches anything already in the database.
-              
+
                           //way 2: calling regex created at beginning of file
                           if (value == null || value.isEmpty) {
                             return 'Please enter an ID';
@@ -475,7 +469,7 @@ showAddItemDialog(BuildContext context) {
                         },
                       ),
                       SizedBox(height: 50),
-              
+
                       _isProcessing
                           ? Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -486,49 +480,47 @@ showAddItemDialog(BuildContext context) {
                               ),
                             )
                           : Container(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(75, 75)
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
+                                onPressed: () async {
+                                  // Validate returns true if the form is valid, or false otherwise.
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      _isProcessing = true;
+                                    });
+
+                                    await Database.addItem(
+                                      name: _nameController.text,
+                                      description: _descriptionController.text,
+                                      price:
+                                          double.parse(_priceController.text),
+                                      quantity:
+                                          int.parse(_quantityController.text),
+                                      mostRecentScanIn:
+                                          _currentDateTime, // pulls from the  _currentDateTime var created above.
+                                      id: _idController.text,
+                                    );
+
+                                    setState(() {
+                                      _isProcessing = false;
+                                    });
+
+                                    Navigator.of(context)
+                                        .pop(); // return to previous screen after operation is complete
+                                  }
+                                },
+                                child: const Text('Submit'),
                               ),
-                              onPressed: () async {
-                                // Validate returns true if the form is valid, or false otherwise.
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _isProcessing = true;
-                                  });
-              
-                                  await Database.addItem(
-                                    name: _nameController.text,
-                                    description: _descriptionController.text,
-                                    price: double.parse(_priceController.text),
-                                    quantity: int.parse(_quantityController.text),
-                                    mostRecentScanIn:
-                                        _currentDateTime, // pulls from the  _currentDateTime var created above.
-                                    id: _idController.text,
-                                  );
-              
-                                  setState(() {
-                                    _isProcessing = false;
-                                  });
-              
-                                  Navigator.of(context)
-                                      .pop(); // return to previous screen after operation is complete
-                                }
-                              },
-                              child: const Text('Submit'),
-                            ),
-                          )
+                            )
                     ],
                   ),
-              ),
-              )
-              );
-      }
-      );
+                ),
+              ));
+        });
       });
 }
-
 
 // this method shows an alert to update the item information
 showEditItemDialog(BuildContext context, String itemDocID) {
@@ -575,7 +567,8 @@ showEditItemDialog(BuildContext context, String itemDocID) {
                       //text field for item descriptionP
                       TextFormField(
                         minLines: 1,
-                        maxLines: 100, // this is so the text wraps when we have a long description
+                        maxLines:
+                            100, // this is so the text wraps when we have a long description
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Enter the item\'s new description',
@@ -641,9 +634,8 @@ showEditItemDialog(BuildContext context, String itemDocID) {
                           : Container(
                               width: double.maxFinite,
                               child: ElevatedButton(
-                               style: ElevatedButton.styleFrom(
-                                  minimumSize: Size(75, 75)
-                              ),
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
                                 onPressed: () async {
                                   if (_formKey.currentState!.validate()) {
                                     // this call to validate has to be included or else the form validation checks set above won't show.

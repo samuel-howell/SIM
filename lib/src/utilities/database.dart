@@ -79,7 +79,8 @@ class Database {
       ],
     };
 
-    await quantityDoc.set(firstQuantityDataPoint)
+    await quantityDoc
+        .set(firstQuantityDataPoint)
         .whenComplete(() => print("added firstQuantityDataPoint"))
         .catchError((e) => print(e));
 
@@ -127,8 +128,6 @@ class Database {
         .collection('stores')
         .doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
 
-        
-
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
       "lowercaseName": name.toLowerCase(),
@@ -136,7 +135,6 @@ class Database {
       "lowercaseAddress": address.toLowerCase(),
       "storeID": storeDocumentReferencer.id,
     };
-
 
     await storeDocumentReferencer
         .set(data)
@@ -323,7 +321,7 @@ class Database {
       // this is how we get a DocumentSnapshot from a document reference
       quantity = (snapshot.get('quantity'));
       profit = (snapshot.get('price'));
-      
+
       if (quantity == 0) {
         newQuantity = 0; // prevents  a negative quantity val
       } else {
@@ -359,7 +357,6 @@ class Database {
         }, SetOptions(merge: true))
         .whenComplete(() => print("updated item quantitygraph in the database"))
         .catchError((e) => print(e));
-
 
     //  update the sales data point for the store
     DocumentReference salesDoc = _userCollection
@@ -546,13 +543,14 @@ class Database {
       var map = {};
       list.forEach((entry) {
         if (DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)
-                .month
-                .compareTo(month) == 0  // compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
+                    .month
+                    .compareTo(month) ==
+                0 // compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
             &&
             DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)
-                .year
-                .compareTo(year) == 0  ) 
-        {
+                    .year
+                    .compareTo(year) ==
+                0) {
           map[DateTime.fromMillisecondsSinceEpoch(
               (entry['date']).seconds * 1000)] = entry['quantity'].toDouble();
         }
@@ -562,7 +560,8 @@ class Database {
       //take that map and convert it to type QuantityOverMonth
       map.forEach((k, v) => q.add(QuantityOverMonth(k, v)));
 
-      print('THIS IS THE MAP FOR  ' + month.toString() + ' / ' + year.toString());
+      print(
+          'THIS IS THE MAP FOR  ' + month.toString() + ' / ' + year.toString());
 
       if (map.isNotEmpty) {
         //! for debugging
@@ -576,8 +575,7 @@ class Database {
     return q;
   }
 
-
-   Future<List<QuantityOverYear>> getYearLineData(
+  Future<List<QuantityOverYear>> getYearLineData(
       String itemID, int year) async {
     List<dynamic> list;
     List<QuantityOverYear> q = [];
@@ -600,11 +598,10 @@ class Database {
       // from that list, only add entries that match the month passed in as a paremeter to the map
       var map = {};
       list.forEach((entry) {
-        if (
-            DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)
+        if (DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)
                 .year
-                .compareTo(year) == 0  ) 
-        {
+                .compareTo(year) ==
+            0) {
           map[DateTime.fromMillisecondsSinceEpoch(
               (entry['date']).seconds * 1000)] = entry['quantity'].toDouble();
         }
@@ -627,7 +624,6 @@ class Database {
 
     return q;
   }
-
 
 // method that returns all quantity datapoints from a specific day
   Future<List<QuantityOverDay>> getDayLineData(
@@ -664,8 +660,8 @@ class Database {
             DateTime.fromMillisecondsSinceEpoch((entry['date']).seconds * 1000)
                     .year
                     .compareTo(year) ==
-                    0)
-                 // compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
+                0)
+        // compareTo will ret 0 if the month of the entry date matches the month passed in the parameter.
         {
           map[DateTime.fromMillisecondsSinceEpoch(
               (entry['date']).seconds * 1000)] = entry['quantity'].toDouble();
@@ -695,9 +691,7 @@ class Database {
     return q;
   }
 
-
-
-Future<double> getStoreTotalProfits() async {
+  Future<double> getStoreTotalProfits() async {
     List<dynamic> list;
     double totalProfits = 0;
 
@@ -709,23 +703,18 @@ Future<double> getStoreTotalProfits() async {
         .doc(Database().getCurrentStoreID())
         .collection('storeData')
         .doc('sales');
-        
 
     await itemDoc.get().then((snapshot) {
       // get the list of all sales from firebase
       list = snapshot.get('dataPoints');
 
       // from that list,  add all entries to map
-      list.forEach((entry) 
-        {
-           totalProfits += entry['profit'].toDouble();
-        }
-      );
+      list.forEach((entry) {
+        totalProfits += entry['profit'].toDouble();
+      });
     });
-      return totalProfits;
-}    
-
-
+    return totalProfits;
+  }
 
 // //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
 //   Future<String> getSelectedStoreName() async {

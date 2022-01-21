@@ -1,4 +1,4 @@
-//theme_model.dart 
+//theme_model.dart
 import 'package:flutter/material.dart';
 import 'theme_preference.dart';
 
