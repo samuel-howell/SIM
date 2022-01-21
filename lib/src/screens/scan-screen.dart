@@ -103,7 +103,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              minimumSize: Size(99,99), 
+                              minimumSize: Size(50,50), 
                                 primary: isScanInTapped ? Colors.green : null),
                             child: Text('Scan IN'),
                             onPressed: () async {
@@ -125,7 +125,7 @@ class _ScanScreenState extends State<ScanScreen> {
                           margin: EdgeInsets.all(6),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                                minimumSize: Size(99,99), 
+                                minimumSize: Size(50,50), 
                                 primary: isScanOutTapped ? Colors.green[400] : null),
                             child: Text('Scan OUT'),
                             onPressed: () async {
@@ -154,7 +154,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(99,99), 
+                                minimumSize: Size(50,50), 
                                   primary:
                                       isTallyCountTapped ? Colors.green : null),
                               child: Text('Tally Count'),
@@ -177,7 +177,7 @@ class _ScanScreenState extends State<ScanScreen> {
                             margin: EdgeInsets.all(6),
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                minimumSize: Size(99,99), 
+                                minimumSize: Size(50,50), 
                                   primary: isViewTapped ? Colors.green : null),
                               child: Text('View'),
                               onPressed: () async {

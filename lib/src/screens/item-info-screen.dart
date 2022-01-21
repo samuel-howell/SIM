@@ -40,9 +40,8 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
       initialIndex: 0,
       child: Scaffold(
           appBar: AppBar(
-            title: Text('Item Information Screen'),
+            title: Text('Item Information Screen', ),
             centerTitle: true,
-            backgroundColor: Color(0xffFA9370),
             bottom: TabBar(tabs: _tabs),
           ),
           body: TabBarView(children: <Widget>[

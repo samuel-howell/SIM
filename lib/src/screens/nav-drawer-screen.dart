@@ -8,7 +8,6 @@ import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
-import 'package:howell_capstone/src/screens/view-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';

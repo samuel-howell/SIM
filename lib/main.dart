@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'SIM',
           // theme: themeNotifier.isDark ? CustomTheme.darkTheme : CustomTheme.lightTheme, 
-          theme: themeNotifier.isDark ? FlexThemeData.dark(scheme: FlexScheme.outerSpace) : FlexThemeData.light(scheme: FlexScheme.outerSpace),
+          theme: themeNotifier.isDark ? FlexThemeData.dark(scheme: FlexScheme.vesuviusBurn) : FlexThemeData.light(scheme: FlexScheme.vesuviusBurn),
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
         );

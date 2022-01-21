@@ -94,9 +94,9 @@ class _StoreScreenState extends State<StoreScreen> {
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
-                                              new Text(doc.get('name'), style: new TextStyle(fontSize: 20.0, color: Colors.white70, fontWeight: FontWeight.bold),),
+                                              new Text(doc.get('name'), style: new TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),),
                                               new SizedBox(height: 8.0,),
-                                              new Text(doc.get('address').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white70),),
+                                              new Text(doc.get('address').toString(), style: new TextStyle(fontSize: 17.0, color: Colors.white),),
                                               new SizedBox(height: 10.0,),
                                               new Row(children: <Widget>[
                               

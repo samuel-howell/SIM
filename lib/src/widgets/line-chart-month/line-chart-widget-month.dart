@@ -16,11 +16,7 @@ class LineChartWidgetMonth extends StatefulWidget {
 
 class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
     with AutomaticKeepAliveClientMixin {
-  final List<Color> _gradientColors = [
-    const Color(0xFFD870FA),
-    const Color(0xFF3FC9F8),
-  ];
-
+  List<Color> _gradientColors = [];
   //  the AutomaticKeepAliveClientMixin coupled with this override keeps that graph from refreshing everytime the tab is swiped to on the item info page.
   @override
   bool get wantKeepAlive => true;
@@ -94,7 +90,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
       ),
       borderData: FlBorderData(
         border: const Border(
-          bottom: BorderSide(color: Color(0xFFD870FA), width: 4),
+          bottom: BorderSide(color: Colors.transparent,),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -132,7 +128,6 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white70,
         fontSize: 14,
       ),
       // getTitles: (value) =>                                          // we leave getTitles out if we jsut want it to display the base value with no formatting
@@ -149,7 +144,6 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white,
         fontSize: 14,
       ),
       getTitles: (value) {
@@ -183,19 +177,17 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
 
   @override
   Widget build(BuildContext context) {
+
+            // load the current themes colors into the gradient colors list to be used with the graph.
+     _gradientColors = [
+    Theme.of(context).colorScheme.onBackground,
+    Theme.of(context).colorScheme.secondaryVariant,
+  ];
+
     return AspectRatio(
       aspectRatio: 1.23,
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xffEF709B),
-              Color(0xffFA9372),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
-        ),
+  
         child: Stack(
           children: <Widget>[
             Column(
@@ -204,10 +196,10 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 const SizedBox(
                   height: 37,
                 ),
-                const Text(
+                 Text(
                   'Monthly Quantity',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.secondaryVariant,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -229,7 +221,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                           child: Text(
                             'Quantity',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.secondary,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 2,
@@ -250,10 +242,10 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 const SizedBox(
                   height: 10,
                 ),
-                const Text(
+                 Text(
                   'Day',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.secondary,
                     fontSize: 14,
                     letterSpacing: 2,
                     fontWeight: FontWeight.bold,
@@ -276,6 +268,9 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
   String selectedMonth = "0"; // this is the default month
   String selectedYear = "0";
 
+  String firstPageLoad = "CHOOSE MONTH";  // this is what will show in the datepicker container on the first page load
+  bool isMonthChosen = false;
+
   Widget monthDropdownBtn(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -293,6 +288,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                               onConfirm: (date) {
                             print('confirm $date');
                             setState(() {
+                              isMonthChosen = true;
                               selectedMonth = date.month.toString();
                               selectedYear = date.year.toString();
                               _values =
@@ -301,9 +297,12 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                             });
                           }) ;
     },
-    child: Text(
-        'CHOOSE MONTH',
-        style: TextStyle(color: Colors.blue),
+    child: Container(
+      padding: EdgeInsets.all(5.0),
+      decoration:  BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.secondaryVariant,), borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+      child: Text(
+          isMonthChosen ? selectedMonth + " / " + selectedYear : firstPageLoad,
+      ),
     )),
     
        

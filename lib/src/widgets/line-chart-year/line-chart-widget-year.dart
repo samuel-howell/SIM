@@ -17,10 +17,8 @@ class LineChartWidgetYear extends StatefulWidget {
 
 class _LineChartWidgetYearState extends State<LineChartWidgetYear>
     with AutomaticKeepAliveClientMixin {
-  final List<Color> _gradientColors = [
-    const Color(0xFFD870FA),
-    const Color(0xFF3FC9F8),
-  ];
+
+  List<Color> _gradientColors = [];
 
   //  the AutomaticKeepAliveClientMixin coupled with this override keeps that graph from refreshing everytime the tab is swiped to on the item info page.
   @override
@@ -41,6 +39,9 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
   void initState() {
     super.initState();
     prepareQuantityData(); // putting it in the init state calls it once on the first build
+
+
+
   }
 
   void prepareQuantityData() async {
@@ -93,8 +94,8 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
         topTitles: SideTitles(showTitles: false),
       ),
       borderData: FlBorderData(
-        border: const Border(
-          bottom: BorderSide(color: Color(0xFFD870FA), width: 4),
+        border:  Border(
+          bottom: BorderSide(color: Colors.transparent,),
           left: BorderSide(color: Colors.transparent),
           right: BorderSide(color: Colors.transparent),
           top: BorderSide(color: Colors.transparent),
@@ -132,7 +133,6 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white70,
         fontSize: 14,
       ),
       // getTitles: (value) =>                                          // we leave getTitles out if we jsut want it to display the base value with no formatting
@@ -149,7 +149,6 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
     return SideTitles(
       showTitles: true,
       getTextStyles: (context, value) => TextStyle(
-        color: Colors.white,
         fontSize: 14,
       ),
       getTitles: (value) {
@@ -183,19 +182,17 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
 
   @override
   Widget build(BuildContext context) {
+
+        // load the current themes colors into the gradient colors list to be used with the graph.
+     _gradientColors = [
+    Theme.of(context).colorScheme.onBackground,
+    Theme.of(context).colorScheme.secondaryVariant,
+  ];
+
     return AspectRatio(
       aspectRatio: 1.23,
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xffEF709B),
-              Color(0xffFA9372),
-            ],
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-          ),
-        ),
+     
         child: Stack(
           children: <Widget>[
             Column(
@@ -204,10 +201,10 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                 const SizedBox(
                   height: 37,
                 ),
-                const Text(
+                Text(
                   'Yearly Quantity',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.secondaryVariant,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
@@ -229,7 +226,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                           child: Text(
                             'Quantity',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.secondary,
                               fontSize: 14,
                               letterSpacing: 2,
                               fontWeight: FontWeight.bold,
@@ -250,10 +247,10 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                 const SizedBox(
                   height: 10,
                 ),
-                const Text(
+                 Text(
                   'Month',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.secondary,
                     fontSize: 14,
                     letterSpacing: 2,
                     fontWeight: FontWeight.bold,
@@ -275,6 +272,9 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
 
   String selectedYear = "0"; // this is the default year
 
+  String firstPageLoad = "CHOOSE YEAR";  // this is what will show in the datepicker container on the first page load
+  bool isYearChosen = false;
+
   Widget yearDropdownBtn(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -292,6 +292,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                               onConfirm: (date) {
                             print('confirm $date');
                             setState(() {
+                              isYearChosen = true;
                               selectedYear = date.year.toString();
                               _values =
                                   []; // reset _values to 0 so that prepareQuantityData() can rebuild it. and, if no _values are present for the month, it will display placeholder
@@ -299,9 +300,12 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                             });
                           }) ;
     },
-    child: Text(
-        'CHOOSE YEAR',
-        style: TextStyle(color: Colors.blue),
+    child: Container(
+      padding: EdgeInsets.all(5.0),
+      decoration:  BoxDecoration(border: Border.all(color: Theme.of(context).colorScheme.secondaryVariant,), borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+      child: Text(
+          isYearChosen ? selectedYear : firstPageLoad,
+      ),
     )),
     
        
