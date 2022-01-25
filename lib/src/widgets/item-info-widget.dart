@@ -53,172 +53,51 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
                   snapshot.data as DocumentSnapshot<Object?>?;
               // by casting to document snapshot, we can call .get and get the individual fields from the document.
 
-              return Scaffold(
-                  body: Align(
-                      alignment: Alignment.topLeft,
-                      child: Container(
-                          child: GridView.custom(
-                        gridDelegate: SliverQuiltedGridDelegate(
-                          crossAxisCount: 4,
-                          mainAxisSpacing: 4,
-                          crossAxisSpacing: 4,
-                          repeatPattern: QuiltedGridRepeatPattern.inverted,
-                          pattern: [
-                            QuiltedGridTile(2, 2),
-                            QuiltedGridTile(1, 2),
-                            //rQuiltedGridTile(1, 1),
-                            QuiltedGridTile(1, 2),
-                          ],
+
+
+          return Container(
+            child: SingleChildScrollView(
+              child: Stack(
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 37,
+                      ),
+                      Text(
+                        userDocument!.get('name'),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
                         ),
-                        childrenDelegate:
-                            SliverChildListDelegate(// using list delegate allows me to specifiy what exactly i want to pull from the firebase userDocument.
-                                [
-                          //* Some containers are empty an purely for asthetics.
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 17,
+                      ),
+                  
+                      customInfoCard(context, "Price", '\$'+userDocument.get('price').toString(), Theme.of(context).primaryColor, 0.3),
+                      customInfoCard(context, "ID", userDocument.get('id').toString(), Theme.of(context).primaryColor, 0.4),
+                      customInfoCard(context, "Quantity", userDocument.get('quantity').toString(), Theme.of(context).primaryColor, 0.5),
+                      customInfoCard(context, "Most Recent Scan In", userDocument.get('mostRecentScanIn').toString(), Theme.of(context).primaryColor, 0.6),
+                      customInfoCard(context, "Most Recent Scan Out", userDocument.get('mostRecentScanOut').toString(), Theme.of(context).primaryColor, 0.7),
+                      customInfoCard(context, "Last Employee to Interact", userDocument.get('LastEmployeeToInteract').toString(), Theme.of(context).primaryColor, 0.8),
+                      customInfoCard(context, "Description", userDocument.get('description').toString(), Theme.of(context).primaryColor, 0.9),
+                      
+                     
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
 
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(userDocument!.get('name'),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              child: Center(child: Text(''))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      '\$' +
-                                          userDocument.get('price').toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      userDocument
-                                          .get('mostRecentScanIn')
-                                          .toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      userDocument
-                                          .get('LastEmployeeToInteract')
-                                          .toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      userDocument
-                                          .get('mostRecentScanOut')
-                                          .toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      userDocument.get('quantity').toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(
-                                      userDocument
-                                          .get('description')
-                                          .toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              child: Center(child: Text(''))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.primaryVariant,
-                              ),
-                              child: Center(
-                                  child: Text(userDocument.get('id').toString(),
-                                      style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.secondaryVariant)))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              child: Center(child: Text(''))),
-
-                          Container(
-                            margin: EdgeInsets.all(5),
-                              padding: const EdgeInsets.all(5.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              child: Center(child: Text(''))),
-                        ]),
-                      ))));
-
-            
-            }));
-  }
+                  
+          
+  }));
 }
 
 Widget customDivider(BuildContext context) {
@@ -235,4 +114,46 @@ Widget customDivider(BuildContext context) {
       SizedBox(height: 10),
     ],
   );
+}
+
+Widget customInfoCard(BuildContext context, String identifier, String userDocumentLookUp, Color myColor, double myOpacity ) {
+  return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              color: myColor.withOpacity(myOpacity), // color and opacity pulled in as param
+              elevation: 16,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Wrap(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.background,
+                        borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(10),
+                            topRight: Radius.circular(10))),
+                    margin: EdgeInsets.only(left: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          identifier, // string pulled in as param
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text( userDocumentLookUp, style: TextStyle(fontSize: 18)),    
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+}
+
 }

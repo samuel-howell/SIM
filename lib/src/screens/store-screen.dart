@@ -71,76 +71,46 @@ class _StoreScreenState extends State<StoreScreen> {
                                 actionPane: SlidableDrawerActionPane(),
                                 actionExtentRatio: 0.25,
                                 child: GestureDetector(
-                                    child: Container(
-                                      height: 100.0,
-                                      margin: new EdgeInsets.all(10.0),
-                                      decoration: new BoxDecoration(
-                                          borderRadius: new BorderRadius.all(
-                                              new Radius.circular(10.0)),
-                                          border: Border.all(
-                                              color: tappedIndex == index
-                                                  ? (Colors.green[400])!
-                                                  : (Colors.red[200])!,
-                                              width:
-                                                  4), // color of border will change based on which store is selected.
-                                          gradient: new LinearGradient(
-                                              colors: [
-                                                Theme.of(context).primaryColor,
-                                                Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary
-                                              ],
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                              tileMode: TileMode.clamp)),
-                                      child: new Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          new Padding(
-                                            padding: new EdgeInsets.only(
-                                                left: 10.0, right: 10.0),
-                                            //child: new CircleAvatar(radius: 35.0, backgroundImage: NetworkImage('https://wallpapercave.com/wp/wp2365076.jpg'),)
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Card(
+                                          color: tappedIndex == index ? (Colors.green[400])! : (Colors.red[200])!, 
+                                          elevation: 16,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
-                                          new Expanded(
-                                              child: new Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              new Text(
-                                                doc.get('name'),
-                                                style: new TextStyle(
-                                                    fontSize: 20.0,
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              new SizedBox(
-                                                height: 8.0,
-                                              ),
-                                              new Text(
-                                                doc.get('address').toString(),
-                                                style: new TextStyle(
-                                                    fontSize: 17.0,
-                                                    color: Colors.white),
-                                              ),
-                                              new SizedBox(
-                                                height: 10.0,
-                                              ),
-                                              new Row(
-                                                children: <Widget>[],
+                                          child: Wrap(
+                                            children: [
+                                              Container(
+                                                width: MediaQuery.of(context).size.width,
+                                                decoration: BoxDecoration(
+                                                    color: Theme.of(context).colorScheme.background,
+                                                    borderRadius: BorderRadius.only(
+                                                        bottomRight: Radius.circular(10),
+                                                        topRight: Radius.circular(10))),
+                                                margin: EdgeInsets.only(left: 10),
+                                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      doc.get('name').toString(), // string pulled in as param
+                                                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    Text(doc.get('address').toString(), style: TextStyle(fontSize: 18))
+                                                        
+                                                  ],
+                                                ),
                                               )
                                             ],
-                                          )),
-                                          new Padding(
-                                            padding: new EdgeInsets.only(
-                                                left: 10.0, right: 10.0),
-                                          )
-                                        ],
+                                          ),
+                                        ),
                                       ),
-                                    ),
+
+
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
                                       Database().setStoreClicked(
@@ -156,7 +126,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                   // slide action to delete
                                   IconSlideAction(
                                       caption: 'Delete',
-                                      color: Colors.red,
+                                      color: Theme.of(context).primaryColor,
                                       icon: Icons.delete_sharp,
                                       onTap: () => {
                                             showStoreDeleteConfirmationAlertDialog(
@@ -169,7 +139,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                   // slide action to edit
                                   IconSlideAction(
                                       caption: 'Edit',
-                                      color: CustomColors.red,
+                                      color: Theme.of(context).colorScheme.secondary,
                                       icon: Icons.edit,
                                       onTap: () => {
                                             showEditStoreDialog(

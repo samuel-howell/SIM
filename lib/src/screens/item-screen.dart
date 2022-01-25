@@ -76,82 +76,53 @@ class _ItemScreenState extends State<ItemScreen> {
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
                               actionExtentRatio: 0.25,
-                              child: GestureDetector(
-                                  child: Container(
-                                    height: 100.0,
-                                    margin: new EdgeInsets.all(10.0),
-                                    decoration: new BoxDecoration(
-                                        borderRadius: new BorderRadius.all(
-                                            new Radius.circular(10.0)),
-                                        gradient: new LinearGradient(
-                                            colors: [
-                                              Theme.of(context).primaryColor,
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .secondary
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight,
-                                            tileMode: TileMode.clamp)),
-                                    child: new Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        new Padding(
-                                          padding: new EdgeInsets.only(
-                                              left: 10.0, right: 10.0),
-                                        ),
-                                        new Expanded(
-                                            child: new Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            new Text(
-                                              doc.get('name'),
-                                              style: new TextStyle(
-                                                  fontSize: 20.0,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
+                              child: GestureDetector( 
+                                child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Card(
+                                              color: Theme.of(context).colorScheme.secondary, // color and opacity pulled in as param
+                                              elevation: 16,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Wrap(
+                                                children: [
+                                                  Container(
+                                                    width: MediaQuery.of(context).size.width,
+                                                    decoration: BoxDecoration(
+                                                        color: Theme.of(context).colorScheme.background,
+                                                        borderRadius: BorderRadius.only(
+                                                            bottomRight: Radius.circular(10),
+                                                            topRight: Radius.circular(10))),
+                                                    margin: EdgeInsets.only(left: 10),
+                                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children: [
+                                                        Center(
+                                                          child: Text(
+                                                            doc.get('name').toString(), // string pulled in as param
+                                                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                          ),
+                                                        ),
+                                                        SizedBox(
+                                                          height: 10,
+                                                        ),
+                                                        Row(
+                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                          children: [
+                                                            Text("\$"+ doc.get('price').toString() + " ", style: TextStyle(fontSize: 18)),
+                                                            Text("ID: "+ doc.get('id').toString() + " ", style: TextStyle(fontSize: 18)),
+                                                          ]
+                                                        )
+                                                            
+                                                      ],
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
                                             ),
-                                            new SizedBox(
-                                              height: 8.0,
-                                            ),
-                                            new Text(
-                                              '\$' +
-                                                  doc.get('price').toString(),
-                                              style: new TextStyle(
-                                                  fontSize: 17.0,
-                                                  color: Colors.white),
-                                            ),
-                                            new SizedBox(
-                                              height: 10.0,
-                                            ),
-                                            new Row(
-                                              children: <Widget>[],
-                                            )
-                                          ],
-                                        )),
-                                        new Padding(
-                                            padding: new EdgeInsets.only(
-                                                left: 10.0, right: 10.0),
-                                            child: new Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: <Widget>[
-                                                new Text(
-                                                  'ID: ' +
-                                                      doc.get('id').toString(),
-                                                  style: new TextStyle(
-                                                      fontSize: 17.0,
-                                                      color: Colors.white70),
-                                                ),
-                                              ],
-                                            ))
-                                      ],
-                                    ),
-                                  ),
+                                          ),
                                   onTap: () => {
                                         Navigator.push(
                                             context,
@@ -167,7 +138,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
-                                    color: Colors.red,
+                                    color: Theme.of(context).primaryColor,
                                     icon: Icons.delete_sharp,
                                     onTap: () => {
                                           showItemDeleteConfirmationAlertDialog(
@@ -180,7 +151,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                 // slide action to edit
                                 IconSlideAction(
                                     caption: 'Edit',
-                                    color: CustomColors.red,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     icon: Icons.edit,
                                     onTap: () => {
                                           showEditItemDialog(context, doc.id),
@@ -444,5 +415,7 @@ class Data {
 
   Data({required this.itemDocID});
 }
+
+
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY

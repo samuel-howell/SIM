@@ -20,6 +20,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
+
+//TODO:  Implement the login ui and sign-up ui from this github to mirror the reset password screen - https://github.com/thejo06/Login-Signup-Ui-FLutter/blob/master/lib/screens/login.dart
 // Widget _buildSignInWithText() {
 //   return Column(
 //     children: <Widget>[
