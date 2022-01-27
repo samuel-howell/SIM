@@ -22,71 +22,7 @@ class LoginScreen extends StatefulWidget {
 
 
 //TODO:  Implement the login ui and sign-up ui from this github to mirror the reset password screen - https://github.com/thejo06/Login-Signup-Ui-FLutter/blob/master/lib/screens/login.dart
-// Widget _buildSignInWithText() {
-//   return Column(
-//     children: <Widget>[
-//       Text(
-//         '- OR -',
-//         style: TextStyle(
-//           color: Colors.white,
-//           fontWeight: FontWeight.w400,
-//         ),
-//       ),
-//       SizedBox(height: 20.0),
-//       Text(
-//         'Sign in with',
-//         style: kLabelStyle,
-//       ),
-//     ],
-//   );
-// }
 
-// Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-//   return GestureDetector(
-//     onTap: (){print("social button was clicked");},
-//     child: Container(
-//       height: 60.0,
-//       width: 60.0,
-//       decoration: BoxDecoration(
-//         shape: BoxShape.circle,
-//         color: Colors.white,
-//         boxShadow: [
-//           BoxShadow(
-//             color: Colors.black26,
-//             offset: Offset(0, 2),
-//             blurRadius: 6.0,
-//           ),
-//         ],
-//         image: DecorationImage(
-//           image: logo,
-//         ),
-//       ),
-//     ),
-//   );
-// }
-
-// Widget _buildSocialBtnRow() {
-//   return Padding(
-//     padding: EdgeInsets.symmetric(vertical: 30.0),
-//     child: Row(
-//       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//       children: <Widget>[
-//         _buildSocialBtn(
-//           () => print('Login with Facebook'),
-//           AssetImage(
-//             'assets/logos/facebook.jpg',
-//           ),
-//         ),
-//         _buildSocialBtn(
-//           () => print('Login with Google'),
-//           AssetImage(
-//             'assets/logos/google.jpg',
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 
 class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;
@@ -127,24 +63,24 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         children: <Widget>[
           Theme(
-            data: ThemeData(unselectedWidgetColor: Colors.white),
+            data: ThemeData(unselectedWidgetColor: Theme.of(context).colorScheme.primaryVariant,),
             child: Checkbox(
               value: _rememberMe,
 
               /// the _rememberMe boolean
-              checkColor: Colors.green,
-              activeColor: Colors.white,
+              checkColor: Theme.of(context).colorScheme.secondary,
+              activeColor: Theme.of(context).colorScheme.primary,
               onChanged: (bool? value) {
                 setState(() {
-                  _rememberMe = true;
-                  print('_rememberMe is true now.');
+                  _rememberMe = !_rememberMe;
+                  print("_rememberMe is " + _rememberMe.toString() + " now.");
                 });
               },
             ),
           ),
           Text(
             'Remember me',
-            style: kLabelStyle,
+            style: TextStyle( color: Theme.of(context).colorScheme.primary),
           ),
         ],
       ),
@@ -157,12 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Password',
-          style: kLabelStyle,
         ),
-        SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
             obscureText: true,
@@ -172,16 +105,11 @@ class _LoginScreenState extends State<LoginScreen> {
               });
             },
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.primary,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Colors.white,
-              ),
+           
               hintText: 'Enter your Password',
               hintStyle: kHintTextStyle,
             ),
@@ -197,12 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
       children: <Widget>[
         Text(
           'Email',
-          style: kLabelStyle,
         ),
-        SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
             keyboardType: TextInputType.emailAddress,
@@ -212,16 +137,11 @@ class _LoginScreenState extends State<LoginScreen> {
               });
             },
             style: TextStyle(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.primary,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.white,
-              ),
+              
               hintText: 'Enter your Email',
               hintStyle: kHintTextStyle,
             ),
@@ -286,66 +206,91 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+
+
     return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF73AEF5),
-                      Color(0xFF61A4F1),
-                      Color(0xFF478DE0),
-                      Color(0xFF398AE5),
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
+      body: Padding(
+        padding: kDefaultPadding,
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 220,
+              ),
+              Text(
+                'Welcome Back',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: [
+                  Text(
+                    'New to this app?',
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
                   ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUpScreen(),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              _buildEmailTF(),
+              SizedBox(height: 10),
+              _buildPasswordTF(),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                _buildRememberMeCheckbox(),
+              
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => PasswordResetScreen()));
+                },
+                child: Text(
+                  'Forgot password?',
+                  style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
                 ),
               ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Sign In',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'OpenSans',
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 30.0),
-                      _buildEmailTF(),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      _buildPasswordTF(),
-                      _buildForgotPasswordBtn(),
-                      _buildRememberMeCheckbox(),
-                      _buildLoginBtn(),
-                      //_buildSignInWithText(), //! get rid of this if your not going to use it
-                      //_buildSocialBtnRow(), //! get rid of this if your not going to use it
-                      _buildSignupBtn(),
-                    ],
-                  ),
-                ),
-              )
+
+              ],),
+              
+              SizedBox(
+                height: 20,
+              ),
+              primaryButton( context,
+                 'Log In',
+              ),
+              SizedBox(
+                height: 20,
+              ),
+         
+         
             ],
           ),
         ),
@@ -401,13 +346,36 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _passwordReset(String email) async {
-    try {
-      await auth.sendPasswordResetEmail(email: email);
-    } catch (error) {
-      print('an error was encountered with the forgot password function');
-    }
+Widget primaryButton(BuildContext context, buttonText) {
+ return GestureDetector(
+   child: Container(
+        alignment: Alignment.center,
+        height: MediaQuery.of(context).size.height * 0.08,
+        width: double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary.withOpacity(.5)),
+        child: Text(
+          buttonText,
+        ),
+      ),
+      onTap: () async {
+      //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
+                    if (_rememberMe == true) {
+                      final SharedPreferences sharedPreferences =
+                          await SharedPreferences.getInstance();
+                      sharedPreferences.setString('email', _email);
+                    }
+
+                    _signin(_email,
+                        _password); // pass email and password to _signin in function
+      }
+
+    );
   }
+
+
+
+
 }
 
 //TODO: https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword   make switch statements with all of these Firebase Auth error messages

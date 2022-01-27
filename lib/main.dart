@@ -64,3 +64,6 @@ class MyApp extends StatelessWidget {
 //Switching themes in the flutter apps - Flutterant
 
 //TODO:  run "flutter format lib" in the terminal to autoformat all the code documents in lib folder. lib can be changed out for any directory.
+
+
+///* SIMPL - Streamlined Inventory Management and Product Logistics  - i sent Dad the logo that I wnated to use in Messages. */
