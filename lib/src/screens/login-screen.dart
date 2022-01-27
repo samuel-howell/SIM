@@ -216,8 +216,10 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Image(image: AssetImage('assets/SIMPL-light.png')),
+
               SizedBox(
-                height: 220,
+                height: 120,
               ),
               Text(
                 'Welcome Back',
@@ -356,6 +358,7 @@ Widget primaryButton(BuildContext context, buttonText) {
             borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary.withOpacity(.5)),
         child: Text(
           buttonText,
+           style: textButton.copyWith(color: kWhiteColor),
         ),
       ),
       onTap: () async {

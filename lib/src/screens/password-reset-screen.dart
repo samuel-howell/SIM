@@ -16,55 +16,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //     appBar: AppBar(
-    //         title: Text('Reset Password Screen'),
-    //         centerTitle: true,
-    //         backgroundColor: Theme.of(context).backgroundColor),
-    //     body: Center(
-    //       child: Column(
-    //         children: [
-    //           Text('Enter the email associated with your account below',
-    //               style: GoogleFonts.lato(
-    //                   textStyle: TextStyle(color: Colors.grey, fontSize: 26))),
-    //           _buildEmailTF(),
-    //           ElevatedButton(
-    //               style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.primary),
-    //               child: Text('Send Password Reset'),
-    //               //when pressed, pass email and password to _signin function
-    //               onPressed: () async {
-    //                 try {
-    //                   print('the email is ' + _email);
-    //                   await auth.sendPasswordResetEmail(email: _email);
-    //                 } on FirebaseAuthException catch (error) {
-    //                   print(
-    //                       'an error was encountered with the forgot password function ');
-    //                   print(error.code);
-    //                 }
-    //               }),
-    //           Text(
-    //               'Been a few minutes and you didn\'t get the email? Click the button below to resend.',
-    //               style: GoogleFonts.lato(
-    //                   textStyle: TextStyle(color: Colors.grey, fontSize: 16))),
-    //           ElevatedButton(
-    //               style: ElevatedButton.styleFrom(primary: Theme.of(context).colorScheme.primary),
-    //               child: Text(
-    //                   'Resend Password Reset Email'), //TODO: build out a way to resend the verification email here.
-    //               //when pressed, pass email and password to _signin function
-    //               onPressed: () async {
-    //                 try {
-    //                   print('the email is ' + _email);
-    //                   await auth.sendPasswordResetEmail(email: _email);
-    //                 } on FirebaseAuthException catch (error) {
-    //                   print(
-    //                       'an error was encountered with the forgot password function ');
-    //                   print(error.code);
-    //                 }
-    //               })
-    //         ],
-    //       ),
-    //     )
-    //     );
+
   
   
       return Scaffold(

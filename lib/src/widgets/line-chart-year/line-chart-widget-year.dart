@@ -223,7 +223,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                           child: Text(
                             'Quantity',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: Theme.of(context).colorScheme.primary,
                               fontSize: 14,
                               letterSpacing: 2,
                               fontWeight: FontWeight.bold,
@@ -247,7 +247,7 @@ class _LineChartWidgetYearState extends State<LineChartWidgetYear>
                 Text(
                   'Month',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 14,
                     letterSpacing: 2,
                     fontWeight: FontWeight.bold,

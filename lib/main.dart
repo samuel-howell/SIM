@@ -50,10 +50,10 @@ class MyApp extends StatelessWidget {
           title: 'SIM',
           // theme: themeNotifier.isDark ? CustomTheme.darkTheme : CustomTheme.lightTheme,
           theme: themeNotifier.isDark
-              ? FlexThemeData.dark(scheme: FlexScheme.material)
+              ? FlexThemeData.dark(scheme: FlexScheme.materialHc)
               : FlexThemeData.light(
                   scheme: FlexScheme
-                      .material), // this line changes the theme for the entire app
+                      .materialHc), // this line changes the theme for the entire app
           debugShowCheckedModeBanner: false,
           home: HomeScreen(),
         );

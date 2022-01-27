@@ -225,7 +225,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
                           child: Text(
                             'Quantity',
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
+                              color: Theme.of(context).colorScheme.primary,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 2,
@@ -249,7 +249,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
                 Text(
                   'Time',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 14,
                     letterSpacing: 2,
                     fontWeight: FontWeight.bold,

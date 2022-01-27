@@ -45,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 70,
+              height: 220,
             ),
             Padding(
               padding: kDefaultPadding,
@@ -93,41 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             SizedBox(
               height: 20,
             ),
-            Padding(
-              padding: kDefaultPadding,
-              child: Row(
-                      children: <Widget>[
-                        Theme(
-                          data: ThemeData(unselectedWidgetColor: Theme.of(context).colorScheme.primaryVariant,),
-                          child: Checkbox(
-                            value: termsAccepted,
-
-                            /// the _rememberMe boolean
-                            checkColor: Theme.of(context).colorScheme.secondary,
-                            activeColor: Theme.of(context).colorScheme.primary,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                termsAccepted = !termsAccepted;
-                                print("termsAccepted is " + termsAccepted.toString() + " now.");
-                              });
-                            },
-                          ),
-                        ),
-                        Text('I accept '),
-                        GestureDetector(
-                          child: Text(
-                            'Terms and Conditions',
-                            style: TextStyle( color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline, decorationThickness: 1),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TosScreen()));
-                          }
-                        ),
-                      ],
-      ),            ),
+           
             SizedBox(
               height: 20,
             ),
