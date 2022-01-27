@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeModel>(
           builder: (context, ThemeModel themeNotifier, child) {
         return MaterialApp(
-          title: 'SIM',
+          title: 'SIMPL',
           // theme: themeNotifier.isDark ? CustomTheme.darkTheme : CustomTheme.lightTheme,
           theme: themeNotifier.isDark
               ? FlexThemeData.dark(scheme: FlexScheme.materialHc)

@@ -11,6 +11,8 @@ import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/sign-up-form.dart';
+import 'package:howell_capstone/theme/theme_model.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -207,97 +209,107 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
 
+//TODO: change size of logo and get rid of all the extra space around it using something like pixlr. implememt change notifier provider on reset password and sign up pages.
 
-
-    return Scaffold(
-      body: Padding(
-        padding: kDefaultPadding,
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image(image: AssetImage('assets/SIMPL-light.png')),
-
-              SizedBox(
-                height: 120,
-              ),
-              Text(
-                'Welcome Back',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  Text(
-                    'New to this app?',
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+    return ChangeNotifierProvider(
+      create: (_) => ThemeModel(),
+      child: Consumer<ThemeModel>(
+          builder: (context, ThemeModel themeNotifier, child) {
+      return Scaffold(
+        body: Padding(
+          padding: kDefaultPadding,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png')), // based on whether theme is dark or light, we show the logo with appropriate coloring
+    
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'Welcome Back',
+                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Text(
+                      'New to this app?',
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpScreen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                _buildEmailTF(),
+                SizedBox(height: 10),
+                _buildPasswordTF(),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                  _buildRememberMeCheckbox(),
+                
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => SignUpScreen(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
-                    ),
+                            builder: (context) => PasswordResetScreen()));
+                  },
+                  child: Text(
+                    'Forgot password?',
+                    style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              _buildEmailTF(),
-              SizedBox(height: 10),
-              _buildPasswordTF(),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                _buildRememberMeCheckbox(),
-              
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => PasswordResetScreen()));
-                },
-                child: Text(
-                  'Forgot password?',
-                  style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
                 ),
-              ),
-
-              ],),
-              
-              SizedBox(
-                height: 20,
-              ),
-              primaryButton( context,
-                 'Log In',
-              ),
-              SizedBox(
-                height: 20,
-              ),
-         
-         
-            ],
+    
+                ],),
+                
+                SizedBox(
+                  height: 20,
+                ),
+                primaryButton( context,
+                   'Log In',
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+           
+           
+              ],
+            ),
           ),
         ),
-      ),
+          
+      );
+          }
+          
+    )
     );
+          
   }
 
   _signin(String _email, String _password) async {
