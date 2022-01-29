@@ -8,6 +8,7 @@ import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
+import 'package:howell_capstone/src/screens/settings-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -62,6 +63,13 @@ class NavigationDrawerWidget extends StatelessWidget {
         const SizedBox(height: 24),
         Divider(color: Colors.white70),
         const SizedBox(height: 24),
+
+        const SizedBox(height: 15),
+        buildMenuItem(
+          text: 'SETTINGS',
+          icon: Icons.settings,
+          onClicked: () => selectedItem(context, 5),
+        ),
 
         buildMenuItem(
           text: 'SIGN OUT',
@@ -155,6 +163,15 @@ class NavigationDrawerWidget extends StatelessWidget {
           ));
           break;
         }
+
+        case 5:
+        if (Database().getStoreClicked() == true) {
+          // we will only allow access to scan screen once a store has been selected
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SettingsScreen(),
+          ));
+          break;
+        } 
     }
   }
 }

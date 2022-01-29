@@ -222,10 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+
+                SizedBox(height: 120),
                 Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png')), // based on whether theme is dark or light, we show the logo with appropriate coloring
     
                 SizedBox(
-                  height: 10,
+                  height: 80,
                 ),
                 Text(
                   'Welcome Back',
@@ -254,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         'Sign Up',
-                        style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
+                        style: TextStyle( color: Theme.of(context).colorScheme.primaryVariant, decoration: TextDecoration.underline, decorationThickness: 1),
                       ),
                     ),
                   ],
@@ -282,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text(
                     'Forgot password?',
-                    style: TextStyle( color: Theme.of(context).colorScheme.secondary, decoration: TextDecoration.underline, decorationThickness: 1),
+                    style: TextStyle( color: Theme.of(context).colorScheme.primaryVariant, decoration: TextDecoration.underline, decorationThickness: 1),
                   ),
                 ),
     

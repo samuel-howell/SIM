@@ -4,6 +4,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
+import 'package:howell_capstone/theme/theme_model.dart';
+import 'package:provider/provider.dart';
 
 class PasswordResetScreen extends StatefulWidget {
   @override
@@ -19,46 +21,66 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
   
   
-      return Scaffold(
-          body: Padding(
-            padding: kDefaultPadding,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 250,
-                ),
-                Text(
-                  'Reset Password',
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  'Please enter your email address',
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                resetForm(),
-                SizedBox(
-                  height: 40,
-                ),
-                GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                          ));
-                    },
-                    child: primaryButton(context, 'Reset Password')),
-              ],
+      return ChangeNotifierProvider(
+        create: (_) => ThemeModel(),
+      child: Consumer<ThemeModel>(
+      builder: (context, ThemeModel themeNotifier, child) {
+        return Scaffold(
+            body: Padding(
+              padding: kDefaultPadding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  
+                  SizedBox(height: 120),
+                Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png')), // based on whether theme is dark or light, we show the logo with appropriate coloring
+               SizedBox(height: 80),
+                  Text(
+                    'Reset Password',
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    'Please enter your email address',
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  resetForm(),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(),
+                            ));
+                      },
+                      child: primaryButton(context, 'Reset Password')),
+
+                  SizedBox(
+                        height: 20,
+                      ),
+
+                  Center(
+                    child: IconButton(
+                        icon: Icon(Icons.arrow_back),
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                      ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
+          );
+      })
+      );
   }
 
 
