@@ -35,7 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                SizedBox(height: 120),
                 Padding(
                   padding: kDefaultPadding,
-                  child: Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png')),
+                  child: Center(child: Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png'))),
                 ), // based on whether theme is dark or light, we show the logo with appropriate coloring
                SizedBox(height: 80),
 

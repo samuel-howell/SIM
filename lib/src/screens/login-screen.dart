@@ -224,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
 
                 SizedBox(height: 120),
-                Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png')), // based on whether theme is dark or light, we show the logo with appropriate coloring
+                Center(child: Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png'))), // based on whether theme is dark or light, we show the logo with appropriate coloring
     
                 SizedBox(
                   height: 80,

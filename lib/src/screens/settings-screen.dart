@@ -8,8 +8,9 @@ class SettingsScreen extends StatefulWidget {
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen> with AutomaticKeepAliveClientMixin {
   bool isSwitched = false;
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -34,13 +35,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children:[
-                      Text('DARK THEME', style: TextStyle(fontSize: 17, )),
+                      Text('DARK THEME', style: TextStyle(fontSize: 17, )), 
                     
                       Switch(
                     value: isSwitched,
                     onChanged: (value) {
                       setState(() {
-                        isSwitched = !isSwitched;
+                        isSwitched = !isSwitched; //TODO: the toggle resets to off every time i open the page. automaticClientMixin didn't seem to fix it
                         themeNotifier.isDark = isSwitched;
                         print(isSwitched);
                       });

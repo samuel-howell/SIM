@@ -200,7 +200,7 @@ class _LineChartWidgetMonthState extends State<LineChartWidgetMonth>
                 Text(
                   'Monthly Quantity',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondaryVariant,
+                    color: Theme.of(context).colorScheme.primary,
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
