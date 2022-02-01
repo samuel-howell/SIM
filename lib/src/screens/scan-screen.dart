@@ -255,9 +255,12 @@ class _ScanScreenState extends State<ScanScreen> {
           switch (scanType) {
             case 0:
               Database.incrementItemQuantity(scanData.code);
+              print('increment item quantity');
               break;
             case 1:
               Database.decrementItemQuantity(scanData.code);
+              print('decrement item quantity');
+
               break;
             case 2:
               //TODO: Do something for the tally count here...

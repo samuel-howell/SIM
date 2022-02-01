@@ -320,7 +320,7 @@ class Database {
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
       quantity = (snapshot.get('quantity'));
-      profit = (snapshot.get('price'));
+      profit = (snapshot.get('price')).toDouble();
 
       if (quantity == 0) {
         newQuantity = 0; // prevents  a negative quantity val
@@ -369,7 +369,7 @@ class Database {
     await salesDoc
         .set({
           "dataPoints": FieldValue.arrayUnion([
-            {"profit": profit, "date": now, "itemID": qrCode}
+            {"profit": profit.toDouble(), "date": now, "itemID": qrCode}
           ])
         }, SetOptions(merge: true))
         .whenComplete(() => print("updated item quantitygraph in the database"))
