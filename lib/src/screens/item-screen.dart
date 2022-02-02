@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:howell_capstone/src/screens/item-info-screen.dart';
+import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -46,6 +47,7 @@ class _ItemScreenState extends State<ItemScreen> {
   Widget build(BuildContext context) {
     try {
       return Scaffold(
+        drawer: NavigationDrawerWidget(),
         appBar: AppBar(
           centerTitle: true,
         ),

@@ -7,6 +7,7 @@ import 'package:howell_capstone/src/screens/password-reset-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:howell_capstone/src/screens/store-screen-initial.dart';
 import 'package:howell_capstone/src/screens/store-screen.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -333,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // TODO: set a default store so that the app doesn't crash if you immediately go to item page
 
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => StoreScreen()));
+            MaterialPageRoute(builder: (context) => StoreScreenInitial()));
       }
 
       // ifuser hasn't verified email, we send them back to the email confirmation page

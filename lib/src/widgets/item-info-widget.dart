@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ItemInfoWidget extends StatefulWidget {
   final String itemDocID;
@@ -54,7 +58,7 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
               // by casting to document snapshot, we can call .get and get the individual fields from the document.
 
 
-
+              
           return Container(
             child: SingleChildScrollView(
               child: Stack(
@@ -99,6 +103,30 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
           
   }));
 }
+
+
+//-------------------------------------------------------------------------------------
+String filePath ="";
+
+Future<String> get _localPath async {
+   final directory = await getApplicationSupportDirectory();
+   return directory.absolute.path;
+ }
+
+Future<File> get _localFile async {
+   final path = await _localPath;
+   filePath = '$path/data.csv';
+   return File('$path/data.csv').create();
+ }
+
+
+
+
+
+
+
+ //-------------------------------------------------------------------------------------
+ 
 
 Widget customDivider(BuildContext context) {
   return Column(

@@ -1,18 +1,13 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
-import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 //  init firesbase auth
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,34 +25,20 @@ var tappedIndex;
 String searchKey = "";
 int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
-List<List<String>> storeList = [];
-
-
-class StoreScreen extends StatefulWidget {
+class StoreScreenInitial extends StatefulWidget {
   @override
-  State<StoreScreen> createState() => _StoreScreenState();
+  State<StoreScreenInitial> createState() => _StoreScreenInitialState();
 }
 
-class _StoreScreenState extends State<StoreScreen> {
+class _StoreScreenInitialState extends State<StoreScreenInitial> {
   Stream<QuerySnapshot> streamQuery = db
       .collection('Users')
       .doc(Database().getCurrentUserID().toString())
       .collection('stores')
       .snapshots();
 
-
-  @override
-  void initState() {
-    super.initState();
-    storeList = [<String>["STORE", "ADDRESS"]]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though. 
-  }
-    
-
   @override
   Widget build(BuildContext context) {
-
-
-
     return Scaffold(
         drawer: NavigationDrawerWidget(),
         appBar: AppBar(
@@ -71,7 +52,6 @@ class _StoreScreenState extends State<StoreScreen> {
                   child: CircularProgressIndicator(),
                 );
               } else {
- 
                 return Container(
                     child: Column(children: <Widget>[
                   //this search bar filters out stores
@@ -80,23 +60,12 @@ class _StoreScreenState extends State<StoreScreen> {
                     child: showSearchDialog(),
                   ),
 
-                  
                   Expanded(
                       // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
                       child: ListView.builder(
                           itemCount: snapshot.data!.docs.length,
                           itemBuilder: (context, index) {
                             DocumentSnapshot doc = snapshot.data!.docs[index];
-
-
-                            //! adding this here populates storeList correctly, but is bad for reads because each time you open the page, all the stores are reread and readded to the list
-                            //! so maybe we need to add a button that takes us to another page that builds the list and adds all the stores (basically a duplicate of this page) but it would only be accessed when we wanted to export the store list
-                            //TODO: once you get that separate page working for store, wash, rinse, repeat the process for the items stored in each store (just as you are currenlty doing for stores stored in each user). instead of pulling store name and address, you need to pull quantity, price, etc.
-                            // // add the store to the store list
-                            // storeList.add(<String>[doc.get('name'), doc.get('address')]);
-                            // print('contents of storeList are: ');
-                            // print(storeList.toString());
-                            // print('');
 
                             // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                             return Slidable(
@@ -148,9 +117,21 @@ class _StoreScreenState extends State<StoreScreen> {
                                       Database().setStoreClicked(
                                           true); // now the user can access item screen.
 
-                                      setState(() {
+
+
+                                      setState(() {   //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                         tappedIndex = index;
-                                      }); //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
+                                      });
+                                      
+                                      
+                                      //*go to that store'ss item screen
+                                        if (Database().getStoreClicked() == true) {
+                                          // we will only allow access to item screen once a store has been selected
+
+                                          Navigator.of(context).push(MaterialPageRoute(
+                                            builder: (context) => ItemScreen(),
+                                          ));
+                                        }
                                     }),
                                 actions: <Widget>[
                                   // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
@@ -188,13 +169,9 @@ class _StoreScreenState extends State<StoreScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.post_add),
           onPressed: () => {
-            //showAddStoreDialog(context),
-            generateCsv(),
+            showAddStoreDialog(context),
           },
-        ),
-
-    
-        );
+        ));
   }
 
   showSearchDialog() {
@@ -327,71 +304,4 @@ class _StoreScreenState extends State<StoreScreen> {
       ],
     );
   }
-
-Future<Directory> getDir() async {
-  final Directory directory = await getApplicationDocumentsDirectory();
-  return directory;
-}
-
-
-// method to generate a csv file containing all stores and save it to downloads folder
-generateCsv() async {
-    print("GENERATE CSV WAS CLICKED");
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss')
-        .format(now);
-
-          Stream<QuerySnapshot> streamQuery = db
-      .collection('Users')
-      .doc(Database().getCurrentUserID().toString())
-      .collection('stores')
-      .snapshots();
-
-     StreamBuilder<QuerySnapshot>(
-            stream: streamQuery,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                print("snapshot has no data");
-                return  AlertDialog(title: Text("There are no stores to export!"),);
-              } else {
- 
-                return Expanded(
-                      // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
-                      child: ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            DocumentSnapshot doc = snapshot.data!.docs[index];
-
-                            
-                            // add the store to the store list
-                            storeList.add(<String>[doc.get('name'), doc.get('address')]);
-                            print('contents of storeList are: ');
-                            print(storeList.toString());
-                            print('');
-
-                            return  AlertDialog(title: Text("Stores were exported to a csv file named \"SIMPL-EXPORT-$formattedDate.csv\" in your Downloads folder!"),
-                            );
-                          }
-                      )
-                      );
-              }
-            }
-            );
-              
-
-  String csvData = ListToCsvConverter().convert(storeList);
-
-  Directory generalDownloadDir = Directory(
-                          '/storage/emulated/0/Download');
-
-
-  print(generalDownloadDir.toString());
-  
-
-  final File file = await File('${generalDownloadDir.path}/SIMPL-EXPORT-$formattedDate.csv').create();  //! you cant have spaces in the file name or you will get errno = 1
-  await file.writeAsString(csvData);
-  
-}
-
-
 }

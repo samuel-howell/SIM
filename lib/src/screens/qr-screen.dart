@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:csv/csv.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:flutter/foundation.dart';
@@ -145,6 +146,8 @@ class _QRScreenState extends State<QRScreen> {
                     //running on iOS
                     else if (Platform.isIOS) {
                       //TODO: do ios version of download to device method shown above for android and web
+                      Directory path = await getApplicationDocumentsDirectory();
+                      String documentsPath = path.path;
                     }
                   })),
           SizedBox(height: 20), // acts as a spacer
@@ -191,4 +194,6 @@ class _QRScreenState extends State<QRScreen> {
       ),
     );
   }
+
+
 }
