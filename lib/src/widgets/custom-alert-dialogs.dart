@@ -71,6 +71,7 @@ showStoreDeleteConfirmationAlertDialog(
   );
 }
 
+
 // this method will show an alert to enter the information to add a new store to database
 showAddStoreDialog(BuildContext context) {
   final TextEditingController _storeNameController = TextEditingController();
@@ -682,3 +683,4 @@ showEditItemDialog(BuildContext context, String itemDocID) {
         });
       });
 }
+

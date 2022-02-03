@@ -32,9 +32,7 @@ class StoreScreenInitial extends StatefulWidget {
 
 class _StoreScreenInitialState extends State<StoreScreenInitial> {
   Stream<QuerySnapshot> streamQuery = db
-      .collection('Users')
-      .doc(Database().getCurrentUserID().toString())
-      .collection('stores')
+      .collection('Stores')
       .snapshots();
 
   @override
@@ -244,9 +242,7 @@ class _StoreScreenInitialState extends State<StoreScreenInitial> {
 
               //  this stream query matches the searchkey to the names of the stores in the db
               streamQuery = db
-                  .collection('Users')
-                  .doc(currentUserID)
-                  .collection('stores')
+                  .collection('Stores')
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
@@ -281,9 +277,7 @@ class _StoreScreenInitialState extends State<StoreScreenInitial> {
 
                 //  this stream query matches the searchkey to the names of the stores in the db
                 streamQuery = db
-                    .collection('Users')
-                    .doc(currentUserID)
-                    .collection('stores')
+                    .collection('Stores')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
                     .snapshots();

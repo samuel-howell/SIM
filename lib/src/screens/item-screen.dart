@@ -261,9 +261,7 @@ Stream<QuerySnapshot> streamQuery = db
 //  the search bar for the item id
   showItemIDSearch() {
     streamQuery = db
-        .collection('Users')
-        .doc(Database().getCurrentUserID())
-        .collection('stores')
+        .collection('Stores')
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .snapshots();
@@ -278,9 +276,7 @@ Stream<QuerySnapshot> streamQuery = db
 
               //  this stream query matches the searchkey to the names of the stores in the db
               streamQuery = db
-                  .collection('Users')
-                  .doc(Database().getCurrentUserID())
-                  .collection('stores')
+                  .collection('Stores')
                   .doc(Database().getCurrentStoreID())
                   .collection('items')
                   .where('id', isGreaterThanOrEqualTo: searchKey)
@@ -315,9 +311,7 @@ Stream<QuerySnapshot> streamQuery = db
 
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
-                    .collection('Users')
-                    .doc(Database().getCurrentUserID())
-                    .collection('stores')
+                    .collection('Stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
@@ -344,9 +338,7 @@ Stream<QuerySnapshot> streamQuery = db
   // the seach bar for the item price
   showPriceSearch() {
     streamQuery = db
-        .collection('Users')
-        .doc(Database().getCurrentUserID())
-        .collection('stores')
+        .collection('Stores')
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .snapshots();
@@ -360,9 +352,7 @@ Stream<QuerySnapshot> streamQuery = db
                 lowSearchKey = double.parse(value);
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
-                    .collection('Users')
-                    .doc(Database().getCurrentUserID())
-                    .collection('stores')
+                    .collection('Stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
                     .where('price', isGreaterThanOrEqualTo: lowSearchKey)
@@ -392,9 +382,7 @@ Stream<QuerySnapshot> streamQuery = db
 
                 //  this stream query matches the searchkey to the names of the items in the db
                 streamQuery = db
-                    .collection('Users')
-                    .doc(Database().getCurrentUserID())
-                    .collection('stores')
+                    .collection('Stores')
                     .doc(Database().getCurrentStoreID())
                     .collection('items')
                     .where('price', isGreaterThanOrEqualTo: lowSearchKey)

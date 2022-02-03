@@ -38,9 +38,7 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
     return Scaffold(
         body: StreamBuilder(
             stream: FirebaseFirestore.instance
-                .collection('Users')
-                .doc(currentUserID)
-                .collection('stores')
+                .collection('Stores')
                 .doc(Database().getCurrentStoreID())
                 .collection("items")
                 .doc(widget

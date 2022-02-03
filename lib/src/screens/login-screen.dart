@@ -331,8 +331,6 @@ class _LoginScreenState extends State<LoginScreen> {
         //     await Database.updateUserVerification(
         //   userID: userID, emailVerified: true); //! sets to email verified to ture every time the user logs into the app, which is an uneccesary write to the db
 
-        // TODO: set a default store so that the app doesn't crash if you immediately go to item page
-
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => StoreScreenInitial()));
       }

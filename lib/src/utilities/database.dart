@@ -87,8 +87,7 @@ class Database {
       "mostRecentScanIn": mostRecentScanIn,
       "mostRecentScanOut": "", // initiliaze to null until first scan out
 
-      "LastEmployeeToInteract":
-          currentUserUID, //this will be the user id of the last employee to either scan in or scan out the item
+      "LastEmployeeToInteract": await Database().getCurrentUserName(), //this will be the user id of the last employee to either scan in or scan out the item
     };
 
     Map<String, dynamic> firstQuantityDataPoint = <String, dynamic>{
@@ -268,22 +267,31 @@ class Database {
         ?.uid; // get the current user id at the moment the method has been triggered
 
     //  this doc ref finds the item doc
-    DocumentReference itemDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+    //*@@@@@@@@@@@@@
+    // DocumentReference itemDocumentReferencer = _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(Database().getCurrentStoreID())
+    //     .collection('items')
+    //     .doc(
+    //         itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+    //*@@@@@@@@@@@@@
+
+        DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(
-            itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+            itemDocID); 
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
+      "lowercaseName": name.toLowerCase(),
       "price": price,
       "quantity": quantity,
       "tags": [],
       "description": description,
       "LastEmployeeToInteract": await Database().getCurrentUserName(),
-      "item-id": itemDocumentReferencer.id,
+      //"item-id": itemDocumentReferencer.id, //! Dont think i need this
     };
 
     await itemDocumentReferencer
@@ -303,9 +311,7 @@ class Database {
         .format(now); // format the date like "11/15/2021 - 16:52"
 
     String? currentUserUID = _auth.currentUser?.uid;
-    DocumentReference itemDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+    DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(
@@ -328,9 +334,7 @@ class Database {
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(qrCode)
@@ -360,9 +364,7 @@ class Database {
         .format(now); // format the date like "11/15/2021 - 16:52"
 
     String? currentUserUID = _auth.currentUser?.uid;
-    DocumentReference itemDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+    DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(
@@ -391,9 +393,7 @@ class Database {
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(qrCode)
@@ -410,9 +410,7 @@ class Database {
         .catchError((e) => print(e));
 
     //  update the sales data point for the store
-    DocumentReference salesDoc = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+    DocumentReference salesDoc = _storeCollection
         .doc(Database.currentStoreID)
         .collection('storeData')
         .doc('sales');
@@ -423,7 +421,7 @@ class Database {
             {"profit": profit.toDouble(), "date": now, "itemID": qrCode}
           ])
         }, SetOptions(merge: true))
-        .whenComplete(() => print("updated item quantitygraph in the database"))
+        .whenComplete(() => print("updated item salesData in the database"))
         .catchError((e) => print(e));
   }
 
@@ -577,9 +575,7 @@ class Database {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemID)
@@ -625,7 +621,7 @@ class Database {
 
     return q;
   }
-
+  //  method to return all data for a specific year
   Future<List<QuantityOverYear>> getYearLineData(
       String itemID, int year) async {
     List<dynamic> list;
@@ -633,9 +629,7 @@ class Database {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemID)
@@ -684,9 +678,7 @@ class Database {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemID)

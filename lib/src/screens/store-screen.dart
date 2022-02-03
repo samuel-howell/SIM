@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -62,13 +63,35 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
 
+    // this is the helper method for the popup menu button
+  void onSelected(BuildContext context, int item) async {
+    switch (item) {
+      case 0:
+        showAddStoreDialog(context);
+        break;
 
+      case 1:
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => StoreScreenExport()));
+        break;
+
+    }
+  }
 
     return Scaffold(
         drawer: NavigationDrawerWidget(),
-        appBar: AppBar(
-          centerTitle: true,
-        ),
+         appBar: AppBar(actions: [
+        PopupMenuButton<int>(
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                      child: Text('Add New Store'),
+                      value:
+                          0 // this is the value that will be passed when we press on this popup menu item
+                      ),
+                  PopupMenuItem(child: Text('Export Current Stores'), value: 1),
+                ])
+      ]),
         body: StreamBuilder<QuerySnapshot>(
             stream: streamQuery,
             builder: (context, snapshot) {
@@ -95,14 +118,7 @@ class _StoreScreenState extends State<StoreScreen> {
                             DocumentSnapshot doc = snapshot.data!.docs[index];
 
 
-                            //! adding this here populates storeList correctly, but is bad for reads because each time you open the page, all the stores are reread and readded to the list
-                            //! so maybe we need to add a button that takes us to another page that builds the list and adds all the stores (basically a duplicate of this page) but it would only be accessed when we wanted to export the store list
-                            //TODO: once you get that separate page working for store, wash, rinse, repeat the process for the items stored in each store (just as you are currenlty doing for stores stored in each user). instead of pulling store name and address, you need to pull quantity, price, etc.
-                            // // add the store to the store list
-                            // storeList.add(<String>[doc.get('name'), doc.get('address')]);
-                            // print('contents of storeList are: ');
-                            // print(storeList.toString());
-                            // print('');
+                  
 
                             // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                             return Slidable(
@@ -191,13 +207,8 @@ class _StoreScreenState extends State<StoreScreen> {
                 ]));
               }
             }),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.post_add),
-          onPressed: () => {
-            showAddStoreDialog(context),
-            //generateCsv(),   //!  THIS FUNCTION DOES WORK!!!!!
-          },
-        ),
+    
+      
 
     
         );
@@ -366,17 +377,17 @@ generateCsv() async {
         .format(now);
 
           Stream<QuerySnapshot> streamQuery = db
-      .collection('Users')
-      .doc(Database().getCurrentUserID().toString())
-      .collection('stores')
+      .collection('Stores')
       .snapshots();
+
+      print(await streamQuery.length);
 
      StreamBuilder<QuerySnapshot>(
             stream: streamQuery,
             builder: (context, snapshot) {
               if (!snapshot.hasData) {
                 print("snapshot has no data");
-                return  AlertDialog(title: Text("There are no stores to export!"),);
+                return Text('NO DATA');
               } else {
  
                 return Expanded(
@@ -393,7 +404,7 @@ generateCsv() async {
                             print(storeList.toString());
                             print('');
 
-                            return  AlertDialog(title: Text("Stores were exported to a csv file named \"SIMPL-EXPORT-$formattedDate.csv\" in your Downloads folder!"),
+                            return  Text("Stores were exported to a csv file named \"SIMPL-EXPORT-$formattedDate.csv\" in your Downloads folder!"
                             );
                           }
                       )
