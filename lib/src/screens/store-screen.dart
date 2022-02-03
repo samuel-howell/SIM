@@ -39,12 +39,18 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
-  Stream<QuerySnapshot> streamQuery = db
-      .collection('Users')
-      .doc(Database().getCurrentUserID().toString())
-      .collection('stores')
-      .snapshots();
 
+  //*@@@@@@@@@@@@@@@@@
+  // Stream<QuerySnapshot> streamQuery = db
+  //     .collection('Users')
+  //     .doc(Database().getCurrentUserID().toString())
+  //     .collection('stores')
+  //     .snapshots();
+  //*@@@@@@@@@@@@@@@@@
+
+  Stream<QuerySnapshot> streamQuery = db
+      .collection('Stores')
+      .snapshots();
 
   @override
   void initState() {
@@ -188,8 +194,8 @@ class _StoreScreenState extends State<StoreScreen> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.post_add),
           onPressed: () => {
-            //showAddStoreDialog(context),
-            generateCsv(),
+            showAddStoreDialog(context),
+            //generateCsv(),   //!  THIS FUNCTION DOES WORK!!!!!
           },
         ),
 
@@ -265,14 +271,24 @@ class _StoreScreenState extends State<StoreScreen> {
             setState(() {
               searchKey = value.toLowerCase();
 
+
               //  this stream query matches the searchkey to the names of the stores in the db
+              //*@@@@@@@@@@@@@@@
+              // streamQuery = db
+              //     .collection('Users')
+              //     .doc(currentUserID)
+              //     .collection('stores')
+              //     .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
+              //     .where('lowercaseAddress', isLessThan: searchKey + 'z')
+              //     .snapshots();
+              //*@@@@@@@@@@@@@@@
+              
               streamQuery = db
-                  .collection('Users')
-                  .doc(currentUserID)
-                  .collection('stores')
+                  .collection('Stores')
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
+
             });
           },
           decoration: InputDecoration(
@@ -303,10 +319,18 @@ class _StoreScreenState extends State<StoreScreen> {
                 searchKey = value.toLowerCase();
 
                 //  this stream query matches the searchkey to the names of the stores in the db
+                //*@@@@@@@@@@@@@@@
+                // streamQuery = db
+                //     .collection('Users')
+                //     .doc(currentUserID)
+                //     .collection('stores')
+                //     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
+                //     .where('lowercaseName', isLessThan: searchKey + 'z')
+                //     .snapshots();
+                //*@@@@@@@@@@@@@@@
+
                 streamQuery = db
-                    .collection('Users')
-                    .doc(currentUserID)
-                    .collection('stores')
+                    .collection('Stores')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
                     .snapshots();

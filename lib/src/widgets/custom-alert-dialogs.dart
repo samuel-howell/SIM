@@ -42,9 +42,7 @@ showStoreDeleteConfirmationAlertDialog(
           'the delete button for store delete was pressed and the store id was ' +
               storeDocID.toString());
       db
-          .collection('Users')
-          .doc(currentUserUID)
-          .collection('stores')
+          .collection('Stores')
           .doc(storeDocID)
           .delete(); // in firebase, it goes from collection  users -> store -> the doc id of the the store you just tapped, then deletes it
 
@@ -294,13 +292,24 @@ showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {
   Widget continueButton = TextButton(
     child: Text("Yes"),
     onPressed: () {
-      String? currentUserUID = _auth.currentUser
-          ?.uid; // get the current user id at the moment the method has been triggered
+      //*@@@@@@@@@@@@@@@@@
+      // String? currentUserUID = _auth.currentUser
+      //     ?.uid; // get the current user id at the moment the method has been triggered
+
+      // db
+      //     .collection('Users')
+      //     .doc(currentUserUID)
+      //     .collection('stores')
+      //     .doc(Database().getCurrentStoreID())
+      //     .collection('items')
+      //     .doc(itemDocID)
+      //     .delete();
+      //*@@@@@@@@@@@@@@@@@
+
 
       db
-          .collection('Users')
-          .doc(currentUserUID)
-          .collection('stores')
+          .collection('Stores')
+       
           .doc(Database().getCurrentStoreID())
           .collection('items')
           .doc(itemDocID)

@@ -35,10 +35,18 @@ class _ItemScreenState extends State<ItemScreen> {
   //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
 
 //declaring stream
-  Stream<QuerySnapshot> streamQuery = db
-      .collection('Users')
-      .doc(Database().getCurrentUserID())
-      .collection('stores')
+//*@@@@@@@@@@@@@@@
+  // Stream<QuerySnapshot> streamQuery = db
+  //     .collection('Users')
+  //     .doc(Database().getCurrentUserID())
+  //     .collection('stores')
+  //     .doc(Database().getCurrentStoreID())
+  //     .collection('items')
+  //     .snapshots();
+//*@@@@@@@@@@@@@@@
+
+Stream<QuerySnapshot> streamQuery = db
+      .collection('Stores')
       .doc(Database().getCurrentStoreID())
       .collection('items')
       .snapshots();

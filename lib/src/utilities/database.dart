@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _userCollection = _firestore.collection('Users');
+final CollectionReference _storeCollection = _firestore.collection('Stores');
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 String? currentUserUID = _auth.currentUser?.uid;
@@ -36,24 +37,41 @@ class Database {
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
 
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
-    DocumentReference itemDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(Database.currentStoreID)
-        .collection('items')
-        .doc(
-            id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // String? currentUserUID = _auth.currentUser
+    //     ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
+    // DocumentReference itemDocumentReferencer = _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(Database.currentStoreID)
+    //     .collection('items')
+    //     .doc(
+    //         id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
 
-    DocumentReference quantityDoc = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(Database.currentStoreID)
-        .collection('items')
-        .doc(id)
-        .collection('graphData')
-        .doc('quantity');
+    // DocumentReference quantityDoc = _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(Database.currentStoreID)
+    //     .collection('items')
+    //     .doc(id)
+    //     .collection('graphData')
+    //     .doc('quantity');
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+        String? currentUserUID = _auth.currentUser
+                ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
+            DocumentReference itemDocumentReferencer = _storeCollection
+                .doc(Database.currentStoreID)
+                .collection('items')
+                .doc(
+                    id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
+
+            DocumentReference quantityDoc = _storeCollection
+                .doc(Database.currentStoreID)
+                .collection('items')
+                .doc(id)
+                .collection('graphData')
+                .doc('quantity');
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -120,13 +138,19 @@ class Database {
     required String name,
     required String address,
   }) async {
-    DateTime now = DateTime.now();
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered
-    DocumentReference storeDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // String? currentUserUID = _auth.currentUser
+    //     ?.uid; // get the current user id at the moment the method has been triggered
+    // DocumentReference storeDocumentReferencer = _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    DocumentReference storeDocumentReferencer = _storeCollection
+        .doc(); 
+
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -146,14 +170,19 @@ class Database {
 
 //  method to delete a store
   static Future<void> deleteStore(String storeDocID) async {
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered
 
-    await _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
-        .doc(Database().getCurrentStoreID())
-        .collection('items')
+
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // await _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(Database().getCurrentStoreID())
+    //     .collection('items')
+    //     .doc(storeDocID)
+    //     .delete();
+//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    await _storeCollection
         .doc(storeDocID)
         .delete();
 
@@ -166,13 +195,22 @@ class Database {
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
 
-    await _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+//*@@@@@@@@@@@@@@@@@@@@@@@@
+    // await _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(Database().getCurrentStoreID())
+    //     .collection('items')
+    //     .doc(itemDocID)
+    //     .delete();
+//*@@@@@@@@@@@@@@@@@@@@@@@@
+
+    await _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemDocID)
         .delete();
+
 
     print('the delete buttonnnnnwas pressed.and the item id was ' +
         itemDocID.toString());
@@ -186,17 +224,30 @@ class Database {
     required String address,
     required String docID,
   }) async {
+
+    //*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    // String? currentUserUID = _auth.currentUser
+    //     ?.uid; // get the current user id at the moment the method has been triggered
+    // DocumentReference storeDocumentReferencer = _userCollection
+    //     .doc(currentUserUID)
+    //     .collection('stores')
+    //     .doc(
+    //         docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+    //*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
-    DocumentReference storeDocumentReferencer = _userCollection
-        .doc(currentUserUID)
-        .collection('stores')
+    DocumentReference storeDocumentReferencer = _storeCollection
         .doc(
             docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
+
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
       "address": address,
+      "lowercaseAddress": address.toLowerCase(),
+      "lowercaseName": name.toLowerCase(),
       "storeID": storeDocumentReferencer.id,
     };
 
