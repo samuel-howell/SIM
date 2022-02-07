@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:howell_capstone/src/screens/item-info-screen.dart';
+import 'package:howell_capstone/src/screens/item-screen-export.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +27,9 @@ double highSearchKey = 0;
 
 int searchFilter = 1;
 
+// for use with csv export
+List<List<String>> itemList = [];
+
 class ItemScreen extends StatefulWidget {
   @override
   State<ItemScreen> createState() => _ItemScreenState();
@@ -34,16 +38,6 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> {
   //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
 
-//declaring stream
-//*@@@@@@@@@@@@@@@
-  // Stream<QuerySnapshot> streamQuery = db
-  //     .collection('Users')
-  //     .doc(Database().getCurrentUserID())
-  //     .collection('stores')
-  //     .doc(Database().getCurrentStoreID())
-  //     .collection('items')
-  //     .snapshots();
-//*@@@@@@@@@@@@@@@
 
 Stream<QuerySnapshot> streamQuery = db
       .collection('Stores')
@@ -51,14 +45,46 @@ Stream<QuerySnapshot> streamQuery = db
       .collection('items')
       .snapshots();
 
+
+  @override
+  void initState() {
+    super.initState();
+    itemList = [<String>["ITEM", "QUANTITY"]]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though. 
+  }
+
   @override
   Widget build(BuildContext context) {
     try {
+
+       // this is the helper method for the popup menu button
+  void onSelected(BuildContext context, int item) async {
+    switch (item) {
+      case 0:
+        showAddItemDialog(context);
+        break;
+
+      case 1:
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ItemScreenExport()));
+        break;
+
+    }
+  }
+
       return Scaffold(
         drawer: NavigationDrawerWidget(),
-        appBar: AppBar(
-          centerTitle: true,
-        ),
+        appBar: AppBar(actions: [
+        PopupMenuButton<int>(
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
+                  PopupMenuItem(
+                      child: Text('Add New Item'),
+                      value:
+                          0 // this is the value that will be passed when we press on this popup menu item
+                      ),
+                  PopupMenuItem(child: Text('Export Current Items'), value: 1),
+                ])
+      ]),
         body: StreamBuilder<QuerySnapshot>(
             stream:
                 streamQuery, // this streamQuery will change based on what is typed into the search bar
@@ -174,10 +200,6 @@ Stream<QuerySnapshot> streamQuery = db
                 ]));
               }
             }),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.post_add),
-          onPressed: () => {showAddItemDialog(context)},
-        ),
       );
     } catch (e) {
       //! this code isn't working.

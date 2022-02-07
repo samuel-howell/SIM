@@ -41,13 +41,6 @@ class StoreScreen extends StatefulWidget {
 
 class _StoreScreenState extends State<StoreScreen> {
 
-  //*@@@@@@@@@@@@@@@@@
-  // Stream<QuerySnapshot> streamQuery = db
-  //     .collection('Users')
-  //     .doc(Database().getCurrentUserID().toString())
-  //     .collection('stores')
-  //     .snapshots();
-  //*@@@@@@@@@@@@@@@@@
 
   Stream<QuerySnapshot> streamQuery = db
       .collection('Stores')
@@ -184,6 +177,19 @@ class _StoreScreenState extends State<StoreScreen> {
                                       icon: Icons.delete_sharp,
                                       onTap: () => {
                                             showStoreDeleteConfirmationAlertDialog(
+                                                context, doc.id),
+                                            print('store ' +
+                                                doc.id +
+                                                ' was deleted.')
+                                          }),
+
+                                  // slide action to give new user access to the store
+                                  IconSlideAction(
+                                      caption: 'Add User',
+                                      color: Theme.of(context).primaryColor,
+                                      icon: Icons.person_add,
+                                      onTap: () => {
+                                            showAddUserDialog(
                                                 context, doc.id),
                                             print('store ' +
                                                 doc.id +

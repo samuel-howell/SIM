@@ -30,30 +30,33 @@ var tappedIndex;
 String searchKey = "";
 int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
-List<List<String>> storeList = [];
+// for use of csv export
+List<List<String>> itemList = [];
 
 
-class StoreScreenExport extends StatefulWidget {
+class ItemScreenExport extends StatefulWidget {
   @override
-  State<StoreScreenExport> createState() => _StoreScreenState();
+  State<ItemScreenExport> createState() => _StoreScreenState();
 }
 
-class _StoreScreenState extends State<StoreScreenExport> {
+class _StoreScreenState extends State<ItemScreenExport> {
 
 
 
-  Stream<QuerySnapshot> streamQuery = db
+ Stream<QuerySnapshot> streamQuery = db
       .collection('Stores')
+      .doc(Database().getCurrentStoreID())
+      .collection('items')
       .snapshots();
 
   @override
   void initState() {
     super.initState();
-    storeList = [<String>["STORE", "ADDRESS"]]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though. 
+    itemList = [<String>["ID", "NAME", "PRICE", "QUANTITY", "LAST EMPLOYEE TO INTERACT", "MOST RECENT SCAN IN", "MOST RECENT SCAN OUT", "DESCRIPTION"]]; // we have to reset itemList  to empty every time the page is built. we add one entry <String>["blah", "blah"] to serve as a headers though. 
   }
     
 
-//*  this page just loads all the stores into a list and gives the user an opprotunity to export as csv file
+//*  this page just loads all the items into a list and gives the user an opprotunity to export as csv file
   @override
   Widget build(BuildContext context) {
 
@@ -61,7 +64,7 @@ class _StoreScreenState extends State<StoreScreenExport> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Stores to be Exported'),
+          title: Text('Items to be Exported'),
           centerTitle: true,
         ),
         body: StreamBuilder<QuerySnapshot>(
@@ -84,9 +87,9 @@ class _StoreScreenState extends State<StoreScreenExport> {
 
 
                             // add the store to the store list
-                            storeList.add(<String>[doc.get('name'), doc.get('address')]);
-                            print('contents of storeList are: ');
-                            print(storeList.toString());
+                            itemList.add(<String>[doc.get('id'), doc.get('name').toString(), doc.get('price').toString(), doc.get('quantity').toString(), doc.get('LastEmployeeToInteract'), doc.get('mostRecentScanIn'), doc.get('mostRecentScanOut'), doc.get('description')]);
+                            print('contents of itemList are: ');
+                            print(itemList.toString());
                             print('');
 
                             // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
@@ -123,7 +126,7 @@ class _StoreScreenState extends State<StoreScreenExport> {
                                                     SizedBox(
                                                       height: 10,
                                                     ),
-                                                    Text(doc.get('address').toString(), style: TextStyle(fontSize: 18))
+                                                    Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 18))
                                                         
                                                   ],
                                                 ),
@@ -152,7 +155,7 @@ class _StoreScreenState extends State<StoreScreenExport> {
               child: Icon(Icons.file_download),
               onPressed: () => {
                 generateCsv(),
-                Fluttertoast.showToast(msg: 'Store List was exported!'),
+                Fluttertoast.showToast(msg: 'Item List was exported!'),
                 Navigator.pop(context),
               },
             ),
@@ -175,15 +178,15 @@ generateCsv() async {
         .format(now);
 
 
-  String csvData = ListToCsvConverter().convert(storeList);
+  String csvData = ListToCsvConverter().convert(itemList);
 
   Directory generalDownloadDir = Directory(
                           '/storage/emulated/0/Download');
 
 
-  print("The directory is mnwoiwoi: " + generalDownloadDir.toString());
+  print("The directory is: " + generalDownloadDir.toString());
   
-  final File file = await File('${generalDownloadDir.path}/SIMPL_S-EXPORT_$formattedDate.csv').create();  //! you cant have spaces in the file name or you will get errno = 1
+  final File file = await File('${generalDownloadDir.path}/SIMPL_I-EXPORT_$formattedDate.csv').create();  //! you cant have spaces in the file name or you will get errno = 1
   await file.writeAsString(csvData);
 
   print('made it to the end');

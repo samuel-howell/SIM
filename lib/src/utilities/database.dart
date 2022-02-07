@@ -132,20 +132,30 @@ class Database {
         .catchError((e) => print(e));
   }
 
+
+//  method to  add a user access to a store
+  static Future<void> addStoreUser({
+    required String email,
+    required String docID,
+  }) async {
+    DocumentReference storeDocumentReferencer = _storeCollection.doc(docID);
+   
+
+    await storeDocumentReferencer
+        .set({
+          "sharedWith": FieldValue.arrayUnion([
+            {"UID": await Database().getUserUIDFromEmail(email), "Name": await Database().getUserNameFromEmail(email), "Email": email}
+          ])
+        }, SetOptions(merge: true))
+        .whenComplete(() => print("user added to the store " + Database.currentStoreID.toString()))
+        .catchError((e) => print(e));
+  }
+
 //  method to  add a store
   static Future<void> addStore({
     required String name,
     required String address,
   }) async {
-
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // String? currentUserUID = _auth.currentUser
-    //     ?.uid; // get the current user id at the moment the method has been triggered
-    // DocumentReference storeDocumentReferencer = _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     DocumentReference storeDocumentReferencer = _storeCollection
         .doc(); 
@@ -157,6 +167,8 @@ class Database {
       "address": address,
       "lowercaseAddress": address.toLowerCase(),
       "storeID": storeDocumentReferencer.id,
+      "sharedWith": [],  // init an array to store all the user uids that can access this particular store
+      "createdBy:": Database().getCurrentUserID()
     };
 
     await storeDocumentReferencer
@@ -734,6 +746,37 @@ class Database {
     return q;
   }
 
+
+  getUserUIDFromEmail(String email) async {
+    Stream<QuerySnapshot<Object?>> userDocumentStream = _userCollection.where('email', isEqualTo: email).snapshots(); 
+
+    QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
+
+    DocumentSnapshot doc = docQuery.docs[0]; // returns the first entry in an array list.
+
+    print('the size of the docQuery is ' + docQuery.size.toString());
+    print('the value that should be retd from getUserUIDFromEmail method is ' + doc.get('userID'));
+
+
+    return doc.get('userID');
+  }
+
+  getUserNameFromEmail(String email) async {
+    Stream<QuerySnapshot<Object?>> userDocumentStream = _userCollection.where('email', isEqualTo: email).snapshots(); 
+
+    QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
+
+    DocumentSnapshot doc = docQuery.docs[0]; // returns the first entry in an array list.
+
+    print('the size of the docQuery is ' + docQuery.size.toString());
+    print('the value that should be retd from getUserUIDFromEmail method is ' + doc.get('firstName') + " " + doc.get('lastName'));
+
+
+    return doc.get('firstName') + " " + doc.get('lastName');
+  }
+
+
+  
   Future<double> getStoreTotalProfits() async {
     List<dynamic> list;
     double totalProfits = 0;

@@ -229,6 +229,7 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                           return null;
                         },
                       ),
+                      
 
                       SizedBox(height: 30),
                       _isProcessing
@@ -684,3 +685,89 @@ showEditItemDialog(BuildContext context, String itemDocID) {
       });
 }
 
+// this method shows an alert to update the store name address
+showAddUserDialog(BuildContext context, String storeDocID) {
+  // make sure to pull the docID from the store screen ( the store that is clicked on)
+
+  final TextEditingController _emailController = TextEditingController();
+  bool _isProcessing = false;
+  final _formKey = GlobalKey<FormState>();
+
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+              title: Center(child: Text("Add a new User Access")),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      //text field for store name
+                      TextFormField(
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Enter the User\'s email',
+                        ),
+                        controller: _emailController,
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          // The validator receives the text that the user has entered.
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter some text';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 20),
+
+                      
+
+                      SizedBox(height: 30),
+                      _isProcessing
+                          ? Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  CustomColors.red,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.maxFinite,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    // this call to validate has to be included or else the form validation checks set above won't show.
+
+                                    setState(() {
+                                      _isProcessing = true;
+                                    });
+
+                                    await Database.addStoreUser(
+                                      email: _emailController.text,
+                                      docID: storeDocID
+                                    );
+
+                                    setState(() {
+                                      _isProcessing = false;
+                                    });
+
+                                    Navigator.of(context)
+                                        .pop(); // return to previous screen after operation is complete
+                                  }
+                                },
+                                child: const Text('Submit'),
+                              ),
+                            )
+                    ],
+                  ),
+                ),
+              ));
+        });
+      });
+}
