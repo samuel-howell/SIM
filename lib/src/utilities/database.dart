@@ -747,6 +747,7 @@ class Database {
   }
 
 
+// helper method for add user to store
   getUserUIDFromEmail(String email) async {
     Stream<QuerySnapshot<Object?>> userDocumentStream = _userCollection.where('email', isEqualTo: email).snapshots(); 
 
@@ -761,6 +762,7 @@ class Database {
     return doc.get('userID');
   }
 
+// helper method for add user to store
   getUserNameFromEmail(String email) async {
     Stream<QuerySnapshot<Object?>> userDocumentStream = _userCollection.where('email', isEqualTo: email).snapshots(); 
 

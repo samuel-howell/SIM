@@ -1,7 +1,11 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:convert';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
@@ -173,12 +177,39 @@ Future<Directory> getDir() async {
 // method to generate a csv file containing all stores and save it to downloads folder
 generateCsv() async {
     print("GENERATE CSV WAS CLICKED");
+
+    String csvData = ListToCsvConverter().convert(itemList);
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss')
         .format(now);
 
+// how to download on web //TODO: do this same operation for the store export on web
+ if (kIsWeb){
+    print('registering as a web device');
+  final bytes = utf8.encode(csvData);
+//NOTE THAT HERE WE USED HTML PACKAGE
+final blob = html.Blob([bytes]);
+//It will create downloadable object
+final url = html.Url.createObjectUrlFromBlob(blob);
+//It will create anchor to download the file
+final anchor = html.document.createElement('a')  as    html.AnchorElement..href = url..style.display = 'none'         ..download = 'SIMPL_I-EXPORT_$formattedDate.csv';       
+//finally add the csv anchor to body 
+html.document.body!.children.add(anchor);
+// Cause download by calling this function         
+anchor.click();
+//revoke the object
+html.Url.revokeObjectUrl(url);
+  
 
-  String csvData = ListToCsvConverter().convert(itemList);
+  print('made it to the end pf web dl');
+ }
+
+// how to download on android
+  else if(Platform.isAndroid){
+   
+
+
+ 
 
   Directory generalDownloadDir = Directory(
                           '/storage/emulated/0/Download');
@@ -187,10 +218,12 @@ generateCsv() async {
   print("The directory is: " + generalDownloadDir.toString());
   
   final File file = await File('${generalDownloadDir.path}/SIMPL_I-EXPORT_$formattedDate.csv').create();  //! you cant have spaces in the file name or you will get errno = 1
-  await file.writeAsString(csvData);
 
-  print('made it to the end');
-  
+  await file.writeAsString(csvData);
+  }
+
+ 
+
 }
 
 
