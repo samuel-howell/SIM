@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen-export.dart';
-import 'package:howell_capstone/src/screens/store-screen-sharedWith.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -34,13 +33,13 @@ int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
 List<List<String>> storeList = [];
 
-class StoreScreen extends StatefulWidget {
+class StoreScreenSharedWith extends StatefulWidget {
   @override
-  State<StoreScreen> createState() => _StoreScreenState();
+  State<StoreScreenSharedWith> createState() => _StoreScreenSharedWithState();
 }
 
-class _StoreScreenState extends State<StoreScreen> {
-  Stream<QuerySnapshot> streamQueryCreatedBy = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user.
+class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
+  Stream<QuerySnapshot> streamQuerySharedWith = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
   @override
   void initState() {
@@ -61,11 +60,6 @@ class _StoreScreenState extends State<StoreScreen> {
 
         case 1:
           Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => StoreScreenExport()));
-          break;
-
-        case 2:
-          Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => StoreScreenSharedWith()));
           break;
       }
@@ -83,11 +77,10 @@ class _StoreScreenState extends State<StoreScreen> {
                           0 // this is the value that will be passed when we press on this popup menu item
                       ),
                   PopupMenuItem(child: Text('Export Current Stores'), value: 1),
-                  PopupMenuItem(child: Text('Stores Shared With Me'), value: 2),
                 ])
       ]),
       body: StreamBuilder<QuerySnapshot>(
-          stream: streamQueryCreatedBy,
+          stream: streamQuerySharedWith,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
@@ -101,14 +94,14 @@ class _StoreScreenState extends State<StoreScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: showSearchDialog(),
                 ),
-      
+
                 Expanded(
                     // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
                     child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot doc = snapshot.data!.docs[index];
-      
+
                           // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
@@ -175,14 +168,14 @@ class _StoreScreenState extends State<StoreScreen> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
-      
+
                                     setState(() {
                                       tappedIndex = index;
                                     }); //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                   }),
                               actions: <Widget>[
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
-      
+
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
@@ -195,7 +188,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                               doc.id +
                                               ' was deleted.')
                                         }),
-      
+
                                 // slide action to give new user access to the store
                                 IconSlideAction(
                                     caption: 'Add User',
@@ -207,7 +200,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                               doc.id +
                                               ' was deleted.')
                                         }),
-      
+
                                 // slide action to edit
                                 IconSlideAction(
                                     caption: 'Edit',
@@ -306,7 +299,7 @@ class _StoreScreenState extends State<StoreScreen> {
               //     .snapshots();
               //*@@@@@@@@@@@@@@@
 
-              streamQueryCreatedBy = db // TODO: make a similar change for streaQuerySharedWith
+              streamQuerySharedWith = db 
                   .collection('Stores')
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
@@ -351,7 +344,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 //     .snapshots();
                 //*@@@@@@@@@@@@@@@
 
-                streamQueryCreatedBy = db
+                streamQuerySharedWith = db
                     .collection('Stores')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')

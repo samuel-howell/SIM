@@ -38,53 +38,52 @@ class ItemScreen extends StatefulWidget {
 class _ItemScreenState extends State<ItemScreen> {
   //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
 
-
-Stream<QuerySnapshot> streamQuery = db
+  Stream<QuerySnapshot> streamQuery = db
       .collection('Stores')
       .doc(Database().getCurrentStoreID())
       .collection('items')
       .snapshots();
 
-
   @override
   void initState() {
     super.initState();
-    itemList = [<String>["ITEM", "QUANTITY"]]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though. 
+    itemList = [
+      <String>["ITEM", "QUANTITY"]
+    ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
   }
 
   @override
   Widget build(BuildContext context) {
     try {
+      // this is the helper method for the popup menu button
+      void onSelected(BuildContext context, int item) async {
+        switch (item) {
+          case 0:
+            showAddItemDialog(context);
+            break;
 
-       // this is the helper method for the popup menu button
-  void onSelected(BuildContext context, int item) async {
-    switch (item) {
-      case 0:
-        showAddItemDialog(context);
-        break;
-
-      case 1:
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => ItemScreenExport()));
-        break;
-
-    }
-  }
+          case 1:
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ItemScreenExport()));
+            break;
+        }
+      }
 
       return Scaffold(
         drawer: NavigationDrawerWidget(),
         appBar: AppBar(actions: [
-        PopupMenuButton<int>(
-            onSelected: (item) => onSelected(context, item),
-            itemBuilder: (context) => [
-                  PopupMenuItem(
-                      child: Text('Add New Item'),
-                      value:
-                          0 // this is the value that will be passed when we press on this popup menu item
-                      ),
-                  PopupMenuItem(child: Text('Export Current Items'), value: 1),
-                ])
-      ]),
+          PopupMenuButton<int>(
+              onSelected: (item) => onSelected(context, item),
+              itemBuilder: (context) => [
+                    PopupMenuItem(
+                        child: Text('Add New Item'),
+                        value:
+                            0 // this is the value that will be passed when we press on this popup menu item
+                        ),
+                    PopupMenuItem(
+                        child: Text('Export Current Items'), value: 1),
+                  ])
+        ]),
         body: StreamBuilder<QuerySnapshot>(
             stream:
                 streamQuery, // this streamQuery will change based on what is typed into the search bar
@@ -112,53 +111,82 @@ Stream<QuerySnapshot> streamQuery = db
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
                               actionExtentRatio: 0.25,
-                              child: GestureDetector( 
-                                child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Card(
-                                              color: Theme.of(context).colorScheme.secondary, // color and opacity pulled in as param
-                                              elevation: 16,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Wrap(
-                                                children: [
-                                                  Container(
-                                                    width: MediaQuery.of(context).size.width,
-                                                    decoration: BoxDecoration(
-                                                        color: Theme.of(context).colorScheme.background,
-                                                        borderRadius: BorderRadius.only(
-                                                            bottomRight: Radius.circular(10),
-                                                            topRight: Radius.circular(10))),
-                                                    margin: EdgeInsets.only(left: 10),
-                                                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                                    child: Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children: [
-                                                        Center(
-                                                          child: Text(
-                                                            doc.get('name').toString(), // string pulled in as param
-                                                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                                          ),
-                                                        ),
-                                                        SizedBox(
-                                                          height: 10,
-                                                        ),
-                                                        Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                          children: [
-                                                            Text("\$"+ doc.get('price').toString() + " ", style: TextStyle(fontSize: 18)),
-                                                            Text("ID: "+ doc.get('id').toString() + " ", style: TextStyle(fontSize: 18)),
-                                                          ]
-                                                        )
-                                                            
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
+                              child: GestureDetector(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Card(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary, // color and opacity pulled in as param
+                                      elevation: 16,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Wrap(
+                                        children: [
+                                          Container(
+                                            width: MediaQuery.of(context)
+                                                .size
+                                                .width,
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .background,
+                                                borderRadius: BorderRadius.only(
+                                                    bottomRight:
+                                                        Radius.circular(10),
+                                                    topRight:
+                                                        Radius.circular(10))),
+                                            margin: EdgeInsets.only(left: 10),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 16, vertical: 10),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Center(
+                                                  child: Text(
+                                                    doc
+                                                        .get('name')
+                                                        .toString(), // string pulled in as param
+                                                    style: TextStyle(
+                                                        fontSize: 24,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+                                                Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text(
+                                                          "\$" +
+                                                              doc
+                                                                  .get('price')
+                                                                  .toString() +
+                                                              " ",
+                                                          style: TextStyle(
+                                                              fontSize: 18)),
+                                                      Text(
+                                                          "ID: " +
+                                                              doc
+                                                                  .get('id')
+                                                                  .toString() +
+                                                              " ",
+                                                          style: TextStyle(
+                                                              fontSize: 18)),
+                                                    ])
+                                              ],
                                             ),
-                                          ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                   onTap: () => {
                                         Navigator.push(
                                             context,
@@ -187,7 +215,8 @@ Stream<QuerySnapshot> streamQuery = db
                                 // slide action to edit
                                 IconSlideAction(
                                     caption: 'Edit',
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                     icon: Icons.edit,
                                     onTap: () => {
                                           showEditItemDialog(context, doc.id),
@@ -435,7 +464,5 @@ class Data {
 
   Data({required this.itemDocID});
 }
-
-
 
 // //* Good reference articles... https://medium.com/firebase-tips-tricks/how-to-use-cloud-firestore-in-flutter-9ea80593ca40 ... https://www.youtube.com/watch?v=lyZQa7hqoVY

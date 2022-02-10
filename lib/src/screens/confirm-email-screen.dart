@@ -6,8 +6,7 @@ class ConfirmEmailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-           ),
+        appBar: AppBar(),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -17,12 +16,14 @@ class ConfirmEmailScreen extends StatelessWidget {
                 Text(
                     'Email confirmation has been sent to your email address. After you accept, please click the button below',
                     style: GoogleFonts.lato(
-                        textStyle: TextStyle(color: Colors.grey, fontSize: 26))),
+                        textStyle:
+                            TextStyle(color: Colors.grey, fontSize: 26))),
 
                 SizedBox(height: 100, width: 100), //for formatting
 
                 ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+                    style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor),
                     child: Text('Sign In'),
                     //when pressed, pass email and password to _signin function
                     onPressed: () async {
@@ -30,7 +31,6 @@ class ConfirmEmailScreen extends StatelessWidget {
                         builder: (context) => LoginScreen(),
                       ));
                     }),
-
               ],
             ),
           ),

@@ -164,14 +164,14 @@ class NavigationDrawerWidget extends StatelessWidget {
           break;
         }
 
-        case 5:
+      case 5:
         if (Database().getStoreClicked() == true) {
           // we will only allow access to scan screen once a store has been selected
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SettingsScreen(),
           ));
           break;
-        } 
+        }
     }
   }
 }

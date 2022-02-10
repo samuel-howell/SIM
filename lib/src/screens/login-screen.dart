@@ -23,9 +23,7 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-
 //TODO:  Implement the login ui and sign-up ui from this github to mirror the reset password screen - https://github.com/thejo06/Login-Signup-Ui-FLutter/blob/master/lib/screens/login.dart
-
 
 class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;
@@ -66,7 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         children: <Widget>[
           Theme(
-            data: ThemeData(unselectedWidgetColor: Theme.of(context).colorScheme.primaryVariant,),
+            data: ThemeData(
+              unselectedWidgetColor:
+                  Theme.of(context).colorScheme.primaryVariant,
+            ),
             child: Checkbox(
               value: _rememberMe,
 
@@ -83,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Text(
             'Remember me',
-            style: TextStyle( color: Theme.of(context).colorScheme.primary),
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
           ),
         ],
       ),
@@ -112,7 +113,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
-           
               hintText: 'Enter your Password',
               hintStyle: kHintTextStyle,
             ),
@@ -144,7 +144,6 @@ class _LoginScreenState extends State<LoginScreen> {
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
-              
               hintText: 'Enter your Email',
               hintStyle: kHintTextStyle,
             ),
@@ -209,110 +208,126 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
 //TODO: change size of logo and get rid of all the extra space around it using something like pixlr. implememt change notifier provider on reset password and sign up pages.
 
     return ChangeNotifierProvider(
-      create: (_) => ThemeModel(),
-      child: Consumer<ThemeModel>(
-          builder: (context, ThemeModel themeNotifier, child) {
-      return Scaffold(
-        body: Padding(
-          padding: kDefaultPadding,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                SizedBox(height: 120),
-                Center(child: Image(image: themeNotifier.isDark ? AssetImage('assets/SIMPL-dark.png') : AssetImage('assets/SIMPL-light.png'))), // based on whether theme is dark or light, we show the logo with appropriate coloring
-    
-                SizedBox(
-                  height: 80,
-                ),
-                Text(
-                  'Welcome Back',
-                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 32, fontWeight: FontWeight.w700),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
+        create: (_) => ThemeModel(),
+        child: Consumer<ThemeModel>(
+            builder: (context, ThemeModel themeNotifier, child) {
+          return Scaffold(
+            body: Padding(
+              padding: kDefaultPadding,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SizedBox(height: 120),
+                    Center(
+                        child: Image(
+                            image: themeNotifier.isDark
+                                ? AssetImage('assets/SIMPL-dark.png')
+                                : AssetImage(
+                                    'assets/SIMPL-light.png'))), // based on whether theme is dark or light, we show the logo with appropriate coloring
+
+                    SizedBox(
+                      height: 80,
+                    ),
                     Text(
-                      'New to this app?',
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(.7), fontSize: 18, fontWeight: FontWeight.w600),
+                      'Welcome Back',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w700),
                     ),
                     SizedBox(
-                      width: 5,
+                      height: 20,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SignUpScreen(),
+                    Row(
+                      children: [
+                        Text(
+                          'New to this app?',
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(.7),
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SignUpScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Sign Up',
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryVariant,
+                                decoration: TextDecoration.underline,
+                                decorationThickness: 1),
                           ),
-                        );
-                      },
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle( color: Theme.of(context).colorScheme.primaryVariant, decoration: TextDecoration.underline, decorationThickness: 1),
-                      ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    _buildEmailTF(),
+                    SizedBox(height: 10),
+                    _buildPasswordTF(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildRememberMeCheckbox(),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        PasswordResetScreen()));
+                          },
+                          child: Text(
+                            'Forgot password?',
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primaryVariant,
+                                decoration: TextDecoration.underline,
+                                decorationThickness: 1),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    SizedBox(
+                      height: 20,
+                    ),
+                    primaryButton(
+                      context,
+                      'Log In',
+                    ),
+                    SizedBox(
+                      height: 20,
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                _buildEmailTF(),
-                SizedBox(height: 10),
-                _buildPasswordTF(),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                  _buildRememberMeCheckbox(),
-                
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PasswordResetScreen()));
-                  },
-                  child: Text(
-                    'Forgot password?',
-                    style: TextStyle( color: Theme.of(context).colorScheme.primaryVariant, decoration: TextDecoration.underline, decorationThickness: 1),
-                  ),
-                ),
-    
-                ],),
-                
-                SizedBox(
-                  height: 20,
-                ),
-                primaryButton( context,
-                   'Log In',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-           
-           
-              ],
+              ),
             ),
-          ),
-        ),
-          
-      );
-          }
-          
-    )
-    );
-          
+          );
+        }));
   }
 
   _signin(String _email, String _password) async {
@@ -361,37 +376,32 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-Widget primaryButton(BuildContext context, buttonText) {
- return GestureDetector(
-   child: Container(
-        alignment: Alignment.center,
-        height: MediaQuery.of(context).size.height * 0.08,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary.withOpacity(.5)),
-        child: Text(
-          buttonText,
-           style: textButton.copyWith(color: kWhiteColor),
+  Widget primaryButton(BuildContext context, buttonText) {
+    return GestureDetector(
+        child: Container(
+          alignment: Alignment.center,
+          height: MediaQuery.of(context).size.height * 0.08,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: Theme.of(context).colorScheme.primary.withOpacity(.5)),
+          child: Text(
+            buttonText,
+            style: textButton.copyWith(color: kWhiteColor),
+          ),
         ),
-      ),
-      onTap: () async {
-      //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
-                    if (_rememberMe == true) {
-                      final SharedPreferences sharedPreferences =
-                          await SharedPreferences.getInstance();
-                      sharedPreferences.setString('email', _email);
-                    }
+        onTap: () async {
+          //  shared pref allows user to remain logged in.  as long as this email is not null, the user will remain signed in
+          if (_rememberMe == true) {
+            final SharedPreferences sharedPreferences =
+                await SharedPreferences.getInstance();
+            sharedPreferences.setString('email', _email);
+          }
 
-                    _signin(_email,
-                        _password); // pass email and password to _signin in function
-      }
-
-    );
+          _signin(_email,
+              _password); // pass email and password to _signin in function
+        });
   }
-
-
-
-
 }
 
 //TODO: https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword   make switch statements with all of these Firebase Auth error messages

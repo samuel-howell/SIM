@@ -55,131 +55,153 @@ class _ItemInfoWidgetState extends State<ItemInfoWidget> {
                   snapshot.data as DocumentSnapshot<Object?>?;
               // by casting to document snapshot, we can call .get and get the individual fields from the document.
 
-
-              
-          return Container(
-            child: SingleChildScrollView(
-              child: Stack(
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+              return Container(
+                child: SingleChildScrollView(
+                  child: Stack(
                     children: <Widget>[
-                      const SizedBox(
-                        height: 37,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          const SizedBox(
+                            height: 37,
+                          ),
+                          Text(
+                            userDocument!.get('name'),
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(
+                            height: 17,
+                          ),
+                          customInfoCard(
+                              context,
+                              "Price",
+                              '\$' + userDocument.get('price').toString(),
+                              Theme.of(context).primaryColor,
+                              0.3),
+                          customInfoCard(
+                              context,
+                              "ID",
+                              userDocument.get('id').toString(),
+                              Theme.of(context).primaryColor,
+                              0.4),
+                          customInfoCard(
+                              context,
+                              "Quantity",
+                              userDocument.get('quantity').toString(),
+                              Theme.of(context).primaryColor,
+                              0.5),
+                          customInfoCard(
+                              context,
+                              "Most Recent Scan In",
+                              userDocument.get('mostRecentScanIn').toString(),
+                              Theme.of(context).primaryColor,
+                              0.6),
+                          customInfoCard(
+                              context,
+                              "Most Recent Scan Out",
+                              userDocument.get('mostRecentScanOut').toString(),
+                              Theme.of(context).primaryColor,
+                              0.7),
+                          customInfoCard(
+                              context,
+                              "Last Employee to Interact",
+                              userDocument
+                                  .get('LastEmployeeToInteract')
+                                  .toString(),
+                              Theme.of(context).primaryColor,
+                              0.8),
+                          customInfoCard(
+                              context,
+                              "Description",
+                              userDocument.get('description').toString(),
+                              Theme.of(context).primaryColor,
+                              0.9),
+                        ],
                       ),
-                      Text(
-                        userDocument!.get('name'),
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(
-                        height: 17,
-                      ),
-                  
-                      customInfoCard(context, "Price", '\$'+userDocument.get('price').toString(), Theme.of(context).primaryColor, 0.3),
-                      customInfoCard(context, "ID", userDocument.get('id').toString(), Theme.of(context).primaryColor, 0.4),
-                      customInfoCard(context, "Quantity", userDocument.get('quantity').toString(), Theme.of(context).primaryColor, 0.5),
-                      customInfoCard(context, "Most Recent Scan In", userDocument.get('mostRecentScanIn').toString(), Theme.of(context).primaryColor, 0.6),
-                      customInfoCard(context, "Most Recent Scan Out", userDocument.get('mostRecentScanOut').toString(), Theme.of(context).primaryColor, 0.7),
-                      customInfoCard(context, "Last Employee to Interact", userDocument.get('LastEmployeeToInteract').toString(), Theme.of(context).primaryColor, 0.8),
-                      customInfoCard(context, "Description", userDocument.get('description').toString(), Theme.of(context).primaryColor, 0.9),
-                      
-                     
                     ],
                   ),
-                ],
-              ),
-            ),
-          );
-
-                  
-          
-  }));
-}
-
+                ),
+              );
+            }));
+  }
 
 //-------------------------------------------------------------------------------------
-String filePath ="";
+  String filePath = "";
 
-Future<String> get _localPath async {
-   final directory = await getApplicationSupportDirectory();
-   return directory.absolute.path;
- }
+  Future<String> get _localPath async {
+    final directory = await getApplicationSupportDirectory();
+    return directory.absolute.path;
+  }
 
-Future<File> get _localFile async {
-   final path = await _localPath;
-   filePath = '$path/data.csv';
-   return File('$path/data.csv').create();
- }
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    filePath = '$path/data.csv';
+    return File('$path/data.csv').create();
+  }
 
+  //-------------------------------------------------------------------------------------
 
+  Widget customDivider(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(height: 10),
+        Divider(
+          height: 20,
+          thickness: 5,
+          indent: 10,
+          endIndent: 10,
+          color: Colors.white,
+        ),
+        SizedBox(height: 10),
+      ],
+    );
+  }
 
-
-
-
-
- //-------------------------------------------------------------------------------------
- 
-
-Widget customDivider(BuildContext context) {
-  return Column(
-    children: [
-      SizedBox(height: 10),
-      Divider(
-        height: 20,
-        thickness: 5,
-        indent: 10,
-        endIndent: 10,
-        color: Colors.white,
-      ),
-      SizedBox(height: 10),
-    ],
-  );
-}
-
-Widget customInfoCard(BuildContext context, String identifier, String userDocumentLookUp, Color myColor, double myOpacity ) {
-  return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              color: myColor.withOpacity(myOpacity), // color and opacity pulled in as param
-              elevation: 16,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Wrap(
+  Widget customInfoCard(BuildContext context, String identifier,
+      String userDocumentLookUp, Color myColor, double myOpacity) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        color: myColor
+            .withOpacity(myOpacity), // color and opacity pulled in as param
+        elevation: 16,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Wrap(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.background,
+                  borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(10),
+                      topRight: Radius.circular(10))),
+              margin: EdgeInsets.only(left: 10),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.background,
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            topRight: Radius.circular(10))),
-                    margin: EdgeInsets.only(left: 10),
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          identifier, // string pulled in as param
-                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text( userDocumentLookUp, style: TextStyle(fontSize: 18)),    
-                      ],
-                    ),
-                  )
+                  Text(
+                    identifier, // string pulled in as param
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(userDocumentLookUp, style: TextStyle(fontSize: 18)),
                 ],
               ),
-            ),
-          );
-}
-
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

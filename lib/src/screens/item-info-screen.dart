@@ -40,7 +40,6 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
       initialIndex: 0,
       child: Scaffold(
           appBar: AppBar(
-         
             bottom: TabBar(tabs: _tabs),
           ),
           body: TabBarView(children: <Widget>[

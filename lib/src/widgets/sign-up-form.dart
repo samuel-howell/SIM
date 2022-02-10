@@ -11,7 +11,6 @@ import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
 import 'package:intl/intl.dart';
 
-
 // Define a custom Form widget.
 class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
@@ -52,8 +51,8 @@ class SignUpFormState extends State<SignUpForm> {
   final auth = FirebaseAuth.instance;
   String _email = '';
   String _password = '';
-     bool termsAccepted = false;
-     bool privacyAccepted = false;
+  bool termsAccepted = false;
+  bool privacyAccepted = false;
 
   //*really good article on validation - https://michaeladesola1410.medium.com/input-validation-flutter-dfe433caec5c
 
@@ -153,73 +152,84 @@ class SignUpFormState extends State<SignUpForm> {
           ),
 
           Row(
-                      children: <Widget>[
-                        Theme(
-                          data: ThemeData(unselectedWidgetColor: Theme.of(context).colorScheme.primaryVariant,),
-                          child: Checkbox(
-                            value: termsAccepted,
+            children: <Widget>[
+              Theme(
+                data: ThemeData(
+                  unselectedWidgetColor:
+                      Theme.of(context).colorScheme.primaryVariant,
+                ),
+                child: Checkbox(
+                  value: termsAccepted,
 
-                            /// the _rememberMe boolean
-                            checkColor: Theme.of(context).colorScheme.secondary,
-                            activeColor: Theme.of(context).colorScheme.primary,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                termsAccepted = !termsAccepted;
-                                print("termsAccepted is " + termsAccepted.toString() + " now.");
-                              });
-                            },
-                          ),
-                        ),
-                        Text('I accept '),
-                        GestureDetector(
-                          child: Text(
-                            'Terms and Conditions',
-                            style: TextStyle( color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline, decorationThickness: 1),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => TosScreen()));
-                          }
-                        ),
-                      ],
-                ), 
+                  /// the _rememberMe boolean
+                  checkColor: Theme.of(context).colorScheme.secondary,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      termsAccepted = !termsAccepted;
+                      print("termsAccepted is " +
+                          termsAccepted.toString() +
+                          " now.");
+                    });
+                  },
+                ),
+              ),
+              Text('I accept '),
+              GestureDetector(
+                  child: Text(
+                    'Terms and Conditions',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 1),
+                  ),
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => TosScreen()));
+                  }),
+            ],
+          ),
 
-              Row(
-                    children: <Widget>[
-                      Theme(
-                        data: ThemeData(unselectedWidgetColor: Theme.of(context).colorScheme.primaryVariant,),
-                        child: Checkbox(
-                          value: privacyAccepted,
+          Row(
+            children: <Widget>[
+              Theme(
+                data: ThemeData(
+                  unselectedWidgetColor:
+                      Theme.of(context).colorScheme.primaryVariant,
+                ),
+                child: Checkbox(
+                  value: privacyAccepted,
 
-                          /// the _rememberMe boolean
-                          checkColor: Theme.of(context).colorScheme.secondary,
-                          activeColor: Theme.of(context).colorScheme.primary,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              privacyAccepted = !privacyAccepted;
-                              print("privacyAccepted is " + privacyAccepted.toString() + " now.");
-                            });
-                          },
-                        ),
-                      ),
-                      Text('I accept '),
-                      GestureDetector(
-                        child: Text(
-                          'Privacy Policy',
-                          style: TextStyle( color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline, decorationThickness: 1),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PrivacyPolicyScreen()));
-                        }
-                      ),
-                    ],
-              ),           
-
+                  /// the _rememberMe boolean
+                  checkColor: Theme.of(context).colorScheme.secondary,
+                  activeColor: Theme.of(context).colorScheme.primary,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      privacyAccepted = !privacyAccepted;
+                      print("privacyAccepted is " +
+                          privacyAccepted.toString() +
+                          " now.");
+                    });
+                  },
+                ),
+              ),
+              Text('I accept '),
+              GestureDetector(
+                  child: Text(
+                    'Privacy Policy',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: TextDecoration.underline,
+                        decorationThickness: 1),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PrivacyPolicyScreen()));
+                  }),
+            ],
+          ),
 
           _isProcessing
               ? Padding(
@@ -231,35 +241,39 @@ class SignUpFormState extends State<SignUpForm> {
                   ),
                 )
               : GestureDetector(
-                child: Container(
+                  child: Container(
                     width: double.infinity,
                     height: MediaQuery.of(context).size.height * 0.08,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16), color: Theme.of(context).colorScheme.primary.withOpacity(.5)),
-                      child: Text(
-                        'Submit',
-                         style: textButton.copyWith(color: kWhiteColor),
-                      ),
-                ),
-                      onTap: () async {
-                        // Validate returns true if the form is valid, or false otherwise.
-                        if (_formKey.currentState!.validate() && termsAccepted == true && privacyAccepted == true ) {
-                          setState(() {
-                            _isProcessing = true;
-                          });
-              
-                          _signup(_email,
-                              _password); // try to add the user via authentication.  if it works, then add a user profile in the database
-              
-                          setState(() {
-                            _isProcessing = false;
-                          });
-                        }
-                      },
+                        borderRadius: BorderRadius.circular(16),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withOpacity(.5)),
+                    child: Text(
+                      'Submit',
+                      style: textButton.copyWith(color: kWhiteColor),
                     ),
-              
-                
+                  ),
+                  onTap: () async {
+                    // Validate returns true if the form is valid, or false otherwise.
+                    if (_formKey.currentState!.validate() &&
+                        termsAccepted == true &&
+                        privacyAccepted == true) {
+                      setState(() {
+                        _isProcessing = true;
+                      });
+
+                      _signup(_email,
+                          _password); // try to add the user via authentication.  if it works, then add a user profile in the database
+
+                      setState(() {
+                        _isProcessing = false;
+                      });
+                    }
+                  },
+                ),
         ],
       ),
     );

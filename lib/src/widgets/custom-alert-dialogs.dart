@@ -71,7 +71,6 @@ showStoreDeleteConfirmationAlertDialog(
   );
 }
 
-
 // this method will show an alert to enter the information to add a new store to database
 showAddStoreDialog(BuildContext context) {
   final TextEditingController _storeNameController = TextEditingController();
@@ -229,7 +228,6 @@ showEditStoreDialog(BuildContext context, String storeDocID) {
                           return null;
                         },
                       ),
-                      
 
                       SizedBox(height: 30),
                       _isProcessing
@@ -308,10 +306,8 @@ showItemDeleteConfirmationAlertDialog(BuildContext context, String itemDocID) {
       //     .delete();
       //*@@@@@@@@@@@@@@@@@
 
-
       db
           .collection('Stores')
-       
           .doc(Database().getCurrentStoreID())
           .collection('items')
           .doc(itemDocID)
@@ -723,8 +719,6 @@ showAddUserDialog(BuildContext context, String storeDocID) {
 
                       SizedBox(height: 20),
 
-                      
-
                       SizedBox(height: 30),
                       _isProcessing
                           ? Padding(
@@ -749,9 +743,8 @@ showAddUserDialog(BuildContext context, String storeDocID) {
                                     });
 
                                     await Database.addStoreUser(
-                                      email: _emailController.text,
-                                      docID: storeDocID
-                                    );
+                                        email: _emailController.text,
+                                        docID: storeDocID);
 
                                     setState(() {
                                       _isProcessing = false;

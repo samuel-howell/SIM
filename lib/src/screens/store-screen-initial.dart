@@ -31,9 +31,7 @@ class StoreScreenInitial extends StatefulWidget {
 }
 
 class _StoreScreenInitialState extends State<StoreScreenInitial> {
-  Stream<QuerySnapshot> streamQuery = db
-      .collection('Stores')
-      .snapshots();
+  Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -71,65 +69,86 @@ class _StoreScreenInitialState extends State<StoreScreenInitial> {
                                 actionExtentRatio: 0.25,
                                 child: GestureDetector(
                                     child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Card(
-                                          color: tappedIndex == index ? (Colors.green[400])! : (Colors.red[200])!, 
-                                          elevation: 16,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                          ),
-                                          child: Wrap(
-                                            children: [
-                                              Container(
-                                                width: MediaQuery.of(context).size.width,
-                                                decoration: BoxDecoration(
-                                                    color: Theme.of(context).colorScheme.background,
-                                                    borderRadius: BorderRadius.only(
-                                                        bottomRight: Radius.circular(10),
-                                                        topRight: Radius.circular(10))),
-                                                margin: EdgeInsets.only(left: 10),
-                                                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      doc.get('name').toString(), // string pulled in as param
-                                                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                                    ),
-                                                    SizedBox(
-                                                      height: 10,
-                                                    ),
-                                                    Text(doc.get('address').toString(), style: TextStyle(fontSize: 18))
-                                                        
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Card(
+                                        color: tappedIndex == index
+                                            ? (Colors.green[400])!
+                                            : (Colors.red[200])!,
+                                        elevation: 16,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Wrap(
+                                          children: [
+                                            Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .background,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          bottomRight:
+                                                              Radius.circular(
+                                                                  10),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  10))),
+                                              margin: EdgeInsets.only(left: 10),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    doc
+                                                        .get('name')
+                                                        .toString(), // string pulled in as param
+                                                    style: TextStyle(
+                                                        fontSize: 24,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                      doc
+                                                          .get('address')
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 18))
+                                                ],
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
-
-
+                                    ),
                                     onTap: () {
                                       Database.setcurrentStoreID(doc.id);
                                       Database().setStoreClicked(
                                           true); // now the user can access item screen.
 
-
-
-                                      setState(() {   //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
+                                      setState(() {
+                                        //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                         tappedIndex = index;
                                       });
-                                      
-                                      
-                                      //*go to that store'ss item screen
-                                        if (Database().getStoreClicked() == true) {
-                                          // we will only allow access to item screen once a store has been selected
 
-                                          Navigator.of(context).push(MaterialPageRoute(
-                                            builder: (context) => ItemScreen(),
-                                          ));
-                                        }
+                                      //*go to that store'ss item screen
+                                      if (Database().getStoreClicked() ==
+                                          true) {
+                                        // we will only allow access to item screen once a store has been selected
+
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) => ItemScreen(),
+                                        ));
+                                      }
                                     }),
                                 actions: <Widget>[
                                   // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
@@ -150,7 +169,9 @@ class _StoreScreenInitialState extends State<StoreScreenInitial> {
                                   // slide action to edit
                                   IconSlideAction(
                                       caption: 'Edit',
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                       icon: Icons.edit,
                                       onTap: () => {
                                             showEditStoreDialog(

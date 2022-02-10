@@ -194,6 +194,4 @@ class _QRScreenState extends State<QRScreen> {
       ),
     );
   }
-
-
 }
