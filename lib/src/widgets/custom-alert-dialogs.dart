@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/screens/store-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
 import 'package:intl/intl.dart';

@@ -7,8 +7,7 @@ import 'package:howell_capstone/src/screens/password-reset-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/screens/store-screen-initial.dart';
-import 'package:howell_capstone/src/screens/store-screen.dart';
+ import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/sign-up-form.dart';
@@ -23,7 +22,6 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-//TODO:  Implement the login ui and sign-up ui from this github to mirror the reset password screen - https://github.com/thejo06/Login-Signup-Ui-FLutter/blob/master/lib/screens/login.dart
 
 class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;
@@ -347,7 +345,7 @@ class _LoginScreenState extends State<LoginScreen> {
         //   userID: userID, emailVerified: true); //! sets to email verified to ture every time the user logs into the app, which is an uneccesary write to the db
 
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => StoreScreenInitial()));
+            MaterialPageRoute(builder: (context) => StoreScreenCreatedBy()));
       }
 
       // ifuser hasn't verified email, we send them back to the email confirmation page

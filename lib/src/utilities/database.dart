@@ -133,7 +133,8 @@ class Database {
         .catchError((e) => print(e));
   }
 
-//  method to  add a user access to a store
+ //  method to  add a user access to a store
+
   static Future<void> addStoreUser({
     required String email,
     required String docID,
@@ -141,17 +142,16 @@ class Database {
     DocumentReference storeDocumentReferencer = _storeCollection.doc(docID);
 
     await storeDocumentReferencer
-        .set({
+        .update({
           "sharedWith": FieldValue.arrayUnion([
-            {
-              "UID": await Database().getUserUIDFromEmail(email),
-              "Name": await Database().getUserNameFromEmail(email),
-              "Email": email
-            }
+            
+              await Database().getUserUIDFromEmail(email),   
+               
+            
           ])
-        }, SetOptions(merge: true))
+        }, )
         .whenComplete(() => print(
-            "user added to the store " + Database.currentStoreID.toString()))
+            "user added to the store " + docID))
         .catchError((e) => print(e));
   }
 

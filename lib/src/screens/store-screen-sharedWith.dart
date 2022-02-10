@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/screens/store-screen-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,7 +61,17 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
 
         case 1:
           Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => StoreScreenExport()));
+          break;
+
+        case 2:
+          Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => StoreScreenSharedWith()));
+          break;
+
+        case 3:
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => StoreScreenCreatedBy()));
           break;
       }
     }
@@ -71,11 +82,9 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
         PopupMenuButton<int>(
             onSelected: (item) => onSelected(context, item),
             itemBuilder: (context) => [
-                  PopupMenuItem(
-                      child: Text('Add New Store'),
-                      value:
-                          0 // this is the value that will be passed when we press on this popup menu item
-                      ),
+                  PopupMenuItem(child: Text('Add New Store'), value:0),
+                  PopupMenuItem(child: Text('My Stores'), value: 3),
+                  PopupMenuItem(child: Text('Stores Shared With Me'), value: 2),
                   PopupMenuItem(child: Text('Export Current Stores'), value: 1),
                 ])
       ]),
@@ -300,7 +309,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
               //*@@@@@@@@@@@@@@@
 
               streamQuerySharedWith = db 
-                  .collection('Stores')
+                  .collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
@@ -345,7 +354,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                 //*@@@@@@@@@@@@@@@
 
                 streamQuerySharedWith = db
-                    .collection('Stores')
+                    .collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
                     .snapshots();
@@ -378,7 +387,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss').format(now);
 
-    Stream<QuerySnapshot> streamQuery = db.collection('Stores').snapshots();
+    Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
     print(await streamQuery.length);
 

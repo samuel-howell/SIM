@@ -2,6 +2,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/csv-import.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
@@ -9,7 +10,7 @@ import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/qr-screen.dart';
 import 'package:howell_capstone/src/screens/scan-screen.dart';
 import 'package:howell_capstone/src/screens/settings-screen.dart';
-import 'package:howell_capstone/src/screens/store-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,6 +58,13 @@ class NavigationDrawerWidget extends StatelessWidget {
           text: 'SCAN QR',
           icon: Icons.screenshot,
           onClicked: () => selectedItem(context, 3),
+        ),
+
+        const SizedBox(height: 15),
+        buildMenuItem(
+          text: 'CSV IMPORT',
+          icon: Icons.file_copy_outlined,
+          onClicked: () => selectedItem(context, 6),
         ),
 
         //  this is our divider
@@ -125,7 +133,7 @@ class NavigationDrawerWidget extends StatelessWidget {
 
       case 1:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => StoreScreen(),
+         builder: (context) => StoreScreenCreatedBy(),
         ));
         break;
 
@@ -146,8 +154,8 @@ class NavigationDrawerWidget extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PleaseChooseStoreScreen(),
           ));
-          break;
         }
+        break;
 
       case 4:
         if (Database().getStoreClicked() == true) {
@@ -160,18 +168,25 @@ class NavigationDrawerWidget extends StatelessWidget {
         } else {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PleaseChooseStoreScreen(),
-          ));
-          break;
+          ));  
         }
+        break;
 
       case 5:
         if (Database().getStoreClicked() == true) {
           // we will only allow access to scan screen once a store has been selected
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SettingsScreen(),
-          ));
-          break;
+          )); 
         }
+        break;
+
+      case 6:
+        Navigator.of(context).push(MaterialPageRoute(
+           builder: (context) => CsvToList(),
+        ));
+        break;
+
     }
   }
 }

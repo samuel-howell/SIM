@@ -34,12 +34,12 @@ int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
 List<List<String>> storeList = [];
 
-class StoreScreen extends StatefulWidget {
+class StoreScreenCreatedBy extends StatefulWidget {
   @override
-  State<StoreScreen> createState() => _StoreScreenState();
+  State<StoreScreenCreatedBy> createState() => _StoreScreenCreatedByState();
 }
 
-class _StoreScreenState extends State<StoreScreen> {
+class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
   Stream<QuerySnapshot> streamQueryCreatedBy = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user.
 
   @override
@@ -68,6 +68,11 @@ class _StoreScreenState extends State<StoreScreen> {
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => StoreScreenSharedWith()));
           break;
+
+        case 3:
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => StoreScreenCreatedBy()));
+          break;
       }
     }
 
@@ -77,13 +82,10 @@ class _StoreScreenState extends State<StoreScreen> {
         PopupMenuButton<int>(
             onSelected: (item) => onSelected(context, item),
             itemBuilder: (context) => [
-                  PopupMenuItem(
-                      child: Text('Add New Store'),
-                      value:
-                          0 // this is the value that will be passed when we press on this popup menu item
-                      ),
-                  PopupMenuItem(child: Text('Export Current Stores'), value: 1),
+                  PopupMenuItem(child: Text('Add New Store'), value:0),
+                  PopupMenuItem(child: Text('My Stores'), value: 3),
                   PopupMenuItem(child: Text('Stores Shared With Me'), value: 2),
+                  PopupMenuItem(child: Text('Export Current Stores'), value: 1),
                 ])
       ]),
       body: StreamBuilder<QuerySnapshot>(
@@ -295,19 +297,9 @@ class _StoreScreenState extends State<StoreScreen> {
             setState(() {
               searchKey = value.toLowerCase();
 
-              //  this stream query matches the searchkey to the names of the stores in the db
-              //*@@@@@@@@@@@@@@@
-              // streamQuery = db
-              //     .collection('Users')
-              //     .doc(currentUserID)
-              //     .collection('stores')
-              //     .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
-              //     .where('lowercaseAddress', isLessThan: searchKey + 'z')
-              //     .snapshots();
-              //*@@@@@@@@@@@@@@@
 
-              streamQueryCreatedBy = db // TODO: make a similar change for streaQuerySharedWith
-                  .collection('Stores')
+              streamQueryCreatedBy = db 
+                  .collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
@@ -340,21 +332,12 @@ class _StoreScreenState extends State<StoreScreen> {
               setState(() {
                 searchKey = value.toLowerCase();
 
-                //  this stream query matches the searchkey to the names of the stores in the db
-                //*@@@@@@@@@@@@@@@
-                // streamQuery = db
-                //     .collection('Users')
-                //     .doc(currentUserID)
-                //     .collection('stores')
-                //     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
-                //     .where('lowercaseName', isLessThan: searchKey + 'z')
-                //     .snapshots();
-                //*@@@@@@@@@@@@@@@
 
                 streamQueryCreatedBy = db
                     .collection('Stores')
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
+                    .where('createdBy', isEqualTo: currentUserID)
                     .snapshots();
               });
             },
@@ -385,7 +368,7 @@ class _StoreScreenState extends State<StoreScreen> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss').format(now);
 
-    Stream<QuerySnapshot> streamQuery = db.collection('Stores').snapshots();
+  Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user.
 
     print(await streamQuery.length);
 
