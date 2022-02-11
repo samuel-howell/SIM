@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:intl/intl.dart';
+import 'package:universal_html/html.dart' as html;
+
 
 class CsvToList extends StatefulWidget{
   @override
@@ -80,16 +84,23 @@ class CsvToListState extends State<CsvToList>{
                     catch(exception){
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Card(child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] + ", " + itemData[index][2] + ", " + itemData[index][3] + ", " + itemData[index][4] +  "]. Please make sure row conforms to CSV import guidelines."),
-                            ],
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.red), 
+                            borderRadius: BorderRadius.circular(10),
+
                           ),
-                        )),
+                          child: Card(child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] + ", " + itemData[index][2] + ", " + itemData[index][3] + ", " + itemData[index][4] +  "]. Please make sure row conforms to CSV import guidelines."),
+                              ],
+                            ),
+                          )),
+                        ),
                       );
                     }
                   
@@ -116,7 +127,8 @@ class CsvToListState extends State<CsvToList>{
 
 
 
-
+Uint8List uploadedCsv = new Uint8List(0);
+String option1Text = "";
 
 
   openFile(filepath) async
@@ -133,6 +145,12 @@ class CsvToListState extends State<CsvToList>{
 
   void _openFileExplorer() async {
 
+    if (kIsWeb)
+    {
+      print('registering as web file picker');
+        startWebFilePicker();
+    }
+    else{ // for android and ios
     try {
 
       _paths = (await FilePicker.platform.pickFiles(
@@ -157,5 +175,51 @@ class CsvToListState extends State<CsvToList>{
       print(_paths!.first.extension);
 
     });
+      }
   }
+
+  // since we can't use .path with file picker pkg on Web, we have to use the workaround below
+  startWebFilePicker() async {
+
+    /* we have to get the bytes of the file since we can't use the file path. once we get the bytes, we convert to base64 (thus putting the csv in UInt8List)
+        then we can convert that back to something that CsvToListConverter can use  using utf8.decode */
+
+      html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
+        uploadInput.click();
+
+          uploadInput.onChange.listen((e) {
+            // read file content as dataURL
+            final files = uploadInput.files;
+            if (files!.length == 1) {
+              final file = files[0];
+              html.FileReader reader = html.FileReader();
+
+              reader.onLoadEnd.listen((e) {
+                setState(() async {
+                  uploadedCsv = Base64Decoder()
+                      .convert(reader.result.toString().split(",").last);
+
+                  final fields = CsvToListConverter().convert(utf8.decode(uploadedCsv));
+                    print(fields);
+                    setState(() {
+                      itemData=fields;
+                    });
+
+                  print('uploadedCSV is now ' + utf8.decode(uploadedCsv)); // utf8.decode returns the UInt8List to readable csv
+                });
+              });
+
+              reader.onError.listen((fileEvent) {
+                setState(() {
+                  option1Text = "Some Error occured while reading the file";
+                });
+              });
+
+              reader.readAsDataUrl(file);
+
+            }
+          });
+
+      }
 }
+
