@@ -40,7 +40,8 @@ class StoreScreenExport extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreenExport> {
-  Stream<QuerySnapshot> streamQuery = db.collection('Stores').snapshots();
+Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user. 
+Stream<QuerySnapshot> streamQuery2 = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
   @override
   void initState() {
@@ -48,6 +49,9 @@ class _StoreScreenState extends State<StoreScreenExport> {
     storeList = [
       <String>["STORE", "ADDRESS"]
     ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
+
+    addMyStoreDocs(); // adds all stores that user has created to export list
+    addSharedStoreDocs(); // adds all stores that have been shared with to export list
   }
 
 //*  this page just loads all the stores into a list and gives the user an opprotunity to export as csv file
@@ -58,100 +62,222 @@ class _StoreScreenState extends State<StoreScreenExport> {
         title: Text('Stores to be Exported'),
         centerTitle: true,
       ),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: streamQuery,
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return Container(
-                  child: Column(children: <Widget>[
-                Expanded(
-                    // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
-                    child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot doc = snapshot.data!.docs[index];
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 40),
+            Center(child: Text('My Stores', style: TextStyle(fontSize: 0, fontWeight: FontWeight.bold), )),
+            SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(width: 3, color: Theme.of(context).primaryColor )),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 2,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: streamQuery,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return Container(
+                            child: Column(children: <Widget>[
+                          Expanded(
+                              // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
+                              child: ListView.builder(
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot doc = snapshot.data!.docs[index];
 
-                          // add the store to the store list
-                          storeList.add(
-                              <String>[doc.get('name'), doc.get('address')]);
-                          print('contents of storeList are: ');
-                          print(storeList.toString());
-                          print('');
 
-                          // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
-                          return Slidable(
-                              actionPane: SlidableDrawerActionPane(),
-                              actionExtentRatio: 0.25,
-                              child: GestureDetector(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      color: tappedIndex == index
-                                          ? (Colors.green[400])!
-                                          : (Colors.red[200])!,
-                                      elevation: 16,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Wrap(
-                                        children: [
-                                          Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .background,
-                                                borderRadius: BorderRadius.only(
-                                                    bottomRight:
-                                                        Radius.circular(10),
-                                                    topRight:
-                                                        Radius.circular(10))),
-                                            margin: EdgeInsets.only(left: 10),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  doc
-                                                      .get('name')
-                                                      .toString(), // string pulled in as param
-                                                  style: TextStyle(
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.bold),
+
+      
+                                    // // add the store to the store list
+                                    // storeList.add(
+                                    //     <String>[doc.get('name'), doc.get('address')]);
+                                    // print('contents of storeList are: ');
+                                    // print(storeList.toString());
+                                    // print('');
+      
+                                    // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                                    return Slidable(
+                                        actionPane: SlidableDrawerActionPane(),
+                                        actionExtentRatio: 0.25,
+                                        child: GestureDetector(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Card(
+                                                color: tappedIndex == index
+                                                    ? (Colors.green[400])!
+                                                    : (Colors.red[200])!,
+                                                elevation: 16,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10),
                                                 ),
-                                                SizedBox(
-                                                  height: 10,
+                                                child: Wrap(
+                                                  children: [
+                                                    Container(
+                                                      width: MediaQuery.of(context)
+                                                          .size
+                                                          .width,
+                                                      decoration: BoxDecoration(
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .background,
+                                                          borderRadius: BorderRadius.only(
+                                                              bottomRight:
+                                                                  Radius.circular(10),
+                                                              topRight:
+                                                                  Radius.circular(10))),
+                                                      margin: EdgeInsets.only(left: 10),
+                                                      padding: EdgeInsets.symmetric(
+                                                          horizontal: 16, vertical: 10),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            doc
+                                                                .get('name')
+                                                                .toString(), // string pulled in as param
+                                                            style: TextStyle(
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight.bold),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Text(
+                                                              doc
+                                                                  .get('address')
+                                                                  .toString(),
+                                                              style:
+                                                                  TextStyle(fontSize: 18))
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
                                                 ),
-                                                Text(
-                                                    doc
-                                                        .get('address')
-                                                        .toString(),
-                                                    style:
-                                                        TextStyle(fontSize: 18))
-                                              ],
+                                              ),
                                             ),
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  onTap: () {}),
-                              actions: <Widget>[
-                                // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
-                              ]);
-                        }))
-              ]));
-            }
-          }),
+                                            onTap: () {}),
+                                        actions: <Widget>[
+                                          // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+                                        ]);
+                                  }))
+                        ]));
+                      }
+                    }),
+              ),
+            ),
+
+            SizedBox(height: 40),
+            Center(child: Text('Stores Shared With Me', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
+            SizedBox(height: 20),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), border: Border.all(width: 3, color: Theme.of(context).colorScheme.secondary )),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 2,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: streamQuery2,
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return Container(
+                            child: Column(children: <Widget>[
+                          Expanded(
+                              // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
+                              child: ListView.builder(
+                                  itemCount: snapshot.data!.docs.length,
+                                  itemBuilder: (context, index) {
+                                    DocumentSnapshot doc = snapshot.data!.docs[index];
+      
+                       
+                                    // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                                    return Slidable(
+                                        actionPane: SlidableDrawerActionPane(),
+                                        actionExtentRatio: 0.25,
+                                        child: GestureDetector(
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Card(
+                                                color: tappedIndex == index
+                                                    ? (Colors.green[400])!
+                                                    : (Colors.red[200])!,
+                                                elevation: 16,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                ),
+                                                child: Wrap(
+                                                  children: [
+                                                    Container(
+                                                      width: MediaQuery.of(context)
+                                                          .size
+                                                          .width,
+                                                      decoration: BoxDecoration(
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .background,
+                                                          borderRadius: BorderRadius.only(
+                                                              bottomRight:
+                                                                  Radius.circular(10),
+                                                              topRight:
+                                                                  Radius.circular(10))),
+                                                      margin: EdgeInsets.only(left: 10),
+                                                      padding: EdgeInsets.symmetric(
+                                                          horizontal: 16, vertical: 10),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            doc
+                                                                .get('name')
+                                                                .toString(), // string pulled in as param
+                                                            style: TextStyle(
+                                                                fontSize: 24,
+                                                                fontWeight:
+                                                                    FontWeight.bold),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 10,
+                                                          ),
+                                                          Text(
+                                                              doc
+                                                                  .get('address')
+                                                                  .toString(),
+                                                              style:
+                                                                  TextStyle(fontSize: 18))
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            onTap: () {}),
+                                        actions: <Widget>[
+                                          // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+                                        ]);
+                                  }))
+                        ]));
+                      }
+                    }),
+              ),
+            ),
+      
+          ],
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.file_download),
         onPressed: () => {
@@ -212,4 +338,33 @@ else if (Platform.isAndroid) {
     print('made it to the end');
   }
   }
+
+
+//todo: HOW WE GET FIRESTORE DATA WITHOUT USING LISTVIEW OR ANYTHING ELSE!!!!!!
+//! THIS FILE IS HOW WE GET FIREBASE DATA WITHOUT HAVING TO BUILD A LISTVIEW OR ANY UI ELEMENT
+  Future addMyStoreDocs() async {
+  QuerySnapshot querySnapshot = await db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).get();
+  for (int i = 0; i < querySnapshot.docs.length; i++) {
+    var doc = querySnapshot.docs[i];
+    print(doc.get('name'));
+
+    storeList.add(<String>[doc.get('name'), doc.get('address')]);
+  }
 }
+
+  Future addSharedStoreDocs() async {
+  QuerySnapshot querySnapshot = await db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).get(); // only shows stores that have been sharedWith the currently signed in user.
+  for (int i = 0; i < querySnapshot.docs.length; i++) {
+    var doc = querySnapshot.docs[i];
+    print(doc.get('name'));
+
+    storeList.add(<String>[doc.get('name'), doc.get('address')]);
+  }
+}
+}
+
+
+//TODO: add a tab to switch between stores you own and stores that have been shared with you, as opposed to clickeing no the 3 dots 
+
+// TODO remove the ui element from store export. have it all be done automatically on the backend
+

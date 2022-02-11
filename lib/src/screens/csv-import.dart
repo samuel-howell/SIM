@@ -25,6 +25,7 @@ class CsvToList extends StatefulWidget{
   String formattedDate = DateFormat('MM/dd/yyyy - HH:mm').format(now);
   List<List<dynamic>> itemData = [];
 
+int importSelected = 0; // depending on what this number is is what database operation is performed
 
 class CsvToListState extends State<CsvToList>{
 
@@ -45,6 +46,7 @@ class CsvToListState extends State<CsvToList>{
   @override
   Widget build(BuildContext context) {
 
+//TODO: migrate each import item csv and import store csv to their respectivce pages up in the 3 dots
 
       return Scaffold(
          key: _scaffoldKey,
@@ -56,11 +58,31 @@ class CsvToListState extends State<CsvToList>{
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  color: Colors.green,
-                  height: 30,
+                  //color: Theme.of(context).primaryColor,
+                  //decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: 50,
                   child: TextButton(
-                    child: Text("CSV ITEM LIST IMPORT",style: TextStyle(color: Colors.white),), //TODO: Create a similar button and process that imports stores and their addresses, then one that imports quantity data just so I can build a detailed quantity graph quickly
-                    onPressed: _openFileExplorer,
+                    child: Text("Import CSV Item List",), //TODO: Create a similar button and process that imports stores and their addresses, then one that imports quantity data just so I can build a detailed quantity graph quickly
+                    onPressed: () => [
+                      setImportSelected(1),
+                      _openFileExplorer()
+                    ]
+                  ),
+                ),
+              ),
+
+               Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                 // color: Theme.of(context).primaryColor,
+                 // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+                  height: 50,
+                  child: TextButton(
+                    child: Text("Import CSV Store List",), //TODO: Create  one that imports quantity data just so I can build a detailed quantity graph quickly
+                    onPressed: () => [
+                      setImportSelected(2),
+                      _openFileExplorer()
+                    ]
                   ),
                 ),
               ),
@@ -71,53 +93,109 @@ class CsvToListState extends State<CsvToList>{
                   itemCount: itemData.length,
                   itemBuilder: (context,index){
               
-                    try{
-                    // the index number is based on which column the data is in in an excel file, starting from cell 0,0
-                    Database.addItem(
-                      name: itemData[index][1],
-                      price: double.parse(itemData[index][2].toString()),   
-                      quantity: itemData[index][3], 
-                      description: itemData[index][4], 
-                      mostRecentScanIn: formattedDate, 
-                      id: itemData[index][0].toString());
-                    }
-                    catch(exception){
+                    // for item import csv
+                    if(importSelected == 1){
+                      try{
+                      // the index number is based on which column the data is in in an excel file, starting from cell 0,0
+                      Database.addItem(
+                        name: itemData[index][1],
+                        price: double.parse(itemData[index][2].toString()),   
+                        quantity: itemData[index][3], 
+                        description: itemData[index][4], 
+                        mostRecentScanIn: formattedDate, 
+                        id: itemData[index][0].toString());
+                      }
+                      catch(exception){
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.red), 
+                              borderRadius: BorderRadius.circular(10),
+
+                            ),
+                            child: Card(child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] + ", " + itemData[index][2] + ", " + itemData[index][3] + ", " + itemData[index][4] +  "]. Please make sure row conforms to CSV import guidelines."),
+                                ],
+                              ),
+                            )),
+                          ),
+                        );
+                      }
+                    
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.red), 
-                            borderRadius: BorderRadius.circular(10),
-
+                        child: Card(child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(itemData[index][1] + ' was imported successfully!'),
+                            ],
                           ),
-                          child: Card(child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] + ", " + itemData[index][2] + ", " + itemData[index][3] + ", " + itemData[index][4] +  "]. Please make sure row conforms to CSV import guidelines."),
-                              ],
-                            ),
-                          )),
-                        ),
+                        )),
                       );
-                    }
-                  
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(child: Padding(
+                  } // end if(importedSelected == 1)
+
+
+                  // for store import csv
+                   if(importSelected == 2){
+                      try{
+                      // the index number is based on which column the data is in in an excel file, starting from cell 0,0
+                      Database.addStore(
+                        name: itemData[index][0],
+                        address: itemData[index][1]);
+                      }
+                      catch(exception){
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.red), 
+                              borderRadius: BorderRadius.circular(10),
+
+                            ),
+                            child: Card(child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] +   "]. Please make sure row conforms to CSV import guidelines."),
+                                ],
+                              ),
+                            )),
+                          ),
+                        );
+                      }
+                    
+                      return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(itemData[index][1] + ' was imported successfully!'),
-                          ],
-                        ),
-                      )),
-                    );
-                  }
+                        child: Card(child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(itemData[index][0] + ' at address ' + itemData[index][1] + ' was imported successfully!'),
+                            ],
+                          ),
+                        )),
+                      );
+                  } // end if(importedSelected == 2)
+
+
+
+
+                  // default ret for null safety
+                  return Container();
+                  } 
                   ),
             ],
           ),
@@ -176,6 +254,10 @@ String option1Text = "";
 
     });
       }
+  }
+
+  setImportSelected(int number) {
+    importSelected = number;
   }
 
   // since we can't use .path with file picker pkg on Web, we have to use the workaround below
