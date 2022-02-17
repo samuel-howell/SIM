@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ItemInfoWidget extends StatefulWidget {
   final String itemDocID;
+  
 
   const ItemInfoWidget({Key? key, required this.itemDocID}) : super(key: key);
 
@@ -25,6 +27,10 @@ double storeTotalProfit = 1;
 class _ItemInfoWidgetState extends State<ItemInfoWidget> {
   @override
   Widget build(BuildContext context) {
+
+ 
+
+
     String? currentUserID = auth.currentUser?.uid;
 
     //* this is how I assign a future to a var that I can actually use in the build

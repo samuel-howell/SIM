@@ -764,3 +764,89 @@ showAddUserDialog(BuildContext context, String storeDocID) {
         });
       });
 }
+
+
+// this method shows an alert to update minimum stock needed
+setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
+  // make sure to pull the docID item that is clicked on
+
+  final TextEditingController _minStockController = TextEditingController();
+  bool _isProcessing = false;
+  final _formKey = GlobalKey<FormState>();
+
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+              title: Center(child: Text("Set Minimum Stock Needed Amount")),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      //text field for store name
+                      TextFormField(
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Enter the minimum amount you need in stock',
+                        ),
+                        controller: _minStockController,
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          RegExp regex = new RegExp(r'[0-9]');
+                          if (!regex.hasMatch(value!)) {
+                            // regex makes sure users only enter number values
+                            return 'Please enter a valid number amount';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      SizedBox(height: 20),
+
+                      SizedBox(height: 30),
+                      _isProcessing
+                          ? Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  CustomColors.red,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.maxFinite,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    // this call to validate has to be included or else the form validation checks set above won't show.
+
+                                    setState(() {
+                                      _isProcessing = true;
+                                    });
+
+                                    await Database.setMinimumStockNeeded(
+                                        min: double.parse(_minStockController.text),
+                                        itemDocID: itemDocID);
+
+                                    setState(() {
+                                      _isProcessing = false;
+                                    });
+
+                                    Navigator.of(context)
+                                        .pop(); // return to previous screen after operation is complete
+                                  }
+                                },
+                                child: const Text('Submit'),
+                              ),
+                            )
+                    ],
+                  ),
+                ),
+              ));
+        });
+      });
+}

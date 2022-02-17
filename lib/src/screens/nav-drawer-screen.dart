@@ -2,7 +2,6 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:howell_capstone/src/screens/csv-import.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/login-screen.dart';
@@ -59,13 +58,6 @@ class NavigationDrawerWidget extends StatelessWidget {
           text: 'SCAN QR',
           icon: Icons.screenshot,
           onClicked: () => selectedItem(context, 3),
-        ),
-
-        const SizedBox(height: 15),
-        buildMenuItem(
-          text: 'CSV IMPORT',
-          icon: Icons.file_copy_outlined,
-          onClicked: () => selectedItem(context, 6),
         ),
 
         //  this is our divider
@@ -177,12 +169,6 @@ class NavigationDrawerWidget extends StatelessWidget {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => SettingsScreen(),
           )); 
-        break;
-
-      case 6:
-        Navigator.of(context).push(MaterialPageRoute(
-           builder: (context) => CsvToList(),
-        ));
         break;
 
     }

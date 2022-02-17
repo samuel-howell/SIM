@@ -12,11 +12,11 @@ import 'package:intl/intl.dart';
 import 'package:universal_html/html.dart' as html;
 
 
-class CsvToList extends StatefulWidget{
+class ItemCsvImport extends StatefulWidget{
   @override
   State<StatefulWidget> createState() {
 
-    return CsvToListState();
+    return ItemCsvImportState();
   }
 
 }
@@ -27,7 +27,7 @@ class CsvToList extends StatefulWidget{
 
 int importSelected = 0; // depending on what this number is is what database operation is performed
 
-class CsvToListState extends State<CsvToList>{
+class ItemCsvImportState extends State<ItemCsvImport>{
 
  // format the date like "11/15/2021 - 16:52"
 
@@ -46,11 +46,10 @@ class CsvToListState extends State<CsvToList>{
   @override
   Widget build(BuildContext context) {
 
-//TODO: migrate each import item csv and import store csv to their respectivce pages up in the 3 dots
 
       return Scaffold(
          key: _scaffoldKey,
-        appBar: AppBar(title:Text("CSV To List")),
+        appBar: AppBar(),
         
         body: SingleChildScrollView(
           child: Column(
@@ -62,7 +61,7 @@ class CsvToListState extends State<CsvToList>{
                   //decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                   height: 50,
                   child: TextButton(
-                    child: Text("Import CSV Item List",), //TODO: Create a similar button and process that imports stores and their addresses, then one that imports quantity data just so I can build a detailed quantity graph quickly
+                    child: Text("Import CSV Item List",), 
                     onPressed: () => [
                       setImportSelected(1),
                       _openFileExplorer()
@@ -71,21 +70,6 @@ class CsvToListState extends State<CsvToList>{
                 ),
               ),
 
-               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                 // color: Theme.of(context).primaryColor,
-                 // decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-                  height: 50,
-                  child: TextButton(
-                    child: Text("Import CSV Store List",), //TODO: Create  one that imports quantity data just so I can build a detailed quantity graph quickly
-                    onPressed: () => [
-                      setImportSelected(2),
-                      _openFileExplorer()
-                    ]
-                  ),
-                ),
-              ),
               
               ListView.builder(
                   shrinkWrap: true,
@@ -94,7 +78,7 @@ class CsvToListState extends State<CsvToList>{
                   itemBuilder: (context,index){
               
                     // for item import csv
-                    if(importSelected == 1){
+                    
                       try{
                       // the index number is based on which column the data is in in an excel file, starting from cell 0,0
                       Database.addItem(
@@ -141,60 +125,7 @@ class CsvToListState extends State<CsvToList>{
                           ),
                         )),
                       );
-                  } // end if(importedSelected == 1)
-
-
-                  // for store import csv
-                   if(importSelected == 2){
-                      try{
-                      // the index number is based on which column the data is in in an excel file, starting from cell 0,0
-                      Database.addStore(
-                        name: itemData[index][0],
-                        address: itemData[index][1]);
-                      }
-                      catch(exception){
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.red), 
-                              borderRadius: BorderRadius.circular(10),
-
-                            ),
-                            child: Card(child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text("ERROR importing row containing [" + itemData[index][0] + ", " + itemData[index][1] +   "]. Please make sure row conforms to CSV import guidelines."),
-                                ],
-                              ),
-                            )),
-                          ),
-                        );
-                      }
-                    
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Card(child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(itemData[index][0] + ' at address ' + itemData[index][1] + ' was imported successfully!'),
-                            ],
-                          ),
-                        )),
-                      );
-                  } // end if(importedSelected == 2)
-
-
-
-
-                  // default ret for null safety
-                  return Container();
+                  
                   } 
                   ),
             ],
@@ -264,7 +195,7 @@ String option1Text = "";
   startWebFilePicker() async {
 
     /* we have to get the bytes of the file since we can't use the file path. once we get the bytes, we convert to base64 (thus putting the csv in UInt8List)
-        then we can convert that back to something that CsvToListConverter can use  using utf8.decode */
+        then we can convert that back to something that ItemCsvImportConverter can use  using utf8.decode */
 
       html.FileUploadInputElement uploadInput = html.FileUploadInputElement();
         uploadInput.click();

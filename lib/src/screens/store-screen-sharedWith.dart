@@ -40,7 +40,10 @@ class StoreScreenSharedWith extends StatefulWidget {
 }
 
 class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
-  Stream<QuerySnapshot> streamQuerySharedWith = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been sharedWith the currently signed in user.
+  Stream<QuerySnapshot> streamQuerySharedWith = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
+              .where('lowercaseName', isGreaterThanOrEqualTo: searchKey) //these 2 wheres organize the stream alphabetically
+              .where('lowercaseName', isLessThan: searchKey + 'z')
+              .snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
   @override
   void initState() {

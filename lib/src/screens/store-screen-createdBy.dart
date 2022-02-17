@@ -40,7 +40,10 @@ class StoreScreenCreatedBy extends StatefulWidget {
 }
 
 class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
-  Stream<QuerySnapshot> streamQueryCreatedBy = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user.
+  Stream<QuerySnapshot> streamQueryCreatedBy = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
+                  .where('lowercaseName', isGreaterThanOrEqualTo: searchKey) //these 2 wheres organize the stream alphabetically
+                  .where('lowercaseName', isLessThan: searchKey + 'z')
+                  .snapshots(); // only shows stores that have been created by  the currently signed in user.
 
   @override
   void initState() {

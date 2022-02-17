@@ -37,26 +37,6 @@ class Database {
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
 
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // String? currentUserUID = _auth.currentUser
-    //     ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
-    // DocumentReference itemDocumentReferencer = _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(Database.currentStoreID)
-    //     .collection('items')
-    //     .doc(
-    //         id); // current user -> store -> items -> *insert the new item here in this blank doc and make its id the item id entered by user*
-
-    // DocumentReference quantityDoc = _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(Database.currentStoreID)
-    //     .collection('items')
-    //     .doc(id)
-    //     .collection('graphData')
-    //     .doc('quantity');
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
@@ -86,6 +66,7 @@ class Database {
 
       "mostRecentScanIn": mostRecentScanIn,
       "mostRecentScanOut": "", // initiliaze to null until first scan out
+      "minimumStockNeeded" : "", // initialize to null until user enters a value //TODO: do i need to add minimum stock needed to import item function behind description?
 
       "LastEmployeeToInteract": await Database()
           .getCurrentUserName(), //this will be the user id of the last employee to either scan in or scan out the item
@@ -232,15 +213,7 @@ class Database {
     required String address,
     required String docID,
   }) async {
-    //*@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // String? currentUserUID = _auth.currentUser
-    //     ?.uid; // get the current user id at the moment the method has been triggered
-    // DocumentReference storeDocumentReferencer = _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(
-    //         docID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
-    //*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ 
 
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
@@ -271,16 +244,6 @@ class Database {
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
 
-    //  this doc ref finds the item doc
-    //*@@@@@@@@@@@@@
-    // DocumentReference itemDocumentReferencer = _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(Database().getCurrentStoreID())
-    //     .collection('items')
-    //     .doc(
-    //         itemDocID); // finds the location of the documentCollection of the current user that is signed in and then creates a new document under the "stores" collection in that user's documentCollection
-    //*@@@@@@@@@@@@@
 
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
@@ -775,6 +738,43 @@ class Database {
     return doc.get('firstName') + " " + doc.get('lastName');
   }
 
+
+// method to add a new minimum stock needed on an item to store
+
+  static Future<void> setMinimumStockNeeded({
+    required double min,
+    required String itemDocID
+  }) async {
+      DocumentReference itemDocumentReferencer = _storeCollection
+        .doc(Database().getCurrentStoreID())
+        .collection('items')
+        .doc(itemDocID);
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "minimumStockNeeded": min,
+     
+    };
+
+    await itemDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("item edited in the database"))
+        .catchError((e) => print(e));
+  }
+
+  static Future<bool> isAboveMinimumStockNeeded({
+    required String itemDocID
+    }) async {
+
+      DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore.instance.collection('Stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID).get();
+
+        if(doc.get('minimumStockNeeded') < doc.get('quantity')) return true;
+        return false;
+    }
+
+
+
+
+// helper method to get total store profits
   Future<double> getStoreTotalProfits() async {
     List<dynamic> list;
     double totalProfits = 0;

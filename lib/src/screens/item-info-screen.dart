@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
+import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/src/widgets/item-info-widget.dart';
 import 'package:howell_capstone/src/widgets/line-chart-day/line-chart-widget-day.dart';
 import 'package:howell_capstone/src/widgets/line-chart-month/line-chart-widget-month.dart';
@@ -34,11 +35,28 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
   @override
   Widget build(BuildContext context) {
 
+  // this is the helper method for the popup menu button
+    void onSelected(BuildContext context, int item) async {
+      switch (item) {
+        case 0:
+          setMinimumStockNeededDialog(context, widget.itemDocID);
+          break;
+
+      }
+    }
+
     return DefaultTabController(
       length: _tabs.length,
       initialIndex: 0,
       child: Scaffold(
-          appBar: AppBar(
+            appBar: AppBar(
+            actions: [
+            PopupMenuButton<int>(
+            onSelected: (item) => onSelected(context, item),
+            itemBuilder: (context) => [
+                  PopupMenuItem(child: Text('Set Minimum Stock'), value:0),
+                ])
+                      ],
             bottom: TabBar(tabs: _tabs),
           ),
           body: TabBarView(children: <Widget>[

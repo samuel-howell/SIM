@@ -2,6 +2,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:howell_capstone/src/screens/store-csv-import.dart';
 
 import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/screens/store-screen-sharedWith.dart';
@@ -39,8 +40,14 @@ class _StoreScreenMainState extends State<StoreScreenMain> {
           break;
 
         case 1:
-          SIMPLExport().generateStoreCsv();
+          SIMPLExport().exportStoreCsv();
           break;
+
+        case 2:
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => StoreCsvImport(),
+          )); 
+        break;
       }
     }
 
@@ -57,6 +64,7 @@ class _StoreScreenMainState extends State<StoreScreenMain> {
             itemBuilder: (context) => [
                   PopupMenuItem(child: Text('Add New Store'), value:0),
                   PopupMenuItem(child: Text('Export Stores'), value: 1),
+                  PopupMenuItem(child: Text('Import Stores'), value: 2),
                 ])
                       ],
             bottom: TabBar(tabs: _tabs),

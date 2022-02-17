@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/item-csv-import.dart';
 
 import 'package:howell_capstone/src/screens/item-info-screen.dart';
-import 'package:howell_capstone/src/screens/item-screen-export.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
+import 'package:howell_capstone/src/utilities/SIMPL-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -27,6 +28,8 @@ double highSearchKey = 0;
 
 int searchFilter = 1;
 
+bool lowstock = false;
+
 // for use with csv export
 List<List<String>> itemList = [];
 
@@ -42,6 +45,8 @@ class _ItemScreenState extends State<ItemScreen> {
       .collection('Stores')
       .doc(Database().getCurrentStoreID())
       .collection('items')
+      .where('lowercaseName', isGreaterThanOrEqualTo: searchKey) // adding these 2 .wheres puts the streamQuery in alphabetical order
+      .where('lowercaseName', isLessThan: searchKey + 'z')
       .snapshots();
 
   @override
@@ -63,9 +68,15 @@ class _ItemScreenState extends State<ItemScreen> {
             break;
 
           case 1:
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ItemScreenExport()));
+            SIMPLExport().exportItemCsv();
             break;
+
+          case 2:
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => ItemCsvImport(),
+            ));
+            break;
+
         }
       }
 
@@ -81,7 +92,10 @@ class _ItemScreenState extends State<ItemScreen> {
                             0 // this is the value that will be passed when we press on this popup menu item
                         ),
                     PopupMenuItem(
-                        child: Text('Export Current Items'), value: 1),
+                        child: Text('Export Store Items'), value: 1),
+
+                    PopupMenuItem(
+                        child: Text('Import Store Items'), value: 2),
                   ])
         ]),
         body: StreamBuilder<QuerySnapshot>(
@@ -107,6 +121,7 @@ class _ItemScreenState extends State<ItemScreen> {
                         itemBuilder: (context, index) {
                           DocumentSnapshot doc = snapshot.data!.docs[index];
 
+                          //lowstock = await Database.isAboveMinimumStockNeeded(itemDocID: doc.id); // todo: in init state get all of the items in the store, and compare there min stock reqmt to quanity then set a field called isAboveMinStock to either true or false. then use that bool field to determine whether to color the container with quantity green or red.
                           // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
@@ -158,29 +173,47 @@ class _ItemScreenState extends State<ItemScreen> {
                                                 SizedBox(
                                                   height: 10,
                                                 ),
+
                                                 Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      Text(
-                                                          "\$" +
-                                                              doc
-                                                                  .get('price')
-                                                                  .toString() +
-                                                              " ",
-                                                          style: TextStyle(
-                                                              fontSize: 18)),
-                                                      Text(
-                                                          "ID: " +
-                                                              doc
-                                                                  .get('id')
-                                                                  .toString() +
-                                                              " ",
-                                                          style: TextStyle(
-                                                              fontSize: 18)),
-                                                    ])
-                                              ],
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                    Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      children:[
+                                                Text(
+                                                    "\$" +
+                                                        doc
+                                                            .get('price')
+                                                            .toString() +
+                                                        " ",
+                                                    style: TextStyle(
+                                                        fontSize: 18)),
+
+                                                SizedBox(
+                                                  height: 10,
+                                                ),
+
+                                                Text(
+                                                    "ID: " +
+                                                        doc
+                                                            .get('id')
+                                                            .toString() +
+                                                        " ",
+                                                    style: TextStyle(
+                                                        fontSize: 18)),
+                                                      ]),
+
+                                                Container(
+                                              width: 100,
+                                              height: 50,
+                                              decoration: BoxDecoration(color: lowstock ? Colors.green : Colors.red, borderRadius: BorderRadius.circular(10),), //TODO: build out database function that determines whether an item is in low stock
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 18))),
+                                              ),
+                                               )
+                                              ]),
+                                            ],
                                             ),
                                           )
                                         ],
@@ -192,8 +225,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => ItemInfoScreen(
-                                                  itemDocID: doc
-                                                      .id), // pass the doc id to the item infor screen page
+                                                  itemDocID: doc.id), // pass the doc id to the item infor screen page
                                             ))
                                       }),
                               actions: <Widget>[
