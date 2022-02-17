@@ -33,7 +33,6 @@ final _tabs = <Widget>[
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
   @override
   Widget build(BuildContext context) {
-    String? currentUserID = auth.currentUser?.uid;
 
     return DefaultTabController(
       length: _tabs.length,

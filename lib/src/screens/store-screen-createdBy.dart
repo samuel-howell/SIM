@@ -5,8 +5,8 @@ import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
-import 'package:howell_capstone/src/screens/store-screen-export.dart';
 import 'package:howell_capstone/src/screens/store-screen-sharedWith.dart';
+import 'package:howell_capstone/src/utilities/SIMPL-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,49 +45,14 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
   @override
   void initState() {
     super.initState();
-    storeList = [
-      <String>["STORE", "ADDRESS"]
-    ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
   }
 
   @override
   Widget build(BuildContext context) {
-    // this is the helper method for the popup menu button
-    void onSelected(BuildContext context, int item) async {
-      switch (item) {
-        case 0:
-          showAddStoreDialog(context);
-          break;
-
-        case 1:
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => StoreScreenExport()));
-          break;
-
-        case 2:
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => StoreScreenSharedWith()));
-          break;
-
-        case 3:
-          Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => StoreScreenCreatedBy()));
-          break;
-      }
-    }
+    
 
     return Scaffold(
-      drawer: NavigationDrawerWidget(),
-      appBar: AppBar(actions: [
-        PopupMenuButton<int>(
-            onSelected: (item) => onSelected(context, item),
-            itemBuilder: (context) => [
-                  PopupMenuItem(child: Text('Add New Store'), value:0),
-                  PopupMenuItem(child: Text('My Stores'), value: 3),
-                  PopupMenuItem(child: Text('Stores Shared With Me'), value: 2),
-                  PopupMenuItem(child: Text('Export Current Stores'), value: 1),
-                ])
-      ]),
+ 
       body: StreamBuilder<QuerySnapshot>(
           stream: streamQueryCreatedBy,
           builder: (context, snapshot) {
