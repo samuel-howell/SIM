@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
@@ -508,14 +509,14 @@ showAddItemDialog(BuildContext context) {
                                       mostRecentScanIn:
                                           _currentDateTime, // pulls from the  _currentDateTime var created above.
                                       id: _idController.text,
+                                      isAboveMinimumStockNeeded: true,
                                     );
 
                                     setState(() {
                                       _isProcessing = false;
                                     });
 
-                                    Navigator.of(context)
-                                        .pop(); // return to previous screen after operation is complete
+                                    Navigator.of(context).pop(); 
                                   }
                                 },
                                 child: const Text('Submit'),
@@ -831,6 +832,7 @@ setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
                                     await Database.setMinimumStockNeeded(
                                         min: double.parse(_minStockController.text),
                                         itemDocID: itemDocID);
+
 
                                     setState(() {
                                       _isProcessing = false;

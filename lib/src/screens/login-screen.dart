@@ -8,6 +8,7 @@ import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
  import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
+import 'package:howell_capstone/src/screens/store-screen-main.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/sign-up-form.dart';
@@ -31,7 +32,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   Widget _buildForgotPasswordBtn() {
-    //TODO:  figure out a way to implement this
     return Container(
       alignment: Alignment.centerRight,
       child: Padding(
@@ -56,7 +56,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildRememberMeCheckbox() {
-    //TODO:  figure out a way to implement this
     return Container(
       height: 20.0,
       child: Row(
@@ -345,7 +344,7 @@ class _LoginScreenState extends State<LoginScreen> {
         //   userID: userID, emailVerified: true); //! sets to email verified to ture every time the user logs into the app, which is an uneccesary write to the db
 
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => StoreScreenCreatedBy()));
+            MaterialPageRoute(builder: (context) => StoreScreenMain()));
       }
 
       // ifuser hasn't verified email, we send them back to the email confirmation page

@@ -87,7 +87,8 @@ class ItemCsvImportState extends State<ItemCsvImport>{
                         quantity: itemData[index][3], 
                         description: itemData[index][4], 
                         mostRecentScanIn: formattedDate, 
-                        id: itemData[index][0].toString());
+                        id: itemData[index][0].toString(),
+                        isAboveMinimumStockNeeded: true);
                       }
                       catch(exception){
                         return Padding(

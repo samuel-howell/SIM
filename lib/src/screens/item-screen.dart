@@ -28,11 +28,9 @@ double highSearchKey = 0;
 
 int searchFilter = 1;
 
-bool lowstock = false;
 
 // for use with csv export
 List<List<String>> itemList = [];
-List<Color> colorList = <Color>[];
 class ItemScreen extends StatefulWidget {
   @override
   State<ItemScreen> createState() => _ItemScreenState();
@@ -56,7 +54,6 @@ class _ItemScreenState extends State<ItemScreen> {
       <String>["ITEM", "QUANTITY"]
     ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
 
-    colorList = <Color>[]; // we have to reset colorList  to empty every time the page is built so the indexes work properly.
  
 //if true, add green to list. if false, add red.  
 //Then iterate through list in listview builder to color each container holding quantity correctly
@@ -131,7 +128,7 @@ class _ItemScreenState extends State<ItemScreen> {
                     //this search bar filters out stores
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: showSearchDialog(),
+                      child: showSearchDialog(), //TODO: fix the search dialog not working with futurebuilder.  Perhaps wrap future builder around just listview
                     ),
       
                     Expanded(
@@ -226,7 +223,7 @@ class _ItemScreenState extends State<ItemScreen> {
                                                 width: 100,
                                                 height: 50,
                                                 decoration: BoxDecoration(
-                                                  color: colorList[index], // add the color found at the matching index in the color list
+                                                  color: doc.get('isAboveMinimumStockNeeded') ? Colors.green : Colors.red, // add the color found at the matching index in the color list //TODO: we need to link the color directly to the item and not use an index list
                                                   borderRadius: BorderRadius.circular(10),), //TODO: build out database function that determines whether an item is in low stock
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(8.0),
@@ -516,35 +513,16 @@ class _ItemScreenState extends State<ItemScreen> {
 
 
   //iterate through items to populate color list
- updateQuantityColors() async {
+ Future<void> updateQuantityColors() async {
 
   
-    /*
-  In order to color a quantity container either red or green depending on if it is below minimum stock needed, we need to make a list of
-  colors where each index corresponds with the appropriate index in the itemlist that is generated with the Listview.builder.  then, we can just 
-  use colorList[index] in the listview.builder when defining the color for the quantity container for each item.  We can't do await methods in listview builder, so this was the workaround.
-
-  We use futurebuilder to generate the correct item list everytime the page is rebuilt
-   */
 
   QuerySnapshot querySnapshot = await db.collection('Stores').doc(Database().getCurrentStoreID()).collection('items').get();
   for (int i = 0; i < querySnapshot.docs.length; i++) {
     var doc = querySnapshot.docs[i];
     print(doc.get('name'));
-
-  bool isAboveMinimumStock = await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
-
-    print('isAboveMinimumStock is ' + isAboveMinimumStock.toString());
-
-  if(isAboveMinimumStock){
-    colorList.add(Colors.green[700]!);
-  } 
-  else {
-    colorList.add(Colors.red[400]!);
-    }
-
-    print('colorList is now ' + colorList.toString());
-    print('colorList[0] is ' + colorList[0].toString());
+    
+    await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
 
   }
 }

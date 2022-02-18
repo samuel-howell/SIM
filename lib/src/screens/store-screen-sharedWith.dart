@@ -312,17 +312,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
             onChanged: (value) {
               setState(() {
                 searchKey = value.toLowerCase();
-
-                //  this stream query matches the searchkey to the names of the stores in the db
-                //*@@@@@@@@@@@@@@@
-                // streamQuery = db
-                //     .collection('Users')
-                //     .doc(currentUserID)
-                //     .collection('stores')
-                //     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
-                //     .where('lowercaseName', isLessThan: searchKey + 'z')
-                //     .snapshots();
-                //*@@@@@@@@@@@@@@@
+           
 
                 streamQuerySharedWith = db
                     .collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())

@@ -32,6 +32,7 @@ class Database {
     required String description,
     required String mostRecentScanIn,
     required String id,
+    required bool isAboveMinimumStockNeeded,
   }) async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
@@ -66,8 +67,8 @@ class Database {
 
       "mostRecentScanIn": mostRecentScanIn,
       "mostRecentScanOut": "", // initiliaze to null until first scan out
-      "minimumStockNeeded" : "", // initialize to null until user enters a value //TODO: do i need to add minimum stock needed to import item function behind description?
-
+      "minimumStockNeeded" : 1, // initialize to 1 until user enters a value 
+      "isAboveMinimumStockNeeded" : true,
       "LastEmployeeToInteract": await Database()
           .getCurrentUserName(), //this will be the user id of the last employee to either scan in or scan out the item
     };
@@ -757,18 +758,52 @@ class Database {
 
     await itemDocumentReferencer
         .update(data)
-        .whenComplete(() => print("item edited in the database"))
+        .whenComplete(() => print("stock minimum updated in database"))
         .catchError((e) => print(e));
   }
 
-  static Future<bool> isAboveMinimumStockNeeded({
+  static Future<void> isAboveMinimumStockNeeded({
     required String itemDocID
     }) async {
+      print('inside the isAboveMinimumStockNeeded method');
 
+      bool flag = false;
       DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore.instance.collection('Stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID).get();
 
-        if(doc.get('minimumStockNeeded') < doc.get('quantity')) return true;
-        return false;
+
+      
+      print('minimumStockNeeded: ' + doc.get('minimumStockNeeded').toString());
+      print('quantity: ' + doc.get('quantity').toString().toString());
+
+      
+
+        
+       if(doc.get('minimumStockNeeded') < doc.get('quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
+        {
+           print('flag true');
+           flag = true;
+        }
+        else{
+           print('flag false');
+         flag = false;
+        }
+
+      
+      DocumentReference itemDocumentReferencer = _storeCollection
+        .doc(Database().getCurrentStoreID())
+        .collection('items')
+        .doc(itemDocID);
+
+        Map<String, dynamic> data = <String, dynamic>{
+      "isAboveMinimumStockNeeded": flag,
+     
+    };
+
+    await itemDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("stock minimum bool updated in database"))
+        .catchError((e) => print(e));
+
     }
 
 
