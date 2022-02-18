@@ -32,7 +32,7 @@ bool lowstock = false;
 
 // for use with csv export
 List<List<String>> itemList = [];
-
+List<Color> colorList = <Color>[];
 class ItemScreen extends StatefulWidget {
   @override
   State<ItemScreen> createState() => _ItemScreenState();
@@ -50,16 +50,24 @@ class _ItemScreenState extends State<ItemScreen> {
       .snapshots();
 
   @override
-  void initState() {
+  void initState()  {
     super.initState();
     itemList = [
       <String>["ITEM", "QUANTITY"]
     ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
+
+    colorList = <Color>[]; // we have to reset colorList  to empty every time the page is built so the indexes work properly.
+ 
+//if true, add green to list. if false, add red.  
+//Then iterate through list in listview builder to color each container holding quantity correctly
+    //updateQuantityColors();
+   
   }
+
 
   @override
   Widget build(BuildContext context) {
-    try {
+    
       // this is the helper method for the popup menu button
       void onSelected(BuildContext context, int item) async {
         switch (item) {
@@ -80,192 +88,208 @@ class _ItemScreenState extends State<ItemScreen> {
         }
       }
 
-      return Scaffold(
-        drawer: NavigationDrawerWidget(),
-        appBar: AppBar(actions: [
-          PopupMenuButton<int>(
-              onSelected: (item) => onSelected(context, item),
-              itemBuilder: (context) => [
-                    PopupMenuItem(
-                        child: Text('Add New Item'),
-                        value:
-                            0 // this is the value that will be passed when we press on this popup menu item
-                        ),
-                    PopupMenuItem(
-                        child: Text('Export Store Items'), value: 1),
+      return FutureBuilder(
+          future: updateQuantityColors(),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting)
+            {
+              return Center(
+                    child: CircularProgressIndicator(),
+                  );
+            }
 
-                    PopupMenuItem(
-                        child: Text('Import Store Items'), value: 2),
-                  ])
-        ]),
-        body: StreamBuilder<QuerySnapshot>(
-            stream:
-                streamQuery, // this streamQuery will change based on what is typed into the search bar
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else {
-                return Container(
-                    child: Column(children: <Widget>[
-                  //this search bar filters out stores
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: showSearchDialog(),
-                  ),
-
-                  Expanded(
-                    child: ListView.builder(
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot doc = snapshot.data!.docs[index];
-
-                          //lowstock = await Database.isAboveMinimumStockNeeded(itemDocID: doc.id); // todo: in init state get all of the items in the store, and compare there min stock reqmt to quanity then set a field called isAboveMinStock to either true or false. then use that bool field to determine whether to color the container with quantity green or red.
-                          // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
-                          return Slidable(
-                              actionPane: SlidableDrawerActionPane(),
-                              actionExtentRatio: 0.25,
-                              child: GestureDetector(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondary, // color and opacity pulled in as param
-                                      elevation: 16,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Wrap(
-                                        children: [
-                                          Container(
-                                            width: MediaQuery.of(context)
-                                                .size
-                                                .width,
-                                            decoration: BoxDecoration(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .background,
-                                                borderRadius: BorderRadius.only(
-                                                    bottomRight:
-                                                        Radius.circular(10),
-                                                    topRight:
-                                                        Radius.circular(10))),
-                                            margin: EdgeInsets.only(left: 10),
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 10),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Center(
-                                                  child: Text(
-                                                    doc
-                                                        .get('name')
-                                                        .toString(), // string pulled in as param
-                                                    style: TextStyle(
-                                                        fontSize: 24,
-                                                        fontWeight:
-                                                            FontWeight.bold),
+          else if (snapshot.connectionState == ConnectionState.done) {
+        return Scaffold(
+          drawer: NavigationDrawerWidget(),
+          appBar: AppBar(actions: [
+            PopupMenuButton<int>(
+                onSelected: (item) => onSelected(context, item),
+                itemBuilder: (context) => [
+                      PopupMenuItem(
+                          child: Text('Add New Item'),
+                          value:
+                              0 // this is the value that will be passed when we press on this popup menu item
+                          ),
+                      PopupMenuItem(
+                          child: Text('Export Store Items'), value: 1),
+      
+                      PopupMenuItem(
+                          child: Text('Import Store Items'), value: 2),
+                    ])
+          ]),
+          body: StreamBuilder<QuerySnapshot>(
+              stream:
+                  streamQuery, // this streamQuery will change based on what is typed into the search bar
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else {
+                  return Container(
+                      child: Column(children: <Widget>[
+                    //this search bar filters out stores
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: showSearchDialog(),
+                    ),
+      
+                    Expanded(
+                      child: ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot doc = snapshot.data!.docs[index];
+      
+                            
+                            // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
+                            return Slidable(
+                                actionPane: SlidableDrawerActionPane(),
+                                actionExtentRatio: 0.25,
+                                child: GestureDetector(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Card(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary, // color and opacity pulled in as param
+                                        elevation: 16,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Wrap(
+                                          children: [
+                                            Container(
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .background,
+                                                  borderRadius: BorderRadius.only(
+                                                      bottomRight:
+                                                          Radius.circular(10),
+                                                      topRight:
+                                                          Radius.circular(10))),
+                                              margin: EdgeInsets.only(left: 10),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 16, vertical: 10),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Center(
+                                                    child: Text(
+                                                      doc
+                                                          .get('name')
+                                                          .toString(), // string pulled in as param
+                                                      style: TextStyle(
+                                                          fontSize: 24,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
                                                   ),
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+      
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children:[
+                                                  Text(
+                                                      "\$" +
+                                                          doc
+                                                              .get('price')
+                                                              .toString() +
+                                                          " ",
+                                                      style: TextStyle(
+                                                          fontSize: 18)),
+      
+                                                  SizedBox(
+                                                    height: 10,
+                                                  ),
+      
+                                                  Text(
+                                                      "ID: " +
+                                                          doc
+                                                              .get('id')
+                                                              .toString() +
+                                                          " ",
+                                                      style: TextStyle(
+                                                          fontSize: 18)),
+                                                        ]),
+      
+                                                  Container(
+                                                width: 100,
+                                                height: 50,
+                                                decoration: BoxDecoration(
+                                                  color: colorList[index], // add the color found at the matching index in the color list
+                                                  borderRadius: BorderRadius.circular(10),), //TODO: build out database function that determines whether an item is in low stock
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 18))),
                                                 ),
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-
-                                                Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  children: [
-                                                    Column(
-                                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                                      children:[
-                                                Text(
-                                                    "\$" +
-                                                        doc
-                                                            .get('price')
-                                                            .toString() +
-                                                        " ",
-                                                    style: TextStyle(
-                                                        fontSize: 18)),
-
-                                                SizedBox(
-                                                  height: 10,
-                                                ),
-
-                                                Text(
-                                                    "ID: " +
-                                                        doc
-                                                            .get('id')
-                                                            .toString() +
-                                                        " ",
-                                                    style: TextStyle(
-                                                        fontSize: 18)),
-                                                      ]),
-
-                                                Container(
-                                              width: 100,
-                                              height: 50,
-                                              decoration: BoxDecoration(color: lowstock ? Colors.green : Colors.red, borderRadius: BorderRadius.circular(10),), //TODO: build out database function that determines whether an item is in low stock
-                                              child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
-                                                child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 18))),
+                                                 )
+                                                ]),
+                                              ],
                                               ),
-                                               )
-                                              ]),
-                                            ],
-                                            ),
-                                          )
-                                        ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  onTap: () => {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => ItemInfoScreen(
-                                                  itemDocID: doc.id), // pass the doc id to the item infor screen page
-                                            ))
-                                      }),
-                              actions: <Widget>[
-                                // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
-
-                                // slide action to delete
-                                IconSlideAction(
-                                    caption: 'Delete',
-                                    color: Theme.of(context).primaryColor,
-                                    icon: Icons.delete_sharp,
                                     onTap: () => {
-                                          showItemDeleteConfirmationAlertDialog(
-                                              context, doc.id),
-                                          print('item ' +
-                                              doc.id +
-                                              ' was deleted.')
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => ItemInfoScreen(
+                                                    itemDocID: doc.id), // pass the doc id to the item infor screen page
+                                              ))
                                         }),
-
-                                // slide action to edit
-                                IconSlideAction(
-                                    caption: 'Edit',
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: Icons.edit,
-                                    onTap: () => {
-                                          showEditItemDialog(context, doc.id),
-                                          print(
-                                              'item ' + doc.id + ' was edited')
-                                        }),
-                              ]);
-                        }),
-                  )
-                ]));
-              }
-            }),
-      );
-    } catch (e) {
-      //! this code isn't working.
-      return Center(child: Text('Please choose.'));
-    }
+                                actions: <Widget>[
+                                  // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+      
+                                  // slide action to delete
+                                  IconSlideAction(
+                                      caption: 'Delete',
+                                      color: Theme.of(context).primaryColor,
+                                      icon: Icons.delete_sharp,
+                                      onTap: () => {
+                                            showItemDeleteConfirmationAlertDialog(
+                                                context, doc.id),
+                                            print('item ' +
+                                                doc.id +
+                                                ' was deleted.')
+                                          }),
+      
+                                  // slide action to edit
+                                  IconSlideAction(
+                                      caption: 'Edit',
+                                      color:
+                                          Theme.of(context).colorScheme.secondary,
+                                      icon: Icons.edit,
+                                      onTap: () => {
+                                            showEditItemDialog(context, doc.id),
+                                            print(
+                                                'item ' + doc.id + ' was edited')
+                                          }),
+                                ]
+                                );
+      
+                        
+                          }),
+                    )
+                  ]));
+                }
+              }),
+        );
+          }
+          else {return Text("Snapshot error");}
+           } );
+   
   }
 
   showSearchDialog() {
@@ -490,6 +514,40 @@ class _ItemScreenState extends State<ItemScreen> {
   }
 }
 
+
+  //iterate through items to populate color list
+ updateQuantityColors() async {
+
+  
+    /*
+  In order to color a quantity container either red or green depending on if it is below minimum stock needed, we need to make a list of
+  colors where each index corresponds with the appropriate index in the itemlist that is generated with the Listview.builder.  then, we can just 
+  use colorList[index] in the listview.builder when defining the color for the quantity container for each item.  We can't do await methods in listview builder, so this was the workaround.
+
+  We use futurebuilder to generate the correct item list everytime the page is rebuilt
+   */
+
+  QuerySnapshot querySnapshot = await db.collection('Stores').doc(Database().getCurrentStoreID()).collection('items').get();
+  for (int i = 0; i < querySnapshot.docs.length; i++) {
+    var doc = querySnapshot.docs[i];
+    print(doc.get('name'));
+
+  bool isAboveMinimumStock = await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
+
+    print('isAboveMinimumStock is ' + isAboveMinimumStock.toString());
+
+  if(isAboveMinimumStock){
+    colorList.add(Colors.green[700]!);
+  } 
+  else {
+    colorList.add(Colors.red[400]!);
+    }
+
+    print('colorList is now ' + colorList.toString());
+    print('colorList[0] is ' + colorList[0].toString());
+
+  }
+}
 //itemDocID class
 class Data {
   String itemDocID;
