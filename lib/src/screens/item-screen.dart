@@ -79,6 +79,11 @@ class _ItemScreenState extends State<ItemScreen> {
             builder: (context) => ItemCsvImport(),
           ));
           break;
+
+        case 3:
+          //Database().checkRecommendedStockLevels();
+          waitForStockRefreshDialog(context);
+          break;
       }
     }
 
@@ -95,6 +100,8 @@ class _ItemScreenState extends State<ItemScreen> {
                         ),
                     PopupMenuItem(child: Text('Export Store Items'), value: 1),
                     PopupMenuItem(child: Text('Import Store Items'), value: 2),
+                    PopupMenuItem(child: Text('Refresh Stock Status'), value: 3)
+
                   ])
         ]),
         body: Column(children: [

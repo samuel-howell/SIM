@@ -147,7 +147,7 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
                                     
-                                      Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
+                                      //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
                                     
                                     setState((){
                                       tappedIndex = index;

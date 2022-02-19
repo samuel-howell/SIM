@@ -436,6 +436,20 @@ class Database {
     return userFirstName! + " " + userLastName!;
   }
 
+
+//  returns the name of current store
+  Future<String> getCurrentStoreName() async {
+    String? name = "";
+
+    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    //  this doc ref gets the name of the current user
+    DocumentReference storeDoc = _storeCollection.doc(getCurrentStoreID());
+    await storeDoc.get().then((snapshot) {
+      name = snapshot.get('name');
+    });
+
+    return name!;
+  }
 //  method to get an item's quantity //! not used
   static getItemQuantity(String itemID) async {
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
@@ -734,6 +748,25 @@ class Database {
     return doc.get('firstName') + " " + doc.get('lastName');
   }
 
+
+  getUserNameFromUID(String uid) async {
+    Stream<QuerySnapshot<Object?>> userDocumentStream =
+        _userCollection.where('userID', isEqualTo: uid).snapshots();
+
+    QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
+
+    DocumentSnapshot doc =
+        docQuery.docs[0]; // returns the first entry in an array list. of which there will only be 1 because we called userDocumentStream.first
+
+    print('the size of the docQuery is ' + docQuery.size.toString());
+    print('the value that should be retd from getUserNameFromUID method is ' +
+        doc.get('firstName') +
+        " " +
+        doc.get('lastName'));
+
+    return doc.get('firstName') + " " + doc.get('lastName');
+  }
+
 // method to add a new minimum stock needed on an item to store
 
   static Future<void> setMinimumStockNeeded(
@@ -753,6 +786,8 @@ class Database {
         .catchError((e) => print(e));
   }
 
+
+// helper method for check stock levels
   static Future<void> isAboveMinimumStockNeeded(
       {required String itemDocID}) async {
 
@@ -769,7 +804,7 @@ class Database {
 
     if (doc.get('minimumStockNeeded') <
         doc.get(
-            'quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
+            'quantity') || doc.get('minimumStockNeeded') == doc.get('quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
     {
       // we are over stock
       flag = true;
@@ -804,6 +839,7 @@ class Database {
   
   //run a check to see what items in selected store are under recommended stock levels
 Future<void> checkRecommendedStockLevels() async {
+  
 
   QuerySnapshot querySnapshot = await FirebaseFirestore.instance
       .collection('Stores')

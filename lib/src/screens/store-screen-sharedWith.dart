@@ -144,7 +144,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
-                                      Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
+                                      //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
 
                                     setState(() {
                                       tappedIndex = index;
@@ -265,16 +265,6 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
             setState(() {
               searchKey = value.toLowerCase();
 
-              //  this stream query matches the searchkey to the names of the stores in the db
-              //*@@@@@@@@@@@@@@@
-              // streamQuery = db
-              //     .collection('Users')
-              //     .doc(currentUserID)
-              //     .collection('stores')
-              //     .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
-              //     .where('lowercaseAddress', isLessThan: searchKey + 'z')
-              //     .snapshots();
-              //*@@@@@@@@@@@@@@@
 
               streamQuerySharedWith = db
                   .collection('Stores')

@@ -852,3 +852,73 @@ setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
         });
       });
 }
+
+waitForStockRefreshDialog(BuildContext context) {
+  // make sure to pull the docID item that is clicked on
+
+  final TextEditingController _minStockController = TextEditingController();
+  bool _isProcessing = false;
+  final _formKey = GlobalKey<FormState>();
+
+  return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+              title: Center(child: Text("Depending on how many items are present, this could take a few minutes. Are you sure you want to refresh stock status?")),
+              content: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      
+
+                      SizedBox(height: 20),
+
+                      SizedBox(height: 30),
+                      _isProcessing
+                          ? Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            )
+                          : Container(
+                              width: double.maxFinite,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    minimumSize: Size(75, 75)),
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    // this call to validate has to be included or else the form validation checks set above won't show.
+
+                                    setState(() {
+                                      _isProcessing = true;
+                                    });
+
+                                    await Database().checkRecommendedStockLevels();
+
+                                    setState(() {
+                                      _isProcessing = false;
+                                    });
+
+                                  Future.delayed(Duration.zero, () {  // has dart schedule the call as soon as possible once the current call stack returns to the event loop.  We use this for the refresh button on the home page.
+                                        Navigator.of(context)
+                                          .pop();
+                                      });
+                                     // return to previous screen after operation is complete
+                                  }
+                                },
+                                child: const Text('Begin Stock Status Refresh'),
+                              ),
+                            )
+                    ],
+                  ),
+                ),
+              ));
+        });
+      });
+}
+

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:howell_capstone/src/screens/home-screen.dart';
+import 'package:howell_capstone/src/screens/store-screen-main.dart';
 import 'package:howell_capstone/theme/custom-themes.dart';
 import 'package:howell_capstone/theme/theme_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
                   scheme: FlexScheme
                       .materialHc), // this line changes the theme for the entire app
           debugShowCheckedModeBanner: false,
-          home: HomeScreen(),
+          home: StoreScreenMain(),
         );
       }),
     );
