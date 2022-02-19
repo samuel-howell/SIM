@@ -3,18 +3,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
-import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
-import 'package:howell_capstone/src/utilities/SIMPL-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
-import 'package:howell_capstone/theme/custom-colors.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 //  init firesbase auth
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -40,10 +34,15 @@ class StoreScreenSharedWith extends StatefulWidget {
 }
 
 class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
-  Stream<QuerySnapshot> streamQuerySharedWith = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
-              .where('lowercaseName', isGreaterThanOrEqualTo: searchKey) //these 2 wheres organize the stream alphabetically
-              .where('lowercaseName', isLessThan: searchKey + 'z')
-              .snapshots(); // only shows stores that have been sharedWith the currently signed in user.
+  Stream<QuerySnapshot> streamQuerySharedWith = db
+      .collection('Stores')
+      .where('sharedWith',
+          arrayContains: Database().getCurrentUserID().toString())
+      .where('lowercaseName',
+          isGreaterThanOrEqualTo:
+              searchKey) //these 2 wheres organize the stream alphabetically
+      .where('lowercaseName', isLessThan: searchKey + 'z')
+      .snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
   @override
   void initState() {
@@ -55,10 +54,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
 
   @override
   Widget build(BuildContext context) {
-   
-
     return Scaffold(
-      
       body: StreamBuilder<QuerySnapshot>(
           stream: streamQuerySharedWith,
           builder: (context, snapshot) {
@@ -148,6 +144,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
+                                      Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
 
                                     setState(() {
                                       tappedIndex = index;
@@ -178,7 +175,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                                           showAddUserDialog(context, doc.id),
                                           print('store ' +
                                               doc.id +
-                                              ' was deleted.')
+                                              ' was clicked.')
                                         }),
 
                                 // slide action to edit
@@ -279,8 +276,10 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
               //     .snapshots();
               //*@@@@@@@@@@@@@@@
 
-              streamQuerySharedWith = db 
-                  .collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
+              streamQuerySharedWith = db
+                  .collection('Stores')
+                  .where('sharedWith',
+                      arrayContains: Database().getCurrentUserID().toString())
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
@@ -312,10 +311,11 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
             onChanged: (value) {
               setState(() {
                 searchKey = value.toLowerCase();
-           
 
                 streamQuerySharedWith = db
-                    .collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString())
+                    .collection('Stores')
+                    .where('sharedWith',
+                        arrayContains: Database().getCurrentUserID().toString())
                     .where('lowercaseName', isGreaterThanOrEqualTo: searchKey)
                     .where('lowercaseName', isLessThan: searchKey + 'z')
                     .snapshots();
@@ -348,7 +348,11 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss').format(now);
 
-    Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('sharedWith', arrayContains: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been sharedWith the currently signed in user.
+    Stream<QuerySnapshot> streamQuery = db
+        .collection('Stores')
+        .where('sharedWith',
+            arrayContains: Database().getCurrentUserID().toString())
+        .snapshots(); // only shows stores that have been sharedWith the currently signed in user.
 
     print(await streamQuery.length);
 

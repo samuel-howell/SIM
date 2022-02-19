@@ -126,7 +126,7 @@ class NavigationDrawerWidget extends StatelessWidget {
 
       case 1:
         Navigator.of(context).push(MaterialPageRoute(
-         builder: (context) => StoreScreenMain(),
+          builder: (context) => StoreScreenMain(),
         ));
         break;
 
@@ -161,16 +161,15 @@ class NavigationDrawerWidget extends StatelessWidget {
         } else {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => PleaseChooseStoreScreen(),
-          ));  
+          ));
         }
         break;
 
       case 5:
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => SettingsScreen(),
-          )); 
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => SettingsScreen(),
+        ));
         break;
-
     }
   }
 }

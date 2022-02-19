@@ -38,7 +38,6 @@ class Database {
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
 
-
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
     DocumentReference itemDocumentReferencer = _storeCollection
@@ -67,8 +66,8 @@ class Database {
 
       "mostRecentScanIn": mostRecentScanIn,
       "mostRecentScanOut": "", // initiliaze to null until first scan out
-      "minimumStockNeeded" : 1, // initialize to 1 until user enters a value 
-      "isAboveMinimumStockNeeded" : true,
+      "minimumStockNeeded": 1, // initialize to 1 until user enters a value
+      "isAboveMinimumStockNeeded": true,
       "LastEmployeeToInteract": await Database()
           .getCurrentUserName(), //this will be the user id of the last employee to either scan in or scan out the item
     };
@@ -115,7 +114,7 @@ class Database {
         .catchError((e) => print(e));
   }
 
- //  method to  add a user access to a store
+  //  method to  add a user access to a store
 
   static Future<void> addStoreUser({
     required String email,
@@ -124,16 +123,14 @@ class Database {
     DocumentReference storeDocumentReferencer = _storeCollection.doc(docID);
 
     await storeDocumentReferencer
-        .update({
-          "sharedWith": FieldValue.arrayUnion([
-            
-              await Database().getUserUIDFromEmail(email),   
-               
-            
-          ])
-        }, )
-        .whenComplete(() => print(
-            "user added to the store " + docID))
+        .update(
+          {
+            "sharedWith": FieldValue.arrayUnion([
+              await Database().getUserUIDFromEmail(email),
+            ])
+          },
+        )
+        .whenComplete(() => print("user added to the store " + docID))
         .catchError((e) => print(e));
   }
 
@@ -214,8 +211,6 @@ class Database {
     required String address,
     required String docID,
   }) async {
- 
-
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
     DocumentReference storeDocumentReferencer = _storeCollection.doc(
@@ -244,7 +239,6 @@ class Database {
       required String itemDocID}) async {
     String? currentUserUID = _auth.currentUser
         ?.uid; // get the current user id at the moment the method has been triggered
-
 
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
@@ -412,6 +406,7 @@ class Database {
 
 //method to set a store id
   static setcurrentStoreID(String storeID) {
+    print('hit set currentStoreID method');
     currentStoreID = storeID;
   }
 
@@ -739,21 +734,17 @@ class Database {
     return doc.get('firstName') + " " + doc.get('lastName');
   }
 
-
 // method to add a new minimum stock needed on an item to store
 
-  static Future<void> setMinimumStockNeeded({
-    required double min,
-    required String itemDocID
-  }) async {
-      DocumentReference itemDocumentReferencer = _storeCollection
+  static Future<void> setMinimumStockNeeded(
+      {required double min, required String itemDocID}) async {
+    DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemDocID);
 
     Map<String, dynamic> data = <String, dynamic>{
       "minimumStockNeeded": min,
-     
     };
 
     await itemDocumentReferencer
@@ -762,52 +753,70 @@ class Database {
         .catchError((e) => print(e));
   }
 
-  static Future<void> isAboveMinimumStockNeeded({
-    required String itemDocID
-    }) async {
-      print('inside the isAboveMinimumStockNeeded method');
+  static Future<void> isAboveMinimumStockNeeded(
+      {required String itemDocID}) async {
 
-      bool flag = false;
-      DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore.instance.collection('Stores').doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID).get();
+    bool flag = false;
+    DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
+        .instance
+        .collection('Stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('items')
+        .doc(itemDocID)
+        .get();
 
+    
 
-      
-      print('minimumStockNeeded: ' + doc.get('minimumStockNeeded').toString());
-      print('quantity: ' + doc.get('quantity').toString().toString());
+    if (doc.get('minimumStockNeeded') <
+        doc.get(
+            'quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
+    {
+      // we are over stock
+      flag = true;
+    } else {
+       // we are under stock
+      flag = false;
+    }
 
-      
-
-        
-       if(doc.get('minimumStockNeeded') < doc.get('quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
-        {
-           print('flag true');
-           flag = true;
-        }
-        else{
-           print('flag false');
-         flag = false;
-        }
-
-      
-      DocumentReference itemDocumentReferencer = _storeCollection
+    DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(itemDocID);
 
-        Map<String, dynamic> data = <String, dynamic>{
+    Map<String, dynamic> data = <String, dynamic>{
       "isAboveMinimumStockNeeded": flag,
-     
     };
 
-    await itemDocumentReferencer
-        .update(data)
-        .whenComplete(() => print("stock minimum bool updated in database"))
-        .catchError((e) => print(e));
-
+    if (doc.get('isAboveMinimumStockNeeded') == true && flag == false) {
+      await itemDocumentReferencer
+          .update(data)
+          .whenComplete(() => print(
+              "item was showing good amount of stock, but we were under, so we updated to show we are in the RED"))
+          .catchError((e) => print(e));
+    } else if (doc.get('isAboveMinimumStockNeeded') == false && flag == true) {
+      await itemDocumentReferencer
+          .update(data)
+          .whenComplete(() => print(
+              "item was showing bad amount of stock, but we were over, so we updated to show we are in the GREEN"))
+          .catchError((e) => print(e));
     }
+  }
+  
+  //run a check to see what items in selected store are under recommended stock levels
+Future<void> checkRecommendedStockLevels() async {
 
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection('Stores')
+      .doc(Database().getCurrentStoreID())
+      .collection('items')
+      .get();
+  for (int i = 0; i < querySnapshot.docs.length; i++) {
+    var doc = querySnapshot.docs[i];
+    print('checking stock levels for ' + doc.get('name'));
 
-
+    await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
+  }
+}
 
 // helper method to get total store profits
   Future<double> getStoreTotalProfits() async {

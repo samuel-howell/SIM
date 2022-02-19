@@ -516,7 +516,7 @@ showAddItemDialog(BuildContext context) {
                                       _isProcessing = false;
                                     });
 
-                                    Navigator.of(context).pop(); 
+                                    Navigator.of(context).pop();
                                   }
                                 },
                                 child: const Text('Submit'),
@@ -766,7 +766,6 @@ showAddUserDialog(BuildContext context, String storeDocID) {
       });
 }
 
-
 // this method shows an alert to update minimum stock needed
 setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
   // make sure to pull the docID item that is clicked on
@@ -790,7 +789,8 @@ setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
                       TextFormField(
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'Enter the minimum amount you need in stock',
+                          labelText:
+                              'Enter the minimum amount you need in stock',
                         ),
                         controller: _minStockController,
                         keyboardType: TextInputType.number,
@@ -830,9 +830,9 @@ setMinimumStockNeededDialog(BuildContext context, String itemDocID) {
                                     });
 
                                     await Database.setMinimumStockNeeded(
-                                        min: double.parse(_minStockController.text),
+                                        min: double.parse(
+                                            _minStockController.text),
                                         itemDocID: itemDocID);
-
 
                                     setState(() {
                                       _isProcessing = false;

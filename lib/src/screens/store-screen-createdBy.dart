@@ -40,10 +40,14 @@ class StoreScreenCreatedBy extends StatefulWidget {
 }
 
 class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
-  Stream<QuerySnapshot> streamQueryCreatedBy = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
-                  .where('lowercaseName', isGreaterThanOrEqualTo: searchKey) //these 2 wheres organize the stream alphabetically
-                  .where('lowercaseName', isLessThan: searchKey + 'z')
-                  .snapshots(); // only shows stores that have been created by  the currently signed in user.
+  Stream<QuerySnapshot> streamQueryCreatedBy = db
+      .collection('Stores')
+      .where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
+      .where('lowercaseName',
+          isGreaterThanOrEqualTo:
+              searchKey) //these 2 wheres organize the stream alphabetically
+      .where('lowercaseName', isLessThan: searchKey + 'z')
+      .snapshots(); // only shows stores that have been created by  the currently signed in user.
 
   @override
   void initState() {
@@ -52,10 +56,7 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
 
   @override
   Widget build(BuildContext context) {
-    
-
     return Scaffold(
- 
       body: StreamBuilder<QuerySnapshot>(
           stream: streamQueryCreatedBy,
           builder: (context, snapshot) {
@@ -71,14 +72,14 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                   padding: const EdgeInsets.all(8.0),
                   child: showSearchDialog(),
                 ),
-      
+
                 Expanded(
                     // if I don't have Expanded here, the listview won't be sized in relation to hte searchbar textfield, thus throwing errors
                     child: ListView.builder(
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot doc = snapshot.data!.docs[index];
-      
+
                           // the slideable widget allows us to use slide ios animation to bring up delete and edit dialogs
                           return Slidable(
                               actionPane: SlidableDrawerActionPane(),
@@ -145,14 +146,17 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
-      
-                                    setState(() {
+                                    
+                                      Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
+                                    
+                                    setState((){
                                       tappedIndex = index;
+                                      
                                     }); //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                   }),
                               actions: <Widget>[
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
-      
+
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
@@ -165,7 +169,7 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                               doc.id +
                                               ' was deleted.')
                                         }),
-      
+
                                 // slide action to give new user access to the store
                                 IconSlideAction(
                                     caption: 'Add User',
@@ -175,9 +179,9 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                           showAddUserDialog(context, doc.id),
                                           print('store ' +
                                               doc.id +
-                                              ' was deleted.')
+                                              ' share was clicked.')
                                         }),
-      
+
                                 // slide action to edit
                                 IconSlideAction(
                                     caption: 'Edit',
@@ -265,9 +269,10 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
             setState(() {
               searchKey = value.toLowerCase();
 
-
-              streamQueryCreatedBy = db 
-                  .collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
+              streamQueryCreatedBy = db
+                  .collection('Stores')
+                  .where('createdBy',
+                      isEqualTo: Database().getCurrentUserID().toString())
                   .where('lowercaseAddress', isGreaterThanOrEqualTo: searchKey)
                   .where('lowercaseAddress', isLessThan: searchKey + 'z')
                   .snapshots();
@@ -299,7 +304,6 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
             onChanged: (value) {
               setState(() {
                 searchKey = value.toLowerCase();
-
 
                 streamQueryCreatedBy = db
                     .collection('Stores')
@@ -336,7 +340,10 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MM-dd-yyyy-HH-mm-ss').format(now);
 
-  Stream<QuerySnapshot> streamQuery = db.collection('Stores').where('createdBy', isEqualTo: Database().getCurrentUserID().toString()).snapshots(); // only shows stores that have been created by  the currently signed in user.
+    Stream<QuerySnapshot> streamQuery = db
+        .collection('Stores')
+        .where('createdBy', isEqualTo: Database().getCurrentUserID().toString())
+        .snapshots(); // only shows stores that have been created by  the currently signed in user.
 
     print(await streamQuery.length);
 

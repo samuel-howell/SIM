@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 
 class ItemInfoWidget extends StatefulWidget {
   final String itemDocID;
-  
 
   const ItemInfoWidget({Key? key, required this.itemDocID}) : super(key: key);
 
@@ -27,10 +26,6 @@ double storeTotalProfit = 1;
 class _ItemInfoWidgetState extends State<ItemInfoWidget> {
   @override
   Widget build(BuildContext context) {
-
- 
-
-
     String? currentUserID = auth.currentUser?.uid;
 
     //* this is how I assign a future to a var that I can actually use in the build

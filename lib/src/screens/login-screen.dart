@@ -7,7 +7,7 @@ import 'package:howell_capstone/src/screens/password-reset-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/screens/sign-up-screen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
- import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
+import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/screens/store-screen-main.dart';
 import 'package:howell_capstone/src/utilities/constants.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -22,7 +22,6 @@ class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
-
 
 class _LoginScreenState extends State<LoginScreen> {
   final auth = FirebaseAuth.instance;

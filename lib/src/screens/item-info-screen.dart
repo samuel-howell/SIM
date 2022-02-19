@@ -34,14 +34,12 @@ final _tabs = <Widget>[
 class _ItemInfoScreenState extends State<ItemInfoScreen> {
   @override
   Widget build(BuildContext context) {
-
-  // this is the helper method for the popup menu button
+    // this is the helper method for the popup menu button
     void onSelected(BuildContext context, int item) async {
       switch (item) {
         case 0:
           setMinimumStockNeededDialog(context, widget.itemDocID);
           break;
-
       }
     }
 
@@ -49,14 +47,15 @@ class _ItemInfoScreenState extends State<ItemInfoScreen> {
       length: _tabs.length,
       initialIndex: 0,
       child: Scaffold(
-            appBar: AppBar(
+          appBar: AppBar(
             actions: [
-            PopupMenuButton<int>(
-            onSelected: (item) => onSelected(context, item),
-            itemBuilder: (context) => [
-                  PopupMenuItem(child: Text('Set Minimum Stock'), value:0),
-                ])
-                      ],
+              PopupMenuButton<int>(
+                  onSelected: (item) => onSelected(context, item),
+                  itemBuilder: (context) => [
+                        PopupMenuItem(
+                            child: Text('Set Minimum Stock'), value: 0),
+                      ])
+            ],
             bottom: TabBar(tabs: _tabs),
           ),
           body: TabBarView(children: <Widget>[
