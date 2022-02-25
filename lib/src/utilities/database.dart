@@ -150,7 +150,9 @@ class Database {
       "sharedWith":
           [], // init an array to store all the user uids that can access this particular store
       "createdBy": Database().getCurrentUserID(),
-      "totalCurrentStock": 0 // init total store stock to zero
+      "totalCurrentStock": 0, // init total store stock to zero
+      "dailyStockIn": 0, // init daily stock in to zero
+      "dailyStockOut": 0
     };
 
     await storeDocumentReferencer
@@ -248,7 +250,9 @@ class Database {
     int quantity = 0;
     int newQuantity = 0;
     DateTime now = DateTime.now();
-    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can increment it.
+    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can increment it. //! could cause extra calls to db because each time qr registers it refreshs stock total
+    int dailyStockIn = await Database().getStoreDailyStockIn(); 
+
 
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
@@ -275,6 +279,8 @@ class Database {
 
     Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
       "totalCurrentStock": currentStock + 1,
+      "dailyStockIn": dailyStockIn + 1, // also update the daily stock in for the day
+
     };
 
     await itemDocumentReferencer
@@ -308,12 +314,11 @@ class Database {
 //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
     double profit = 0;
-    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can decrement it.
-
+    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can decrement it. //TODO: this causes a crazy amount of reads I think
+    int dailyStockOut = await Database().getStoreDailyStockIn();
     int quantity = 0;
     int newQuantity = 0;
     DateTime now = DateTime.now();
-    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
 
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
@@ -347,6 +352,9 @@ class Database {
 
     Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
       "totalCurrentStock": currentStock - 1,
+      "dailyStockOut": dailyStockOut + 1,
+      
+      //TODO at the end of the day, set the dailyStockOut and dailyStockIn to 0.
     };
 
     await itemDocumentReferencer
@@ -356,7 +364,7 @@ class Database {
     
     await storeDocumentReferencer
         .update(data2)
-        .whenComplete(() => print("overall Store stock incremented in the database"))
+        .whenComplete(() => print("overall Store stock and daily stock in incremented in the database"))
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
@@ -816,7 +824,7 @@ Future<void> checkRecommendedStockLevels() async {
   Future<int> getStoreTotalStock() async {
     int totalStock = 0;
 
-    await Database().refreshStoreStockTotal();
+   await Database().refreshStoreStockTotal(); //! do I need this here or does the refreshStoreStockTotal need to be something that I only call on home page build. seems like extra api calls.
    
     DocumentReference storeDoc = _storeCollection
         .doc(Database().getCurrentStoreID());
@@ -832,12 +840,40 @@ Future<void> checkRecommendedStockLevels() async {
   }
 
 
-//TODO:  Look below for how to track stock total
-/* 
-we have to query the quantity of each item in the database to refresh total stock value.  
+// helper method to get total store stock
+  Future<int> getStoreDailyStockIn() async {
+    int dailyStockIn = 0;
+   
+    DocumentReference storeDoc = _storeCollection
+        .doc(Database().getCurrentStoreID());
+        
+        
 
-*/
-  //tODO modiffy method to scan item quantity of each item in store and return total.  
+    await storeDoc.get().then((snapshot) {
+      dailyStockIn = snapshot.get('dailyStockIn');
+     
+  });
+  return dailyStockIn;
+  }
+
+  // helper method to get total store stock
+  Future<int> getStoreDailyStockOut() async {
+    int dailyStockOut = 0;
+
+   
+    DocumentReference storeDoc = _storeCollection
+        .doc(Database().getCurrentStoreID());
+        
+        
+
+    await storeDoc.get().then((snapshot) {
+      dailyStockOut = snapshot.get('dailyStockOut');
+     
+  });
+  return dailyStockOut;
+  }
+
+
   refreshStoreStockTotal() async {
 
     num total = 0;
@@ -872,10 +908,8 @@ we have to query the quantity of each item in the database to refresh total stoc
        else{
          print('documents in refreshStoreStockTotal don\'t exist');
        }
-     });
-    
 
-    
+     });
 
   }
 

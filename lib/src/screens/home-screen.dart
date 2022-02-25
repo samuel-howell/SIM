@@ -21,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _value = false;
   String name = "";
   String totalStock = "";
+  String dailyStockIn = "";
+  String dailyStockOut = "";
 
  
       
@@ -41,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     
     
     Database().getStoreTotalStock().then((value) {
-      print('store total stock is is ' + value.toString());
+      print('store total stock is ' + value.toString());
 
       setState(() { 
       //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
@@ -50,13 +52,31 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       });
 
+      Database().getStoreDailyStockIn().then((value) {
+      print('store daily stock in is ' + value.toString());
+
+      setState(() { 
+      //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+        dailyStockIn = value.toString();
+
+      });
+      });
+
+      Database().getStoreDailyStockOut().then((value) {
+      print('store daily stock out is ' + value.toString());
+
+      setState(() { 
+      //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+        dailyStockOut = value.toString();
+
+      });
+      });
     
   }
 
 
   @override
   Widget build(BuildContext context) {
-    String? currentUserID = auth.currentUser?.uid;
 
   if(Database().getStoreClicked() == true) {
     return Consumer<ThemeModel>(
@@ -105,6 +125,36 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Icon(Icons.refresh_sharp, size: 30),
                               onTap: () { 
                                    waitForStockRefreshDialog(context);  //TODO: create a dialog that does what waitForStockRefreshDialog does and also updates total, stock out, and stock in so basically refreshes entire page
+
+                                    Database().getStoreTotalStock().then((value) {
+                                    print('store total stock is ' + value.toString());
+
+                                    setState(() { 
+                                    //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+                                      totalStock = value.toString();
+
+                                    });
+                                    });
+
+                                    Database().getStoreDailyStockIn().then((value) {
+                                    print('store daily stock in is ' + value.toString());
+
+                                    setState(() { 
+                                    //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+                                      dailyStockIn = value.toString();
+
+                                    });
+                                    });
+
+                                    Database().getStoreDailyStockOut().then((value) {
+                                    print('store daily stock out is ' + value.toString());
+
+                                    setState(() { 
+                                    //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+                                      dailyStockOut = value.toString();
+
+                                    });
+                                    });
                                 },
                               ),
                   ),
@@ -144,14 +194,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text(' | ',style: TextStyle(fontSize: 25,)),
 
                       Column(children: <Widget>[
-                        Text('79', style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)),
+                        Text(dailyStockOut, style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)),
                         Text('Stock Out', style: TextStyle(fontSize: 15)),
                       ]),
 
                       Text(' | ',style: TextStyle(fontSize: 25,)),
 
                       Column(children: <Widget>[
-                        Text('14', style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)),
+                        Text(dailyStockIn, style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)),
                         Text('Stock In', style: TextStyle(fontSize: 15)),
                       ]),
                     ]),
@@ -166,6 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 10),
 
 
+          // low stock widget
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Card(
@@ -173,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 10, 10, 10),
                 child: Container(
                   child: Container(
-                   height: 300,
+                   height: 200,
                     child: Column
                     (children: <Widget>[
                       SizedBox(height:15),
@@ -190,6 +241,92 @@ class _HomeScreenState extends State<HomeScreen> {
                       StreamBuilder<QuerySnapshot>(
                         
                           stream:
+                              FirebaseFirestore.instance
+                                    .collection('Stores')
+                                    .doc(Database().getCurrentStoreID())
+                                    .collection('items')
+                                    .where('isAboveMinimumStockNeeded',
+                                        isEqualTo:
+                                            false) 
+                                    .snapshots(), // this streamQuery will change based on what is typed into the search bar
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return Expanded(
+                                child: ListView.builder(
+                                    itemCount: snapshot.data!.docs.length,
+                                    itemBuilder: (context, index) {
+                                      DocumentSnapshot doc =
+                                          snapshot.data!.docs[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: [
+                                              Expanded(child: Text(doc.get('name'), style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))),
+
+                                              Container(
+                                                width:100,
+                                                height: 50,
+                                                decoration: BoxDecoration(color: Colors.red, border: Border.all(width: 1), borderRadius: BorderRadius.circular(5) ),
+                                                child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 17, )))
+                                                ),
+                                            ]),
+                                          )
+                                           
+                                        ),
+                                      );
+                    
+                                    }
+                                ),
+                              );
+                            }
+                          }
+                      ),
+                    
+                    
+                      SizedBox(height:15),
+                    
+                    ]),
+                  ),
+                ),
+              ),
+            ), 
+          ),
+
+
+          // employees shared widget
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(25, 10, 10, 10),
+                child: Container(
+                  child: Container(
+                   height: 200,
+                    child: Column
+                    (children: <Widget>[
+                      SizedBox(height:15),
+                    
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                        Expanded(child: Text("Shared With", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
+
+                      ]),
+                    
+                      SizedBox(height:15),
+                    
+                      StreamBuilder<QuerySnapshot>(
+                        
+                          stream: //TODO: change this to accessing the "shared with" array field on the store doc
                               FirebaseFirestore.instance
                                     .collection('Stores')
                                     .doc(Database().getCurrentStoreID())
