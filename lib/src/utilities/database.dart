@@ -149,7 +149,8 @@ class Database {
       "storeID": storeDocumentReferencer.id,
       "sharedWith":
           [], // init an array to store all the user uids that can access this particular store
-      "createdBy": Database().getCurrentUserID()
+      "createdBy": Database().getCurrentUserID(),
+      "totalCurrentStock": 0 // init total store stock to zero
     };
 
     await storeDocumentReferencer
@@ -162,15 +163,7 @@ class Database {
 
 //  method to delete a store
   static Future<void> deleteStore(String storeDocID) async {
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    // await _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(Database().getCurrentStoreID())
-    //     .collection('items')
-    //     .doc(storeDocID)
-    //     .delete();
-//*@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
 
     await _storeCollection.doc(storeDocID).delete();
 
@@ -180,18 +173,7 @@ class Database {
 
 //  method to delete a item
   static Future<void> deleteItem(String itemDocID) async {
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered
 
-//*@@@@@@@@@@@@@@@@@@@@@@@@
-    // await _userCollection
-    //     .doc(currentUserUID)
-    //     .collection('stores')
-    //     .doc(Database().getCurrentStoreID())
-    //     .collection('items')
-    //     .doc(itemDocID)
-    //     .delete();
-//*@@@@@@@@@@@@@@@@@@@@@@@@
 
     await _storeCollection
         .doc(Database().getCurrentStoreID())
@@ -237,8 +219,7 @@ class Database {
       required int quantity,
       required String description,
       required String itemDocID}) async {
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered
+ // get the current user id at the moment the method has been triggered
 
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
@@ -267,32 +248,43 @@ class Database {
     int quantity = 0;
     int newQuantity = 0;
     DateTime now = DateTime.now();
-    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
+    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can increment it.
 
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
 
-    String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(
             qrCode); // finds the document associate with the id read by the qr code scanner
 
+    DocumentReference storeDocumentReferencer = _storeCollection
+        .doc(Database().getCurrentStoreID());
+
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
       quantity = (snapshot.get('quantity'));
       newQuantity = quantity + 1;
     });
-    Map<String, dynamic> data = <String, dynamic>{
+    Map<String, dynamic> data = <String, dynamic>{ // this data goes to item page in db
       "quantity": newQuantity,
       "mostRecentScanIn": formattedDate,
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
+    Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
+      "totalCurrentStock": currentStock + 1,
+    };
+
     await itemDocumentReferencer
         .update(data)
-        .whenComplete(() => print("item quantity increemeted in the database"))
+        .whenComplete(() => print("item quantity incremented in the database"))
+        .catchError((e) => print(e));
+
+    await storeDocumentReferencer
+        .update(data2)
+        .whenComplete(() => print("overall Store stock incremented in the database"))
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
@@ -316,6 +308,7 @@ class Database {
 //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
     double profit = 0;
+    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can decrement it.
 
     int quantity = 0;
     int newQuantity = 0;
@@ -325,12 +318,14 @@ class Database {
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
 
-    String? currentUserUID = _auth.currentUser?.uid;
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
         .doc(
             qrCode); // finds the document associate with the id read by the qr code scanner
+
+    DocumentReference storeDocumentReferencer = _storeCollection
+        .doc(Database().getCurrentStoreID());
 
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
@@ -343,15 +338,25 @@ class Database {
         newQuantity = quantity - 1;
       }
     });
+
     Map<String, dynamic> data = <String, dynamic>{
       "quantity": newQuantity,
       "mostRecentScanOut": formattedDate,
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
+    Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
+      "totalCurrentStock": currentStock - 1,
+    };
+
     await itemDocumentReferencer
         .update(data)
         .whenComplete(() => print("item quantity decremented in the database"))
+        .catchError((e) => print(e));
+    
+    await storeDocumentReferencer
+        .update(data2)
+        .whenComplete(() => print("overall Store stock incremented in the database"))
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
@@ -470,78 +475,7 @@ class Database {
     return quantity;
   }
 
-  //returns line data list
-  Future<List<QuantityOverMonth>> getLineData(String itemID) async {
-    List<dynamic> list;
-    List<QuantityOverMonth> q = [];
 
-    String currentUserID = FirebaseAuth.instance.currentUser!.uid;
-    //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
-        .doc(Database().getCurrentStoreID())
-        .collection('items')
-        .doc(itemID)
-        .collection('graphData')
-        .doc('quantity');
-
-    // Map<String, dynamic> data = <String, dynamic>{
-    //   "dataPoints": [{"quantity" : Database.getItemQuantity('he'), "date" : DateTime.now()}],
-    // };
-
-    // await itemDoc
-    //         .update(data)
-    //         .whenComplete(() => print("item quantity daily increemeted in the database"))
-    //         .catchError((e) => print(e));
-
-    await itemDoc.get().then((snapshot) {
-      // get the list from firebase
-      list = snapshot.get('dataPoints');
-      //print('THIS IS THE LIST:    ');
-      //print(list);
-
-      // convert that list to a map
-
-      /* 
-      NOTE: Firebase stores DateTime as a timestamp in the form Timestamp(seconds=1639583912, nanoseconds=473000000), so I have to do something like
-      below to convert the timestamp back to a DateTime 
-
-      var t = q[0].date   -- (which means something like var t = Timestamp(1639583912, 473000000);)
-      print(DateTime.fromMillisecondsSinceEpoch(t.seconds * 1000));
-
-      */
-      //print('THIS IS THE MAP and map2:    ');
-
-      // this map just shows how to convert to datetime
-      var map = {};
-      list.forEach((entry) => map[DateTime.fromMillisecondsSinceEpoch(
-              (entry['date']).seconds * 1000)] =
-          entry['quantity']
-              .toDouble()); // cast the int quantity in database to double
-      // print(map);
-
-      //! map2 is just for testing. can be removed eventually
-      var map2 = {};
-      list.forEach(
-          (entry) => map2[(entry['date'].seconds / 1000)] = entry['quantity']);
-      // print(map2);
-
-      //take that map and convert it to type QuantityOverMonth
-      //   print('THIS IS THE QUANTITY DAILY MAP:    ');
-
-      map.forEach((k, v) => q.add(QuantityOverMonth(k, v)));
-
-      print(
-          'THIS IS THE date val in milliseconds in the QUANTITY DAILY MAP in position 1:    ');
-      print(q[1].date.millisecondsSinceEpoch.toDouble().toString());
-      print(
-          'THIS IS THE quantity val in the QUANTITY DAILY MAP in position 1:    ');
-      print(q[1].quantity);
-    });
-
-    return q;
-  }
 
   //method that returns all quantity datapoints from a specific month
 
@@ -861,9 +795,7 @@ Future<void> checkRecommendedStockLevels() async {
 
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
     //  this doc ref gets the name of the current user
-    DocumentReference itemDoc = _userCollection
-        .doc(currentUserID)
-        .collection('stores')
+    DocumentReference itemDoc = _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('storeData')
         .doc('sales');
@@ -879,6 +811,75 @@ Future<void> checkRecommendedStockLevels() async {
     });
     return totalProfits;
   }
+
+// helper method to get total store stock
+  Future<int> getStoreTotalStock() async {
+    int totalStock = 0;
+
+    await Database().refreshStoreStockTotal();
+   
+    DocumentReference storeDoc = _storeCollection
+        .doc(Database().getCurrentStoreID());
+        
+        
+
+    await storeDoc.get().then((snapshot) {
+      // get the list of all sales from firebase
+      totalStock = snapshot.get('totalCurrentStock');
+     
+  });
+  return totalStock;
+  }
+
+
+//TODO:  Look below for how to track stock total
+/* 
+we have to query the quantity of each item in the database to refresh total stock value.  
+
+*/
+  //tODO modiffy method to scan item quantity of each item in store and return total.  
+  refreshStoreStockTotal() async {
+
+    num total = 0;
+    Stream<QuerySnapshot<Map<String, dynamic>>> itemStockDocRef = _storeCollection
+        .doc(Database().getCurrentStoreID()).collection('items').snapshots();
+
+     itemStockDocRef.forEach((snapshot) async {
+       if(snapshot.docs.isNotEmpty){
+
+        for (var doc in snapshot.docs)
+         {
+          total += doc.get('quantity');
+            print('total is now ' + total.toString());
+
+         }
+         
+         // write the total to the store total stock field 
+    Map<String, dynamic> data = <String, dynamic>{ // this data goes to store page in db to update overall stock
+      "totalCurrentStock": total,
+    };
+
+    DocumentReference storeDocumentReferencer = _storeCollection
+        .doc(Database().getCurrentStoreID());
+
+    await storeDocumentReferencer
+        .update(data)
+        .whenComplete(() => print("storeTotalStock updated in the database from the refreshStoreStockTotal method "))
+        .catchError((e) => print(e));
+        
+        
+       }
+       else{
+         print('documents in refreshStoreStockTotal don\'t exist');
+       }
+     });
+    
+
+    
+
+  }
+
+
 
 // //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
 //   Future<String> getSelectedStoreName() async {

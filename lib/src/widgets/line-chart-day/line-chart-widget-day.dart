@@ -116,7 +116,7 @@ class _LineChartWidgetDayState extends State<LineChartWidgetDay>
       gradientTo: const Offset(0.5, 1),
       barWidth: 5,
       isStrokeCapRound: true,
-      dotData: FlDotData(show: true),
+      dotData: FlDotData(show: false),
       belowBarData: BarAreaData(
         show: false,
         colors: _gradientColors.map((color) => color.withOpacity(0.3)).toList(),

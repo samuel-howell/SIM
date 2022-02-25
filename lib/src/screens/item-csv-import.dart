@@ -5,6 +5,7 @@ import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -33,15 +34,20 @@ class ItemCsvImportState extends State<ItemCsvImport> {
   List<PlatformFile>? _paths;
   String? _extension = "csv";
   FileType _pickingType = FileType.custom;
+  
 
   @override
   void initState() {
     super.initState();
     itemData = List<List<dynamic>>.empty(growable: true);
+
   }
+
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(),
@@ -59,15 +65,16 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                       "Import CSV Item List",
                     ),
                     onPressed: () =>
-                        [setImportSelected(1), _openFileExplorer()]),
+                        [setImportSelected(1), _openFileExplorer(), ]),
               ),
             ),
             ListView.builder(
+                
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: itemData.length,
                 itemBuilder: (context, index) {
-                  // for item import csv
+                  
 
                   try {
                     // the index number is based on which column the data is in in an excel file, starting from cell 0,0
@@ -79,6 +86,7 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                         mostRecentScanIn: formattedDate,
                         id: itemData[index][0].toString(),
                         isAboveMinimumStockNeeded: true);
+
                   } catch (exception) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -111,7 +119,6 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                       ),
                     );
                   }
-
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
@@ -127,12 +134,17 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                       ),
                     )),
                   );
-                }),
+                }
+
+                
+                ),  
           ],
         ),
       ),
     );
   }
+
+  
 
   Uint8List uploadedCsv = new Uint8List(0);
   String option1Text = "";
@@ -150,6 +162,8 @@ class ItemCsvImportState extends State<ItemCsvImport> {
       itemData = fields;
     });
   }
+
+
 
   void _openFileExplorer() async {
     if (kIsWeb) {
@@ -185,6 +199,9 @@ class ItemCsvImportState extends State<ItemCsvImport> {
   setImportSelected(int number) {
     importSelected = number;
   }
+
+
+  
 
   // since we can't use .path with file picker pkg on Web, we have to use the workaround below
   startWebFilePicker() async {

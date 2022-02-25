@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final auth = FirebaseAuth.instance;
   bool _value = false;
   String name = "";
+  String totalStock = "";
 
  
       
@@ -29,11 +30,23 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
 
     Database().getCurrentStoreName().then((value) {
-      print('value is ' + value.toString());
+      print('store name is ' + value.toString());
 
       setState(() { 
       //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
         name = value;
+
+      });
+      });
+    
+    
+    Database().getStoreTotalStock().then((value) {
+      print('store total stock is is ' + value.toString());
+
+      setState(() { 
+      //*IMPORTANT calling setState like so is how we take a future and turn it into a variable!!!
+        totalStock = value.toString();
+
       });
       });
 
@@ -124,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                       Column(children: <Widget>[
-                        Text('1435', style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)), // TODO: put actual stock totals her pulled from database methods
+                        Text(totalStock, style: TextStyle(fontSize: 25, color: Theme.of(context).colorScheme.primary)), // TODO: put actual stock totals her pulled from database methods
                         Text('Total', style: TextStyle(fontSize: 15)),
                       ]),
 
@@ -197,7 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     itemBuilder: (context, index) {
                                       DocumentSnapshot doc =
                                           snapshot.data!.docs[index];
-                                      print('hit card in listview builder');
                                       return Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: Container(
@@ -241,7 +253,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           
             ]),
-          ));
+          ),
+         // floatingActionButton: FloatingActionButton(onPressed: Database().refreshStoreStockTotal())
+          );
+        
     });
   }
   else {

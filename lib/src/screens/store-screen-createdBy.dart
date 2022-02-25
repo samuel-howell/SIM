@@ -160,7 +160,7 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
-                                    color: Theme.of(context).primaryColor,
+                                    color: Theme.of(context).colorScheme.secondary,
                                     icon: Icons.delete_sharp,
                                     onTap: () => {
                                           showStoreDeleteConfirmationAlertDialog(
