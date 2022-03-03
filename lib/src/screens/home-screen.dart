@@ -23,8 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String totalStock = "";
   String dailyStockIn = "";
   String dailyStockOut = "";
+  List<String> listOfUsers = [];
 
  
+ bool isLoading = true;
       
 
  @override
@@ -72,6 +74,15 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       });
     
+    // we have to load a list of users that the store isshared with here becaause its an async function, then we assign it to a local list.
+    Database().getUsersSharedWith().then((value) {
+      print('list of users is ' + value.toString());
+      
+      setState((){
+        listOfUsers = value;
+        isLoading = false;
+      });
+    });
   }
 
 
@@ -248,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .where('isAboveMinimumStockNeeded',
                                         isEqualTo:
                                             false) 
-                                    .snapshots(), // this streamQuery will change based on what is typed into the search bar
+                                    .snapshots(), 
                           builder: (context, snapshot) {
                             if (!snapshot.hasData) {
                               return Center(
@@ -323,59 +334,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       ]),
                     
                       SizedBox(height:15),
-                    
-                      StreamBuilder<QuerySnapshot>(
-                        
-                          stream: //TODO: change this to accessing the "shared with" array field on the store doc
-                              FirebaseFirestore.instance
-                                    .collection('Stores')
-                                    .doc(Database().getCurrentStoreID())
-                                    .collection('items')
-                                    .where('isAboveMinimumStockNeeded',
-                                        isEqualTo:
-                                            false) 
-                                    .snapshots(), // this streamQuery will change based on what is typed into the search bar
-                          builder: (context, snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            } else {
-                              return Expanded(
-                                child: ListView.builder(
-                                    itemCount: snapshot.data!.docs.length,
-                                    itemBuilder: (context, index) {
-                                      DocumentSnapshot doc =
-                                          snapshot.data!.docs[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                              Expanded(child: Text(doc.get('name'), style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))),
 
-                                              Container(
-                                                width:100,
-                                                height: 50,
-                                                decoration: BoxDecoration(color: Colors.red, border: Border.all(width: 1), borderRadius: BorderRadius.circular(5) ),
-                                                child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 17, )))
-                                                ),
-                                            ]),
-                                          )
-                                           
-                                        ),
-                                      );
-                    
-                                    }
-                                ),
-                              );
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount: listOfUsers.length,
+                            itemBuilder: (context, index) {
+                              if(isLoading) //TODO this isLoading not working. the listview container remains blank until the list has loaded in.
+                              {
+                                return Center(child: CircularProgressIndicator());
+                              }
+                              else
+                              {
+                              return Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Container(
+                                            width: 100,
+                                            height: 50,
+                                            decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
+                                            child: Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                Expanded(child: Text(listOfUsers[index], style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))), // step through each element in the sharedWith array field.
+                      
+                                                
+                                              ]),
+                                            )
+                                             
+                                          ),
+                                        );
+                              }
                             }
-                          }
+                        ),
                       ),
+                    
+                      
                     
                     
                       SizedBox(height:15),

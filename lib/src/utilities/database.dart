@@ -913,6 +913,30 @@ Future<void> checkRecommendedStockLevels() async {
 
   }
 
+// this method returns a list of all the users a particular store has been shared with
+  Future<List<String>> getUsersSharedWith() async {
+    List<String> listOfUsers = [];
+    
+     DocumentReference doc =
+                              FirebaseFirestore.instance
+                                    .collection('Stores')
+                                    .doc(Database().getCurrentStoreID());
+      
+      await doc.get().then((snapshot) async {
+
+      for(int i = 0; i < snapshot.get('sharedWith').length; i++)
+      {
+        listOfUsers.add(await Database().getUserNameFromUID(snapshot.get('sharedWith')[i].toString())); // since sharedWith is a array field, we have to iterate through it using a for statement
+      }
+    
+
+    
+  
+  });
+  return listOfUsers;
+  }
+  
+
 
 
 // //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
