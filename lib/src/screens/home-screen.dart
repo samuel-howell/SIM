@@ -80,8 +80,10 @@ class _HomeScreenState extends State<HomeScreen> {
       
       setState((){
         listOfUsers = value;
-        isLoading = false;
       });
+
+      isLoading = false;
+
     });
   }
 
@@ -335,16 +337,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     
                       SizedBox(height:15),
 
-                      Expanded(
+                      
+                      Container(
+                        child: isLoading ? 
+                        Center(child: CircularProgressIndicator()) 
+                        : 
+                        Expanded(
                         child: ListView.builder(
                             itemCount: listOfUsers.length,
                             itemBuilder: (context, index) {
-                              if(isLoading) //TODO this isLoading not working. the listview container remains blank until the list has loaded in.
-                              {
-                                return Center(child: CircularProgressIndicator());
-                              }
-                              else
-                              {
                               return Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Container(
@@ -365,9 +366,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         );
                               }
-                            }
+                            
                         ),
                       ),
+                      ),
+                      
                     
                       
                     
