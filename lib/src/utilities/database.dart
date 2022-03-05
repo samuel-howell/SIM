@@ -120,16 +120,19 @@ class Database {
     required String email,
     required String docID,
   }) async {
-    DocumentReference storeDocumentReferencer = _storeCollection.doc(docID);
+    DocumentReference storeDocumentReferencer = _storeCollection.doc(docID).collection('userAccess').doc('sharedWith');
+
+    Map<String, dynamic> sharedUserData = <String, dynamic>{
+      "sharedWith": [
+        {"uid": await Database().getUserUIDFromEmail(email), 
+        "name": await Database().getUserNameFromEmail(email),
+        "role" :  await Database().getUserUIDFromEmail(email)
+        }
+      ],
+    };
 
     await storeDocumentReferencer
-        .update(
-          {
-            "sharedWith": FieldValue.arrayUnion([
-              await Database().getUserUIDFromEmail(email),
-            ])
-          },
-        )
+        .set(sharedUserData)
         .whenComplete(() => print("user added to the store " + docID))
         .catchError((e) => print(e));
   }
@@ -915,6 +918,9 @@ Future<void> checkRecommendedStockLevels() async {
 
 // this method returns a list of all the users a particular store has been shared with
   Future<List<String>> getUsersSharedWith() async {
+
+    //TODO; redirect this to the sharedWith document in the userAccess collection. Hopefully this will decrease load times for shared user widget on the homescreen
+
     List<String> listOfUsers = [];
     
      DocumentReference doc =
@@ -937,7 +943,27 @@ Future<void> checkRecommendedStockLevels() async {
   }
   
 
+Future<void> deleteUserFromStore(String uid) async {
+//TODO; redirect this to the sharedWith document in the userAccess collection
+    
+     DocumentReference doc =
+                              FirebaseFirestore.instance
+                                    .collection('Stores')
+                                    .doc(Database().getCurrentStoreID());
+      
+      await doc.get().then((snapshot) async {
+          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
+      {
+        if(snapshot.get('sharedWith')[i].toString() == uid)
+        {
+          await FirebaseFirestore.instance.collection('Stores').doc(Database().getCurrentStoreID()).update({'sharedWith' : FieldValue.arrayRemove([snapshot.get('sharedWith')[i]]) } );
 
+          
+        }
+      }
+      });
+
+}
 
 // //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
 //   Future<String> getSelectedStoreName() async {

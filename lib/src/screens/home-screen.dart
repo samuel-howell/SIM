@@ -18,7 +18,6 @@ class HomeScreen extends StatefulWidget {
   String formattedDate = DateFormat('LLLL dd').format(now);
 class _HomeScreenState extends State<HomeScreen> {
   final auth = FirebaseAuth.instance;
-  bool _value = false;
   String name = "";
   String totalStock = "";
   String dailyStockIn = "";
@@ -376,6 +375,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     
                     
                       SizedBox(height:15),
+
+                      TextButton(
+                        onPressed: () async {Database().deleteUserFromStore('iewIC10l4TTvAhL9PPFNJjRAMGD2').whenComplete(() => print('completed'));}, 
+                        child: Text('trigger delete')),
                     
                     ]),
                   ),
