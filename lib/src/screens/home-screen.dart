@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final auth = FirebaseAuth.instance;
   String name = "";
+  String storeID = "";
   String totalStock = "";
   String dailyStockIn = "";
   String dailyStockOut = "";
@@ -41,6 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       });
       });
+
+  
+
+      setState(() { 
+        storeID = Database().getCurrentStoreID();
+
+      });
+     
     
     
     Database().getStoreTotalStock().then((value) {
@@ -73,17 +83,17 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       });
     
-    // we have to load a list of users that the store isshared with here becaause its an async function, then we assign it to a local list.
-    Database().getUsersSharedWith().then((value) {
-      print('list of users is ' + value.toString());
+    // // we have to load a list of users that the store isshared with here becaause its an async function, then we assign it to a local list.
+    // Database().getUsersSharedWith().then((value) {
+    //   print('list of users is ' + value.toString());
       
-      setState((){
-        listOfUsers = value;
-      });
+    //   setState((){
+    //     listOfUsers = value;
+    //   });
 
-      isLoading = false;
+    //   isLoading = false;
 
-    });
+    // });
   }
 
 
@@ -93,7 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
   if(Database().getStoreClicked() == true) {
     return Consumer<ThemeModel>(
         builder: (context, ThemeModel themeNotifier, child) {
-      var counter;
       return Scaffold(
           //  import my custom navigation sidebar drawer widget and use as the drawer.
           drawer: NavigationDrawerWidget(),
@@ -236,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 10, 10, 10),
                 child: Container(
                   child: Container(
-                   height: 200,
+                   height: MediaQuery.of(context).size.height / 2,
                     child: Column
                     (children: <Widget>[
                       SizedBox(height:15),
@@ -273,28 +282,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                     itemBuilder: (context, index) {
                                       DocumentSnapshot doc =
                                           snapshot.data!.docs[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
-                                          child: Padding(
+                                          return Padding(
                                             padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                              Expanded(child: Text(doc.get('name'), style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))),
+                                            child: Container(
+                                              decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                  children: [
+                                                  Expanded(child: Text(doc.get('name'), style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))),
 
-                                              Container(
-                                                width:100,
-                                                height: 50,
-                                                decoration: BoxDecoration(color: Colors.red, border: Border.all(width: 1), borderRadius: BorderRadius.circular(5) ),
-                                                child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 17, )))
-                                                ),
-                                            ]),
-                                          )
+                                                  Container(
+                                                    width:100,
+                                                    height: 50,
+                                                    decoration: BoxDecoration(color: Colors.red, border: Border.all(width: 1), borderRadius: BorderRadius.circular(5) ),
+                                                    child: Center(child: Text(doc.get('quantity').toString(), style: TextStyle(fontSize: 17, )))
+                                                    ),
+                                                ]),
+                                              )
                                            
                                         ),
                                       );
+
+                                    
                     
                                     }
                                 ),
@@ -304,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     
                     
-                      SizedBox(height:15),
+                      SizedBox(height:20),
                     
                     ]),
                   ),
@@ -322,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(25, 10, 10, 10),
                 child: Container(
                   child: Container(
-                   height: 200,
+                   height: MediaQuery.of(context).size.height / 2,
                     child: Column
                     (children: <Widget>[
                       SizedBox(height:15),
@@ -332,53 +343,104 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                         Expanded(child: Text("Shared With", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold))),
 
+
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(25, 10, 10, 15),
+                          child: Container(
+                            child: InkWell(
+                                      child: Icon(Icons.add, size: 30),
+                                      onTap: () { 
+                                          showAddUserDialog(context, storeID);
+                                        },
+                                      ),
+                          ),
+                        ),
+
                       ]),
                     
                       SizedBox(height:15),
 
-                      
-                      Container(
-                        child: isLoading ? 
-                        Center(child: CircularProgressIndicator()) 
-                        : 
-                        Expanded(
-                        child: ListView.builder(
-                            itemCount: listOfUsers.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Container(
-                                            width: 100,
-                                            height: 50,
-                                            decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
+                      StreamBuilder<DocumentSnapshot>(
+                        
+                          stream:
+                              FirebaseFirestore.instance
+                                    .collection('Stores')
+                                    .doc(Database().getCurrentStoreID())
+                                    .collection('userAccess')
+                                    .doc('sharedWith')
+                                    .snapshots(), 
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return Expanded(
+                                child: ListView.builder(
+                                    itemCount: snapshot.data!['sharedWith'].length, // get the length of the sharedWith array field  in the snapshot
+                                    itemBuilder: (context, index) {
+                                    Map<String, dynamic> doc =
+                                          snapshot.data!['sharedWith'][index];
+                                          return Slidable(
+                                          actionPane: SlidableDrawerActionPane(),
+                                          actionExtentRatio: 0.25,
                                             child: Padding(
                                               padding: const EdgeInsets.all(8.0),
-                                              child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                children: [
-                                                Expanded(child: Text(listOfUsers[index], style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))), // step through each element in the sharedWith array field.
-                      
+                                              child: Container(
+                                                decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(3) ),
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: [
+                                                    Expanded(child: Text((doc['name'])!, style: TextStyle(fontSize: 17, color: Theme.of(context).colorScheme.primary))),
+
+                                                    Container(
+                                                      width:100,
+                                                      height: 50,
+                                                      decoration: BoxDecoration(color: Colors.red[300], border: Border.all(width: 1), borderRadius: BorderRadius.circular(5) ),
+                                                      child: Center(child: Text((doc['role'])!.toString(), style: TextStyle(fontSize: 17, )))
+                                                      ),
+                                                  ]),
+                                                )
                                                 
-                                              ]),
-                                            )
-                                             
-                                          ),
-                                        );
-                              }
-                            
-                        ),
+                                              ),
+                                            ),
+                                              actions: <Widget>[
+                                                // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
+
+                                                // slide action to delete
+                                                IconSlideAction(
+                                                    caption: 'Delete',
+                                                    color: Theme.of(context).colorScheme.secondary,
+                                                    icon: Icons.delete_sharp,
+                                                    onTap: () => {
+                                                          Database().deleteUserFromStore(doc['uid']),
+                                                             
+                                                          print('user ' +
+                                                              doc['uid'] +
+                                                              ' was deleted.')
+                                                        }),
+
+                                              ]
+
+
+                                    );
+                                      
+                    
+                                    }
+                                ),
+                              );
+                            }
+                          }
                       ),
-                      ),
+                
                       
                     
                       
                     
                     
                       SizedBox(height:15),
-
-                      TextButton(
-                        onPressed: () async {Database().deleteUserFromStore('iewIC10l4TTvAhL9PPFNJjRAMGD2').whenComplete(() => print('completed'));}, 
-                        child: Text('trigger delete')),
                     
                     ]),
                   ),

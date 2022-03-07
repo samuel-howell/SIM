@@ -122,19 +122,22 @@ class Database {
   }) async {
     DocumentReference storeDocumentReferencer = _storeCollection.doc(docID).collection('userAccess').doc('sharedWith');
 
-    Map<String, dynamic> sharedUserData = <String, dynamic>{
-      "sharedWith": [
-        {"uid": await Database().getUserUIDFromEmail(email), 
+    Map<String, dynamic> sharedUserData = <String, dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection
+      
+        {
+        "uid": await Database().getUserUIDFromEmail(email), 
         "name": await Database().getUserNameFromEmail(email),
-        "role" :  await Database().getUserUIDFromEmail(email)
+        "role" : "Employee", // when a user is initally added, they will be an employee
         }
-      ],
-    };
+    
+    ;
 
     await storeDocumentReferencer
-        .set(sharedUserData)
-        .whenComplete(() => print("user added to the store " + docID))
-        .catchError((e) => print(e));
+        .set({
+          "sharedWith": FieldValue.arrayUnion([
+            sharedUserData
+          ])
+        }, SetOptions(merge: true));
   }
 
 //  method to  add a store
@@ -143,6 +146,8 @@ class Database {
     required String address,
   }) async {
     DocumentReference storeDocumentReferencer = _storeCollection.doc();
+
+    
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -158,10 +163,28 @@ class Database {
       "dailyStockOut": 0
     };
 
+    // this data2 makes the user who created the store its first manager
+    Map<String, dynamic> data2 = <String, dynamic>{
+      "name" : name,
+      "role" : "Manager",
+      "uid" : Database().getCurrentUserID()
+    };
+
     await storeDocumentReferencer
         .set(data)
         .whenComplete(() => print("Store added to the database"))
         .catchError((e) => print(e));
+
+//!  URGENT: Fix this below
+    // TODO: this doesn't work, so what i need to do allow whoever is the ID in the createdBy field to have manager privileges without actually putting them in the sharedWith 3/7/22
+    DocumentReference sharedWithDocumentReferencer = _storeCollection.doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
+
+    await sharedWithDocumentReferencer
+                .set({
+                  "sharedWith": FieldValue.arrayUnion([
+                    data2
+                      ])
+                    }, SetOptions(merge: true));
   }
 
   //! //////////////////////////////////////////////      DELETE    /////////////////////////////////////////
@@ -659,8 +682,10 @@ class Database {
 
 // helper method for add user to store
   getUserUIDFromEmail(String email) async {
+
+    String emailTrimmed = email.trim(); // get rid of any accidental white space
     Stream<QuerySnapshot<Object?>> userDocumentStream =
-        _userCollection.where('email', isEqualTo: email).snapshots();
+        _userCollection.where('email', isEqualTo: emailTrimmed).snapshots();
 
     QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
 
@@ -676,8 +701,10 @@ class Database {
 
 // helper method for add user to store
   getUserNameFromEmail(String email) async {
+
+    String emailTrimmed = email.trim(); // get rid of any accidental white space
     Stream<QuerySnapshot<Object?>> userDocumentStream =
-        _userCollection.where('email', isEqualTo: email).snapshots();
+        _userCollection.where('email', isEqualTo: emailTrimmed).snapshots();
 
     QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
 
@@ -811,15 +838,21 @@ Future<void> checkRecommendedStockLevels() async {
         .collection('storeData')
         .doc('sales');
 
-    await itemDoc.get().then((snapshot) {
-      // get the list of all sales from firebase
-      list = snapshot.get('dataPoints');
+    try{
+        await itemDoc.get().then((snapshot) {
+          // get the list of all sales from firebase
+          list = snapshot.get('dataPoints');
 
-      // from that list,  add all entries to map
-      list.forEach((entry) {
-        totalProfits += entry['profit'].toDouble();
-      });
-    });
+          // from that list,  add all entries to map
+          list.forEach((entry) {
+            totalProfits += entry['profit'].toDouble();
+          });
+        });
+    }
+    catch (exception)
+    {
+      totalProfits = 0;
+    }
     return totalProfits;
   }
 
@@ -833,12 +866,17 @@ Future<void> checkRecommendedStockLevels() async {
         .doc(Database().getCurrentStoreID());
         
         
-
+try{
     await storeDoc.get().then((snapshot) {
       // get the list of all sales from firebase
       totalStock = snapshot.get('totalCurrentStock');
      
   });
+}
+catch(exception)
+{
+  totalStock = 0;
+}
   return totalStock;
   }
 
@@ -851,11 +889,15 @@ Future<void> checkRecommendedStockLevels() async {
         .doc(Database().getCurrentStoreID());
         
         
-
+ try{
     await storeDoc.get().then((snapshot) {
       dailyStockIn = snapshot.get('dailyStockIn');
      
   });
+ }
+ catch(exception){ // we catch the exception if there is not stock in the store
+   dailyStockIn = 0;
+ }
   return dailyStockIn;
   }
 
@@ -868,11 +910,16 @@ Future<void> checkRecommendedStockLevels() async {
         .doc(Database().getCurrentStoreID());
         
         
-
+  try{
     await storeDoc.get().then((snapshot) {
       dailyStockOut = snapshot.get('dailyStockOut');
      
   });
+  }
+  catch(exception)
+  {
+    dailyStockOut = 0;
+  }
   return dailyStockOut;
   }
 
@@ -916,73 +963,107 @@ Future<void> checkRecommendedStockLevels() async {
 
   }
 
-// this method returns a list of all the users a particular store has been shared with
-  Future<List<String>> getUsersSharedWith() async {
 
-    //TODO; redirect this to the sharedWith document in the userAccess collection. Hopefully this will decrease load times for shared user widget on the homescreen
+    Future<bool> isCurrentUserAdmin() async {
+      DocumentReference<Map<String, dynamic>> doc =
+                                  FirebaseFirestore.instance
+                                        .collection('Stores')
+                                        .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
 
-    List<String> listOfUsers = [];
-    
-     DocumentReference doc =
-                              FirebaseFirestore.instance
-                                    .collection('Stores')
-                                    .doc(Database().getCurrentStoreID());
-      
-      await doc.get().then((snapshot) async {
-
-      for(int i = 0; i < snapshot.get('sharedWith').length; i++)
+       await doc.get().then((snapshot) async {
+          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
       {
-        listOfUsers.add(await Database().getUserNameFromUID(snapshot.get('sharedWith')[i].toString())); // since sharedWith is a array field, we have to iterate through it using a for statement
-      }
+        if(snapshot.get('sharedWith')[i]['role'] == 'Manager' && snapshot.get('sharedWith')[i]['uid'] == Database().getCurrentUserID()) // if the current user id has manager status in store, ret true
+          {
+             return true;
+          }
     
+      }   
+          });
+      return false;
+    }
+  
+    changeUserSecurityLevel(String userToChangeID) async {
 
-    
-  
-  });
-  return listOfUsers;
-  }
-  
+      bool isAdmin = await Database().isCurrentUserAdmin();
+      DocumentReference<Map<String, dynamic>> doc =
+                                  FirebaseFirestore.instance
+                                        .collection('Stores')
+                                        .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
+
+      await doc.get().then((snapshot) async {
+          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
+      {
+        if(isAdmin && snapshot.get('sharedWith')[i]['uid'] == userToChangeID)
+          {
+            String newRole = "Employee";
+            List entryToRemove = []; // create blank list
+            entryToRemove.add(snapshot.get('sharedWith')[i]); // add array element we want to remove
+
+
+            if(snapshot.get('sharedWith')[i]['role'] == 'Employee') // if the user to be changed is an employee, we will change them to manager. Else, if theyre manager, we will change them to employee
+              {
+                newRole = "Manager";
+              }
+
+
+            Map<String, dynamic> replacementUserEntry = <String, dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection with the updated role
+              {
+              "uid" : snapshot.get('sharedWith')[i]['uid'],
+              "name": snapshot.get('sharedWith')[i]['name'],
+              "role" : newRole, 
+              };
+
+            // delete current userEntry from the sharedWith array
+            await FirebaseFirestore.instance.collection('Stores')
+                                        .doc(Database().getCurrentStoreID()).collection('userAccess')
+                                        .doc('sharedWith')
+                                        .update({
+                                        "sharedWith":FieldValue.arrayRemove(entryToRemove) // update the field array using the arrayRemove command
+                                        });
+
+
+            // replace it with the new entry with the newly defined role
+
+            DocumentReference storeDocumentReferencer = _storeCollection.doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
+               await storeDocumentReferencer
+                .set({
+                  "sharedWith": FieldValue.arrayUnion([
+                    replacementUserEntry
+                      ])
+                    }, SetOptions(merge: true));
+                  }
+          }   
+          });
+    }
 
 Future<void> deleteUserFromStore(String uid) async {
-//TODO; redirect this to the sharedWith document in the userAccess collection
     
-     DocumentReference doc =
+     DocumentReference<Map<String, dynamic>> doc =
                               FirebaseFirestore.instance
                                     .collection('Stores')
-                                    .doc(Database().getCurrentStoreID());
+                                    .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
       
       await doc.get().then((snapshot) async {
           for(int i = 0; i < snapshot.get('sharedWith').length; i++)
       {
-        if(snapshot.get('sharedWith')[i].toString() == uid)
-        {
-          await FirebaseFirestore.instance.collection('Stores').doc(Database().getCurrentStoreID()).update({'sharedWith' : FieldValue.arrayRemove([snapshot.get('sharedWith')[i]]) } );
+        if(snapshot.get('sharedWith')[i]['uid'].toString() == uid)
+          {
+              List entryToRemove = []; // create blank list
+              entryToRemove.add(snapshot.get('sharedWith')[i]); // add array element we want to remove
 
-          
-        }
-      }
+              FirebaseFirestore.instance.collection('Stores')
+                                        .doc(Database().getCurrentStoreID()).collection('userAccess')
+                                        .doc('sharedWith')
+                                        .update({
+                                        "sharedWith":FieldValue.arrayRemove(entryToRemove) // update the field array using the arrayRemove command
+                                        });
+
+          }
+ 
+      }   
       });
 
 }
-
-// //This looks at a snapshot of the store and pulls its name out, sending it to a helper method which converts the <Future>String to String
-//   Future<String> getSelectedStoreName() async {
-//     String? currentUserUID = _auth.currentUser?.uid;
-//     String storeName = "null";
-
-//     DocumentReference storeDocumentReferencer = _userCollection
-//         .doc(currentUserUID)
-//         .collection('stores')
-//         .doc(Database().getCurrentStoreID());
-
-//     await storeDocumentReferencer.get().then((snapshot) {
-//       // this is how we get a DocumentSnapshot from a document reference
-//       storeName = (snapshot.get('name'));
-//     });
-
-//     print('THIS is THe STORE NAME ' + storeName);
-
-//     return storeName; //TODO: this is return Future Stirng
-//   }
 
 }

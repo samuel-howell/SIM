@@ -108,7 +108,7 @@ class _ItemScreenState extends State<ItemScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child:
-                showSearchDialog(), //TODO: fix the search dialog not working with futurebuilder.  Perhaps wrap future builder around just listview
+                showSearchDialog(), 
           ),
 
         

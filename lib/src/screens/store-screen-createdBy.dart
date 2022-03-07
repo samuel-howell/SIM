@@ -193,7 +193,8 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                           print(
                                               'store ' + doc.id + ' was edited')
                                         }),
-                              ]);
+                              ]
+                              );
                         }))
               ]));
             }
