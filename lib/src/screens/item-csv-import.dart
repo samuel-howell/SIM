@@ -34,20 +34,15 @@ class ItemCsvImportState extends State<ItemCsvImport> {
   List<PlatformFile>? _paths;
   String? _extension = "csv";
   FileType _pickingType = FileType.custom;
-  
 
   @override
   void initState() {
     super.initState();
     itemData = List<List<dynamic>>.empty(growable: true);
-
   }
-
-
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(),
@@ -64,18 +59,17 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                     child: Text(
                       "Import CSV Item List",
                     ),
-                    onPressed: () =>
-                        [setImportSelected(1), _openFileExplorer(), ]),
+                    onPressed: () => [
+                          setImportSelected(1),
+                          _openFileExplorer(),
+                        ]),
               ),
             ),
             ListView.builder(
-                
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: itemData.length,
                 itemBuilder: (context, index) {
-                  
-
                   try {
                     // the index number is based on which column the data is in in an excel file, starting from cell 0,0
                     Database.addItem(
@@ -86,7 +80,6 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                         mostRecentScanIn: formattedDate,
                         id: itemData[index][0].toString(),
                         isAboveMinimumStockNeeded: true);
-
                   } catch (exception) {
                     return Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -134,17 +127,12 @@ class ItemCsvImportState extends State<ItemCsvImport> {
                       ),
                     )),
                   );
-                }
-
-                
-                ),  
+                }),
           ],
         ),
       ),
     );
   }
-
-  
 
   Uint8List uploadedCsv = new Uint8List(0);
   String option1Text = "";
@@ -162,8 +150,6 @@ class ItemCsvImportState extends State<ItemCsvImport> {
       itemData = fields;
     });
   }
-
-
 
   void _openFileExplorer() async {
     if (kIsWeb) {
@@ -199,9 +185,6 @@ class ItemCsvImportState extends State<ItemCsvImport> {
   setImportSelected(int number) {
     importSelected = number;
   }
-
-
-  
 
   // since we can't use .path with file picker pkg on Web, we have to use the workaround below
   startWebFilePicker() async {

@@ -28,7 +28,7 @@ int searchFilter = 1; //  set to 1, so the default search would be Name Search
 
 List<List<String>> storeList = [];
 
-class StoreScreenSharedWith extends StatefulWidget {
+class StoreScreenSharedWith extends StatefulWidget { 
   @override
   State<StoreScreenSharedWith> createState() => _StoreScreenSharedWithState();
 }
@@ -36,6 +36,7 @@ class StoreScreenSharedWith extends StatefulWidget {
 class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
   Stream<QuerySnapshot> streamQuerySharedWith = db
       .collection('Stores')
+      
       .where('sharedWith',
           arrayContains: Database().getCurrentUserID().toString())
       .where('lowercaseName',
@@ -144,7 +145,7 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
-                                      //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
+                                    //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
 
                                     setState(() {
                                       tappedIndex = index;
@@ -156,7 +157,8 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                     icon: Icons.delete_sharp,
                                     onTap: () => {
                                           showStoreDeleteConfirmationAlertDialog(
@@ -264,7 +266,6 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
           onChanged: (value) {
             setState(() {
               searchKey = value.toLowerCase();
-
 
               streamQuerySharedWith = db
                   .collection('Stores')

@@ -35,11 +35,7 @@ class Database {
     required bool isAboveMinimumStockNeeded,
   }) async {
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
-        .format(now); // format the date like "11/15/2021 - 16:52"
 
-    String? currentUserUID = _auth.currentUser
-        ?.uid; // get the current user id at the moment the method has been triggered //! why do i need to do this. shouldnt the overal currentUserUID handle it?
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database.currentStoreID)
         .collection('items')
@@ -120,24 +116,31 @@ class Database {
     required String email,
     required String docID,
   }) async {
-    DocumentReference storeDocumentReferencer = _storeCollection.doc(docID).collection('userAccess').doc('sharedWith');
+    DocumentReference storeDocumentUserAccessReferencer =
+        _storeCollection.doc(docID).collection('userAccess').doc('sharedWith');
 
-    Map<String, dynamic> sharedUserData = <String, dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection
-      
+    DocumentReference storeDocumentReferencer =
+        _storeCollection.doc(docID);
+
+    Map<String, dynamic> sharedUserData = <String,
+            dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection
+
         {
-        "uid": await Database().getUserUIDFromEmail(email), 
-        "name": await Database().getUserNameFromEmail(email),
-        "role" : "Employee", // when a user is initally added, they will be an employee
-        }
-    
-    ;
+      "uid": await Database().getUserUIDFromEmail(email),
+      "name": await Database().getUserNameFromEmail(email),
+      "role":
+          "Employee", // when a user is initally added, they will be an employee
+    };
 
-    await storeDocumentReferencer
-        .set({
-          "sharedWith": FieldValue.arrayUnion([
-            sharedUserData
-          ])
-        }, SetOptions(merge: true));
+
+
+    await storeDocumentUserAccessReferencer.set({ // this will store the shared user uid and their role and name 
+      "sharedWith": FieldValue.arrayUnion([sharedUserData])
+    }, SetOptions(merge: true));
+
+    await storeDocumentReferencer.set({ // this just stores the user id for parsing on the shared stores page list
+      "sharedWith": FieldValue.arrayUnion([await Database().getUserUIDFromEmail(email)])
+    }, SetOptions(merge: true));
   }
 
 //  method to  add a store
@@ -145,9 +148,11 @@ class Database {
     required String name,
     required String address,
   }) async {
-    DocumentReference storeDocumentReferencer = _storeCollection.doc();
+    String nameForSharedWithArray = await Database().getCurrentUserName();
+    String role = "Manager";
+    String uid = Database().getCurrentUserID();
 
-    
+    DocumentReference storeDocumentReferencer = _storeCollection.doc();
 
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
@@ -163,36 +168,32 @@ class Database {
       "dailyStockOut": 0
     };
 
-    // this data2 makes the user who created the store its first manager
-    Map<String, dynamic> data2 = <String, dynamic>{
-      "name" : name,
-      "role" : "Manager",
-      "uid" : Database().getCurrentUserID()
-    };
-
     await storeDocumentReferencer
         .set(data)
         .whenComplete(() => print("Store added to the database"))
         .catchError((e) => print(e));
 
-//!  URGENT: Fix this below
-    // TODO: this doesn't work, so what i need to do allow whoever is the ID in the createdBy field to have manager privileges without actually putting them in the sharedWith 3/7/22
-    DocumentReference sharedWithDocumentReferencer = _storeCollection.doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
+    DocumentReference sharedWithDocumentReferencer = _storeCollection
+        .doc(storeDocumentReferencer.id) // we have to use the storeDocumentReferencer.id here because the store hasn't been selected yet because it was just created, so we can't call Database.getCurrentStoreID
+        .collection('userAccess')
+        .doc('sharedWith');
+
+    Map<String, dynamic> firstManager = <String, dynamic>{
+      "sharedWith": [
+        {"name": nameForSharedWithArray, "role": role, "uid": uid}
+      ],
+    };
 
     await sharedWithDocumentReferencer
-                .set({
-                  "sharedWith": FieldValue.arrayUnion([
-                    data2
-                      ])
-                    }, SetOptions(merge: true));
+        .set(firstManager)
+        .whenComplete(() => print("added first manager"))
+        .catchError((e) => print(e));
   }
 
   //! //////////////////////////////////////////////      DELETE    /////////////////////////////////////////
 
 //  method to delete a store
   static Future<void> deleteStore(String storeDocID) async {
-
-
     await _storeCollection.doc(storeDocID).delete();
 
     print('the delete button was pressed.and the store id was ' +
@@ -201,8 +202,6 @@ class Database {
 
 //  method to delete a item
   static Future<void> deleteItem(String itemDocID) async {
-
-
     await _storeCollection
         .doc(Database().getCurrentStoreID())
         .collection('items')
@@ -247,7 +246,7 @@ class Database {
       required int quantity,
       required String description,
       required String itemDocID}) async {
- // get the current user id at the moment the method has been triggered
+    // get the current user id at the moment the method has been triggered
 
     DocumentReference itemDocumentReferencer = _storeCollection
         .doc(Database().getCurrentStoreID())
@@ -276,9 +275,9 @@ class Database {
     int quantity = 0;
     int newQuantity = 0;
     DateTime now = DateTime.now();
-    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can increment it. //! could cause extra calls to db because each time qr registers it refreshs stock total
-    int dailyStockIn = await Database().getStoreDailyStockIn(); 
-
+    int currentStock = await Database()
+        .getStoreTotalStock(); // gets the current total stock so we can increment it. //! could cause extra calls to db because each time qr registers it refreshs stock total
+    int dailyStockIn = await Database().getStoreDailyStockIn();
 
     String formattedDate = DateFormat('MM/dd/yyyy - HH:mm')
         .format(now); // format the date like "11/15/2021 - 16:52"
@@ -289,24 +288,26 @@ class Database {
         .doc(
             qrCode); // finds the document associate with the id read by the qr code scanner
 
-    DocumentReference storeDocumentReferencer = _storeCollection
-        .doc(Database().getCurrentStoreID());
+    DocumentReference storeDocumentReferencer =
+        _storeCollection.doc(Database().getCurrentStoreID());
 
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
       quantity = (snapshot.get('quantity'));
       newQuantity = quantity + 1;
     });
-    Map<String, dynamic> data = <String, dynamic>{ // this data goes to item page in db
+    Map<String, dynamic> data = <String, dynamic>{
+      // this data goes to item page in db
       "quantity": newQuantity,
       "mostRecentScanIn": formattedDate,
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
-    Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
+    Map<String, dynamic> data2 = <String, dynamic>{
+      // this data goes to store page in db to update overall stock
       "totalCurrentStock": currentStock + 1,
-      "dailyStockIn": dailyStockIn + 1, // also update the daily stock in for the day
-
+      "dailyStockIn":
+          dailyStockIn + 1, // also update the daily stock in for the day
     };
 
     await itemDocumentReferencer
@@ -316,7 +317,8 @@ class Database {
 
     await storeDocumentReferencer
         .update(data2)
-        .whenComplete(() => print("overall Store stock incremented in the database"))
+        .whenComplete(
+            () => print("overall Store stock incremented in the database"))
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
@@ -340,7 +342,8 @@ class Database {
 //  method to decrement item count in database by one (called each time qr code is scanned)
   static Future<void> decrementItemQuantity(String qrCode) async {
     double profit = 0;
-    int currentStock = await Database().getStoreTotalStock(); // gets the current total stock so we can decrement it. //TODO: this causes a crazy amount of reads I think
+    int currentStock = await Database()
+        .getStoreTotalStock(); // gets the current total stock so we can decrement it. //TODO: this causes a crazy amount of reads I think
     int dailyStockOut = await Database().getStoreDailyStockIn();
     int quantity = 0;
     int newQuantity = 0;
@@ -355,8 +358,8 @@ class Database {
         .doc(
             qrCode); // finds the document associate with the id read by the qr code scanner
 
-    DocumentReference storeDocumentReferencer = _storeCollection
-        .doc(Database().getCurrentStoreID());
+    DocumentReference storeDocumentReferencer =
+        _storeCollection.doc(Database().getCurrentStoreID());
 
     await itemDocumentReferencer.get().then((snapshot) {
       // this is how we get a DocumentSnapshot from a document reference
@@ -376,10 +379,11 @@ class Database {
       "LastEmployeeToInteract": await Database().getCurrentUserName()
     };
 
-    Map<String, dynamic> data2 = <String, dynamic>{ // this data goes to store page in db to update overall stock
+    Map<String, dynamic> data2 = <String, dynamic>{
+      // this data goes to store page in db to update overall stock
       "totalCurrentStock": currentStock - 1,
       "dailyStockOut": dailyStockOut + 1,
-      
+
       //TODO at the end of the day, set the dailyStockOut and dailyStockIn to 0.
     };
 
@@ -387,10 +391,11 @@ class Database {
         .update(data)
         .whenComplete(() => print("item quantity decremented in the database"))
         .catchError((e) => print(e));
-    
+
     await storeDocumentReferencer
         .update(data2)
-        .whenComplete(() => print("overall Store stock and daily stock in incremented in the database"))
+        .whenComplete(() => print(
+            "overall Store stock and daily stock in incremented in the database"))
         .catchError((e) => print(e));
 
     // update the data points map array in the graphData collection in the quantity column
@@ -475,7 +480,6 @@ class Database {
     return userFirstName! + " " + userLastName!;
   }
 
-
 //  returns the name of current store
   Future<String> getCurrentStoreName() async {
     String? name = "";
@@ -489,6 +493,7 @@ class Database {
 
     return name!;
   }
+
 //  method to get an item's quantity //! not used
   static getItemQuantity(String itemID) async {
     String currentUserID = FirebaseAuth.instance.currentUser!.uid;
@@ -508,8 +513,6 @@ class Database {
     });
     return quantity;
   }
-
-
 
   //method that returns all quantity datapoints from a specific month
 
@@ -682,7 +685,6 @@ class Database {
 
 // helper method for add user to store
   getUserUIDFromEmail(String email) async {
-
     String emailTrimmed = email.trim(); // get rid of any accidental white space
     Stream<QuerySnapshot<Object?>> userDocumentStream =
         _userCollection.where('email', isEqualTo: emailTrimmed).snapshots();
@@ -701,7 +703,6 @@ class Database {
 
 // helper method for add user to store
   getUserNameFromEmail(String email) async {
-
     String emailTrimmed = email.trim(); // get rid of any accidental white space
     Stream<QuerySnapshot<Object?>> userDocumentStream =
         _userCollection.where('email', isEqualTo: emailTrimmed).snapshots();
@@ -720,15 +721,14 @@ class Database {
     return doc.get('firstName') + " " + doc.get('lastName');
   }
 
-
   getUserNameFromUID(String uid) async {
     Stream<QuerySnapshot<Object?>> userDocumentStream =
         _userCollection.where('userID', isEqualTo: uid).snapshots();
 
     QuerySnapshot<Object?> docQuery = await userDocumentStream.first;
 
-    DocumentSnapshot doc =
-        docQuery.docs[0]; // returns the first entry in an array list. of which there will only be 1 because we called userDocumentStream.first
+    DocumentSnapshot doc = docQuery.docs[
+        0]; // returns the first entry in an array list. of which there will only be 1 because we called userDocumentStream.first
 
     print('the size of the docQuery is ' + docQuery.size.toString());
     print('the value that should be retd from getUserNameFromUID method is ' +
@@ -758,11 +758,9 @@ class Database {
         .catchError((e) => print(e));
   }
 
-
 // helper method for check stock levels
   static Future<void> isAboveMinimumStockNeeded(
       {required String itemDocID}) async {
-
     bool flag = false;
     DocumentSnapshot<Map<String, dynamic>> doc = await FirebaseFirestore
         .instance
@@ -772,16 +770,15 @@ class Database {
         .doc(itemDocID)
         .get();
 
-    
-
-    if (doc.get('minimumStockNeeded') <
-        doc.get(
-            'quantity') || doc.get('minimumStockNeeded') == doc.get('quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
+    if (doc.get('minimumStockNeeded') < doc.get('quantity') ||
+        doc.get('minimumStockNeeded') ==
+            doc.get(
+                'quantity')) //NOTE:  It matters what type minimumStock and quntity are in db
     {
       // we are over stock
       flag = true;
     } else {
-       // we are under stock
+      // we are under stock
       flag = false;
     }
 
@@ -808,23 +805,21 @@ class Database {
           .catchError((e) => print(e));
     }
   }
-  
+
   //run a check to see what items in selected store are under recommended stock levels
-Future<void> checkRecommendedStockLevels() async {
-  
+  Future<void> checkRecommendedStockLevels() async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('items')
+        .get();
+    for (int i = 0; i < querySnapshot.docs.length; i++) {
+      var doc = querySnapshot.docs[i];
+      print('checking stock levels for ' + doc.get('name'));
 
-  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-      .collection('Stores')
-      .doc(Database().getCurrentStoreID())
-      .collection('items')
-      .get();
-  for (int i = 0; i < querySnapshot.docs.length; i++) {
-    var doc = querySnapshot.docs[i];
-    print('checking stock levels for ' + doc.get('name'));
-
-    await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
+      await Database.isAboveMinimumStockNeeded(itemDocID: doc.id);
+    }
   }
-}
 
 // helper method to get total store profits
   Future<double> getStoreTotalProfits() async {
@@ -838,19 +833,17 @@ Future<void> checkRecommendedStockLevels() async {
         .collection('storeData')
         .doc('sales');
 
-    try{
-        await itemDoc.get().then((snapshot) {
-          // get the list of all sales from firebase
-          list = snapshot.get('dataPoints');
+    try {
+      await itemDoc.get().then((snapshot) {
+        // get the list of all sales from firebase
+        list = snapshot.get('dataPoints');
 
-          // from that list,  add all entries to map
-          list.forEach((entry) {
-            totalProfits += entry['profit'].toDouble();
-          });
+        // from that list,  add all entries to map
+        list.forEach((entry) {
+          totalProfits += entry['profit'].toDouble();
         });
-    }
-    catch (exception)
-    {
+      });
+    } catch (exception) {
       totalProfits = 0;
     }
     return totalProfits;
@@ -860,210 +853,212 @@ Future<void> checkRecommendedStockLevels() async {
   Future<int> getStoreTotalStock() async {
     int totalStock = 0;
 
-   await Database().refreshStoreStockTotal(); //! do I need this here or does the refreshStoreStockTotal need to be something that I only call on home page build. seems like extra api calls.
-   
-    DocumentReference storeDoc = _storeCollection
-        .doc(Database().getCurrentStoreID());
-        
-        
-try{
-    await storeDoc.get().then((snapshot) {
-      // get the list of all sales from firebase
-      totalStock = snapshot.get('totalCurrentStock');
-     
-  });
-}
-catch(exception)
-{
-  totalStock = 0;
-}
-  return totalStock;
-  }
+    await Database()
+        .refreshStoreStockTotal(); //! do I need this here or does the refreshStoreStockTotal need to be something that I only call on home page build. seems like extra api calls.
 
+    DocumentReference storeDoc =
+        _storeCollection.doc(Database().getCurrentStoreID());
+
+    try {
+      await storeDoc.get().then((snapshot) {
+        // get the list of all sales from firebase
+        totalStock = snapshot.get('totalCurrentStock');
+      });
+    } catch (exception) {
+      totalStock = 0;
+    }
+    return totalStock;
+  }
 
 // helper method to get total store stock
   Future<int> getStoreDailyStockIn() async {
     int dailyStockIn = 0;
-   
-    DocumentReference storeDoc = _storeCollection
-        .doc(Database().getCurrentStoreID());
-        
-        
- try{
-    await storeDoc.get().then((snapshot) {
-      dailyStockIn = snapshot.get('dailyStockIn');
-     
-  });
- }
- catch(exception){ // we catch the exception if there is not stock in the store
-   dailyStockIn = 0;
- }
-  return dailyStockIn;
+
+    DocumentReference storeDoc =
+        _storeCollection.doc(Database().getCurrentStoreID());
+
+    try {
+      await storeDoc.get().then((snapshot) {
+        dailyStockIn = snapshot.get('dailyStockIn');
+      });
+    } catch (exception) {
+      // we catch the exception if there is not stock in the store
+      dailyStockIn = 0;
+    }
+    return dailyStockIn;
   }
 
   // helper method to get total store stock
   Future<int> getStoreDailyStockOut() async {
     int dailyStockOut = 0;
 
-   
-    DocumentReference storeDoc = _storeCollection
-        .doc(Database().getCurrentStoreID());
-        
-        
-  try{
-    await storeDoc.get().then((snapshot) {
-      dailyStockOut = snapshot.get('dailyStockOut');
-     
-  });
-  }
-  catch(exception)
-  {
-    dailyStockOut = 0;
-  }
-  return dailyStockOut;
-  }
+    DocumentReference storeDoc =
+        _storeCollection.doc(Database().getCurrentStoreID());
 
+    try {
+      await storeDoc.get().then((snapshot) {
+        dailyStockOut = snapshot.get('dailyStockOut');
+      });
+    } catch (exception) {
+      dailyStockOut = 0;
+    }
+    return dailyStockOut;
+  }
 
   refreshStoreStockTotal() async {
-
     num total = 0;
-    Stream<QuerySnapshot<Map<String, dynamic>>> itemStockDocRef = _storeCollection
-        .doc(Database().getCurrentStoreID()).collection('items').snapshots();
+    Stream<QuerySnapshot<Map<String, dynamic>>> itemStockDocRef =
+        _storeCollection
+            .doc(Database().getCurrentStoreID())
+            .collection('items')
+            .snapshots();
 
-     itemStockDocRef.forEach((snapshot) async {
-       if(snapshot.docs.isNotEmpty){
-
-        for (var doc in snapshot.docs)
-         {
+    itemStockDocRef.forEach((snapshot) async {
+      if (snapshot.docs.isNotEmpty) {
+        for (var doc in snapshot.docs) {
           total += doc.get('quantity');
-            print('total is now ' + total.toString());
+          print('total is now ' + total.toString());
+        }
 
-         }
-         
-         // write the total to the store total stock field 
-    Map<String, dynamic> data = <String, dynamic>{ // this data goes to store page in db to update overall stock
-      "totalCurrentStock": total,
-    };
+        // write the total to the store total stock field
+        Map<String, dynamic> data = <String, dynamic>{
+          // this data goes to store page in db to update overall stock
+          "totalCurrentStock": total,
+        };
 
-    DocumentReference storeDocumentReferencer = _storeCollection
-        .doc(Database().getCurrentStoreID());
+        DocumentReference storeDocumentReferencer =
+            _storeCollection.doc(Database().getCurrentStoreID());
 
-    await storeDocumentReferencer
-        .update(data)
-        .whenComplete(() => print("storeTotalStock updated in the database from the refreshStoreStockTotal method "))
-        .catchError((e) => print(e));
-        
-        
-       }
-       else{
-         print('documents in refreshStoreStockTotal don\'t exist');
-       }
+        await storeDocumentReferencer
+            .update(data)
+            .whenComplete(() => print(
+                "storeTotalStock updated in the database from the refreshStoreStockTotal method "))
+            .catchError((e) => print(e));
+      } else {
+        print('documents in refreshStoreStockTotal don\'t exist');
+      }
+    });
+  }
 
-     });
+  Future<bool> isCurrentUserAdmin() async {
+    
+    bool flag = false;
+    DocumentReference<Map<String, dynamic>> doc = FirebaseFirestore.instance
+        .collection('Stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('userAccess')
+        .doc('sharedWith');
+
+  
+      await doc.get().then((snapshot){
+        for (int i = 0; i < snapshot.get('sharedWith').length; i++) {
+          if (snapshot.get('sharedWith')[i]['role'] == 'Manager' &&
+                  snapshot.get('sharedWith')[i]['uid'] ==
+                      Database().getCurrentUserID()) // check if the current user has the manager role
+          {
+            flag = true;
+          }
+        }
+      }
+      );
+         return flag;
 
   }
 
 
-    Future<bool> isCurrentUserAdmin() async {
-      DocumentReference<Map<String, dynamic>> doc =
-                                  FirebaseFirestore.instance
-                                        .collection('Stores')
-                                        .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
 
-       await doc.get().then((snapshot) async {
-          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
-      {
-        if(snapshot.get('sharedWith')[i]['role'] == 'Manager' && snapshot.get('sharedWith')[i]['uid'] == Database().getCurrentUserID()) // if the current user id has manager status in store, ret true
+  changeUserSecurityLevel(String userToChangeID) async {
+    bool isAdmin = await Database().isCurrentUserAdmin();
+    DocumentReference<Map<String, dynamic>> doc = FirebaseFirestore.instance
+        .collection('Stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('userAccess')
+        .doc('sharedWith');
+
+    await doc.get().then((snapshot) async {
+      for (int i = 0; i < snapshot.get('sharedWith').length; i++) {
+        if (isAdmin && snapshot.get('sharedWith')[i]['uid'] == userToChangeID) {
+          String newRole = "Employee";
+          List entryToRemove = []; // create blank list
+          entryToRemove.add(snapshot
+              .get('sharedWith')[i]); // add array element we want to remove
+
+          if (snapshot.get('sharedWith')[i]['role'] ==
+              'Employee') // if the user to be changed is an employee, we will change them to manager. Else, if theyre manager, we will change them to employee
           {
-             return true;
+            newRole = "Manager";
           }
-    
-      }   
-          });
-      return false;
-    }
-  
-    changeUserSecurityLevel(String userToChangeID) async {
 
-      bool isAdmin = await Database().isCurrentUserAdmin();
-      DocumentReference<Map<String, dynamic>> doc =
-                                  FirebaseFirestore.instance
-                                        .collection('Stores')
-                                        .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
-
-      await doc.get().then((snapshot) async {
-          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
-      {
-        if(isAdmin && snapshot.get('sharedWith')[i]['uid'] == userToChangeID)
-          {
-            String newRole = "Employee";
-            List entryToRemove = []; // create blank list
-            entryToRemove.add(snapshot.get('sharedWith')[i]); // add array element we want to remove
-
-
-            if(snapshot.get('sharedWith')[i]['role'] == 'Employee') // if the user to be changed is an employee, we will change them to manager. Else, if theyre manager, we will change them to employee
+          Map<String, dynamic> replacementUserEntry = <String,
+                  dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection with the updated role
               {
-                newRole = "Manager";
-              }
+            "uid": snapshot.get('sharedWith')[i]['uid'],
+            "name": snapshot.get('sharedWith')[i]['name'],
+            "role": newRole,
+          };
 
-
-            Map<String, dynamic> replacementUserEntry = <String, dynamic> // create  a map entry to add to the sharedWith array field in the userAccess collection with the updated role
-              {
-              "uid" : snapshot.get('sharedWith')[i]['uid'],
-              "name": snapshot.get('sharedWith')[i]['name'],
-              "role" : newRole, 
-              };
-
-            // delete current userEntry from the sharedWith array
-            await FirebaseFirestore.instance.collection('Stores')
-                                        .doc(Database().getCurrentStoreID()).collection('userAccess')
-                                        .doc('sharedWith')
-                                        .update({
-                                        "sharedWith":FieldValue.arrayRemove(entryToRemove) // update the field array using the arrayRemove command
-                                        });
-
-
-            // replace it with the new entry with the newly defined role
-
-            DocumentReference storeDocumentReferencer = _storeCollection.doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
-               await storeDocumentReferencer
-                .set({
-                  "sharedWith": FieldValue.arrayUnion([
-                    replacementUserEntry
-                      ])
-                    }, SetOptions(merge: true));
-                  }
-          }   
+          // delete current userEntry from the sharedWith array
+          await FirebaseFirestore.instance
+              .collection('Stores')
+              .doc(Database().getCurrentStoreID())
+              .collection('userAccess')
+              .doc('sharedWith')
+              .update({
+            "sharedWith": FieldValue.arrayRemove(
+                entryToRemove) // update the field array using the arrayRemove command
           });
-    }
 
-Future<void> deleteUserFromStore(String uid) async {
-    
-     DocumentReference<Map<String, dynamic>> doc =
-                              FirebaseFirestore.instance
-                                    .collection('Stores')
-                                    .doc(Database().getCurrentStoreID()).collection('userAccess').doc('sharedWith');
-      
-      await doc.get().then((snapshot) async {
-          for(int i = 0; i < snapshot.get('sharedWith').length; i++)
-      {
-        if(snapshot.get('sharedWith')[i]['uid'].toString() == uid)
-          {
-              List entryToRemove = []; // create blank list
-              entryToRemove.add(snapshot.get('sharedWith')[i]); // add array element we want to remove
+          // replace it with the new entry with the newly defined role
 
-              FirebaseFirestore.instance.collection('Stores')
-                                        .doc(Database().getCurrentStoreID()).collection('userAccess')
-                                        .doc('sharedWith')
-                                        .update({
-                                        "sharedWith":FieldValue.arrayRemove(entryToRemove) // update the field array using the arrayRemove command
-                                        });
+          DocumentReference storeDocumentReferencer = _storeCollection
+              .doc(Database().getCurrentStoreID())
+              .collection('userAccess')
+              .doc('sharedWith');
+          await storeDocumentReferencer.set({
+            "sharedWith": FieldValue.arrayUnion([replacementUserEntry])
+          }, SetOptions(merge: true));
+        }
+      }
+    });
+  }
 
-          }
- 
-      }   
-      });
+  Future<void> deleteUserFromStore(String uid) async {
+    DocumentReference<Map<String, dynamic>> doc = FirebaseFirestore.instance
+        .collection('Stores')
+        .doc(Database().getCurrentStoreID())
+        .collection('userAccess')
+        .doc('sharedWith');
 
-}
+    await doc.get().then((snapshot) async {
+      for (int i = 0; i < snapshot.get('sharedWith').length; i++) {
+        if (snapshot.get('sharedWith')[i]['uid'].toString() == uid) {
+          List entryToRemove = []; // create blank list to store val to remove from userAccess collections
+          List uidToRemove = []; // create entry to remove from the smaller sharedWith array in the store's doc's fields (array is queried to create Shared Stores list)
+          entryToRemove.add(snapshot
+              .get('sharedWith')[i]); // add array element we want to remove
+        
+          uidToRemove.add(snapshot.get('sharedWith')[i]['uid']); // we are going to specifically pick off the uid because that is the only thing that wouls match in the sharedWith array
 
+          FirebaseFirestore.instance // remove the entry from the userAccess collection
+              .collection('Stores')
+              .doc(Database().getCurrentStoreID())
+              .collection('userAccess')
+              .doc('sharedWith')
+              .update({
+            "sharedWith": FieldValue.arrayRemove(
+                entryToRemove)// update the field array using the arrayRemove command
+               });
+   
+
+          FirebaseFirestore.instance // remove the entry from the s
+              .collection('Stores')
+              .doc(Database().getCurrentStoreID())
+              .update({
+              "sharedWith": FieldValue.arrayRemove(
+                uidToRemove) // update the field array using the arrayRemove command      
+              });
+        }
+      }
+    });
+  }
 }

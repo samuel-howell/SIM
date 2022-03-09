@@ -146,12 +146,11 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                     Database.setcurrentStoreID(doc.id);
                                     Database().setStoreClicked(
                                         true); // now the user can access item screen.
-                                    
-                                      //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
-                                    
-                                    setState((){
+
+                                    //Database().checkRecommendedStockLevels(); // this will update all the items that are under there recommended stock levels and tag them red in item page
+
+                                    setState(() {
                                       tappedIndex = index;
-                                      
                                     }); //by changing the index of this list tile to the tapped index, we know to put a green accent around only this list tile
                                   }),
                               actions: <Widget>[
@@ -160,7 +159,8 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                 // slide action to delete
                                 IconSlideAction(
                                     caption: 'Delete',
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                     icon: Icons.delete_sharp,
                                     onTap: () => {
                                           showStoreDeleteConfirmationAlertDialog(
@@ -193,8 +193,7 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                           print(
                                               'store ' + doc.id + ' was edited')
                                         }),
-                              ]
-                              );
+                              ]);
                         }))
               ]));
             }

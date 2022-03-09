@@ -119,9 +119,16 @@ class NavigationDrawerWidget extends StatelessWidget {
   void selectedItem(BuildContext context, int index) {
     switch (index) {
       case 0:
+       if (Database().getStoreClicked() == true) {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => HomeScreen(),
         ));
+        break;
+        } else {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => PleaseChooseStoreScreen(),
+          ));
+        }
         break;
 
       case 1:
