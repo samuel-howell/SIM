@@ -515,7 +515,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               Fluttertoast
                                                                   .showToast(
                                                                       msg:
-                                                                          'You don\'t have privileges to change role of user. ')
+                                                                          'You don\'t have privileges to change role of user.')
                                                             }
                                                         }),
                                               ]);
