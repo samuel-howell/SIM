@@ -1,7 +1,7 @@
 <p align="center">
 # howell_capstone - SIMPL
 
-**S**imple **I**nventory **M**anagement and **P**roduct **L**ogistics 
+*(**S**imple **I**nventory **M**anagement and **P**roduct **L**ogistics )*
   
 A micro-saas inventory management system for small businesses
 
