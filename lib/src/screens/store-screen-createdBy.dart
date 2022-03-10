@@ -157,42 +157,42 @@ class _StoreScreenCreatedByState extends State<StoreScreenCreatedBy> {
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 
                                 // slide action to delete
-                                IconSlideAction(
-                                    caption: 'Delete',
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: Icons.delete_sharp,
-                                    onTap: () => {
-                                          showStoreDeleteConfirmationAlertDialog(
-                                              context, doc.id),
-                                          print('store ' +
-                                              doc.id +
-                                              ' was deleted.')
-                                        }),
+                                // IconSlideAction(
+                                //     caption: 'Delete',
+                                //     color:
+                                //         Theme.of(context).colorScheme.secondary,
+                                //     icon: Icons.delete_sharp,
+                                //     onTap: () => {
+                                //           showStoreDeleteConfirmationAlertDialog(
+                                //               context, doc.id),
+                                //           print('store ' +
+                                //               doc.id +
+                                //               ' was deleted.')
+                                //         }),
 
-                                // slide action to give new user access to the store
-                                IconSlideAction(
-                                    caption: 'Add User',
-                                    color: Theme.of(context).primaryColor,
-                                    icon: Icons.person_add,
-                                    onTap: () => {
-                                          showAddUserDialog(context, doc.id),
-                                          print('store ' +
-                                              doc.id +
-                                              ' share was clicked.')
-                                        }),
+                                // // slide action to give new user access to the store
+                                // IconSlideAction(
+                                //     caption: 'Add User',
+                                //     color: Theme.of(context).primaryColor,
+                                //     icon: Icons.person_add,
+                                //     onTap: () => {
+                                //           showAddUserDialog(context, doc.id),
+                                //           print('store ' +
+                                //               doc.id +
+                                //               ' share was clicked.')
+                                //         }),
 
-                                // slide action to edit
-                                IconSlideAction(
-                                    caption: 'Edit',
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: Icons.edit,
-                                    onTap: () => {
-                                          showEditStoreDialog(context, doc.id),
-                                          print(
-                                              'store ' + doc.id + ' was edited')
-                                        }),
+                                // // slide action to edit
+                                // IconSlideAction(
+                                //     caption: 'Edit',
+                                //     color:
+                                //         Theme.of(context).colorScheme.secondary,
+                                //     icon: Icons.edit,
+                                //     onTap: () => {
+                                //           showEditStoreDialog(context, doc.id),
+                                //           print(
+                                //               'store ' + doc.id + ' was edited')
+                                //         }),
                               ]);
                         }))
               ]));

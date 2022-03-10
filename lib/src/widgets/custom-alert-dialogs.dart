@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
+import 'package:howell_capstone/src/screens/store-screen-main.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/theme/custom-colors.dart';
 import 'package:intl/intl.dart';
@@ -35,19 +36,21 @@ showStoreDeleteConfirmationAlertDialog(
   );
   Widget continueButton = TextButton(
     child: Text("Yes"),
-    onPressed: () {
+    onPressed: () async {
       String? currentUserUID = _auth.currentUser
           ?.uid; // get the current user id at the moment the method has been triggered
 
       print(
           'the delete button for store delete was pressed and the store id was ' +
               storeDocID.toString());
-      db
+      await db
           .collection('Stores')
           .doc(storeDocID)
           .delete(); // in firebase, it goes from collection  users -> store -> the doc id of the the store you just tapped, then deletes it
 
-      Navigator.of(context).pop(); // removes the dialog from the screen
+      Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => StoreScreenMain(),
+           ));
       Fluttertoast.showToast(
           msg: 'You deleted the store!',
           gravity: ToastGravity

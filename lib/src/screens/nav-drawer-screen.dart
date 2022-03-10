@@ -121,7 +121,7 @@ class NavigationDrawerWidget extends StatelessWidget {
       case 0:
        if (Database().getStoreClicked() == true) {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => HomeScreen(),
+          builder: (context) => HomeScreen(storeDocID: Database().getCurrentStoreID()),// go to the homescreen and pass the store doc id for methods on that page that may need it
         ));
         break;
         } else {

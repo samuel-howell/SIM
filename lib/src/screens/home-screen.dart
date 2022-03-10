@@ -6,6 +6,9 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/nav-drawer-screen.dart';
 import 'package:howell_capstone/src/screens/please-choose-store-screen.dart';
+import 'package:howell_capstone/src/screens/store-csv-import.dart';
+import 'package:howell_capstone/src/screens/store-screen-main.dart';
+import 'package:howell_capstone/src/utilities/SIMPL-export.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
 import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/theme/theme_model.dart';
@@ -13,6 +16,14 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
+  // by initializing the storedocid, and then requiring it in the const below, you are effectivley making it a parameter
+  final String storeDocID;
+
+  const HomeScreen({Key? key, required this.storeDocID})
+      : super(
+            key:
+                key); // adding required itemDocId here will force us to pass a itemDocID to this page
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -87,13 +98,57 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    // this is the helper method for the popup menu button
+    void onSelected(BuildContext context, int item) async {
+      switch (item) {
+        case 0:
+        if(isCurrentUserAdmin){
+          showAddUserDialog(context, widget.storeDocID);
+          print('store ' + widget.storeDocID +' was selected to add user to.');
+        } else {
+          Fluttertoast.showToast(msg: "You don't have proper privileges to add users to the store.");
+        }
+          break;
+
+        case 1:
+        if(isCurrentUserAdmin){
+          showEditStoreDialog(context, widget.storeDocID);
+          print('store ' + widget.storeDocID + ' was edited');
+        } else {
+          Fluttertoast.showToast(msg: "You don't have proper privileges to edit store details.");
+        }
+          break;
+
+        case 2:
+        if(isCurrentUserAdmin){
+           await showStoreDeleteConfirmationAlertDialog(context, widget.storeDocID); // wait for store delete to finish, if you don't, it will skip the actual delete for some reason
+           print('store ' + widget.storeDocID + ' was deleted');
+          
+        } else {
+          Fluttertoast.showToast(msg: "You don't have proper privileges to delete the store.");
+        }
+          break;
+      }
+    }
+
     if (Database().getStoreClicked() == true) {
       return Consumer<ThemeModel>(
           builder: (context, ThemeModel themeNotifier, child) {
         return Scaffold(
           //  import my custom navigation sidebar drawer widget and use as the drawer.
           drawer: NavigationDrawerWidget(),
-          appBar: AppBar(),
+          appBar: AppBar(
+             actions: [
+              PopupMenuButton<int>(
+                  onSelected: (item) => onSelected(context, item),
+                  itemBuilder: (context) => [
+                        PopupMenuItem(child: Text('Add User'), value: 0),
+                        PopupMenuItem(child: Text('Edit Store'), value: 1),
+                        PopupMenuItem(child: Text('Delete Store'), value: 2),
+                      ])
+            ],
+          ),
           body: SingleChildScrollView(
             child: Column(children: <Widget>[
               SizedBox(height: 40),
