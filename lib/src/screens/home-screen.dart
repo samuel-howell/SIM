@@ -16,7 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart'; 
 
 class HomeScreen extends StatefulWidget {
-  // by initializing the storedociiid, and then requiring it in the const below, you are effectivley making it a parameter
+  // by initializing the storedocid, and then requiring it in the const below, you are effectivley making it a parameter
   final String storeDocID;
 
   const HomeScreen({Key? key, required this.storeDocID})
