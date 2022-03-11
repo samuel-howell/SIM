@@ -7,6 +7,13 @@
 
 
 
+## **Mockups**
+<div align="center">
+<img src="https://drive.google.com/uc?export=view&id=16SZzvhExacUnKJ-FN9ytOUl5Xzt3l2qC" width="300" height="300"/> <img src="https://drive.google.com/uc?export=view&id=1rNmCs2h33QK7xD6IfCLsIjtJ_ULK-_yj" width="150" height="300"/> <img src="https://drive.google.com/uc?export=view&id=1OFnarpdGqZMQ-F6nIpW8ccMJLaHGP5ps" width="500" height="300"/>
+  </div>
+  
+  
+
   ## **Overall Summary**
  
 <p>
@@ -51,10 +58,6 @@ Web Software           |  Mobile Apps
 ![image](https://drive.google.com/uc?export=view&id=1LUi98ABuqQvA7joXSc2Rl4ct4XVw2tVE) | ![image](https://drive.google.com/uc?export=view&id=1LXzn2vZXhxG3M5BA5eIoUyDP5Skcvt1y)  
 
 
-## **Mockups**
-<div align="center">
-<img src="https://drive.google.com/uc?export=view&id=16SZzvhExacUnKJ-FN9ytOUl5Xzt3l2qC" width="300" height="300"/> <img src="https://drive.google.com/uc?export=view&id=1rNmCs2h33QK7xD6IfCLsIjtJ_ULK-_yj" width="150" height="300"/> <img src="https://drive.google.com/uc?export=view&id=1OFnarpdGqZMQ-F6nIpW8ccMJLaHGP5ps" width="500" height="300"/>
-  </div>
 
 
 
