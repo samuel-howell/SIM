@@ -252,7 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontSize: 25,
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .primary)), // TODO: put actual stock totals her pulled from database methods
+                                            .primary)), 
                                 Text('Total', style: TextStyle(fontSize: 15)),
                               ]),
                               Text(' | ',

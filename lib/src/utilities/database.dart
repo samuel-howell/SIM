@@ -196,17 +196,30 @@ class Database {
   static Future<void> deleteStore(String storeDocID) async {
     await _storeCollection.doc(storeDocID).delete();
 
+    // delete userAccess subcollection of the store since Firebase doesn't delete subcollections of docs automatically
+    await _storeCollection.doc(storeDocID).collection('userAccess').doc('sharedWith').delete();
+
     print('the delete button was pressed.and the store id was ' +
         storeDocID.toString());
   }
 
 //  method to delete a item
   static Future<void> deleteItem(String itemDocID) async {
+
+    
+// delete graph data subcollection of the item 
     await _storeCollection
-        .doc(Database().getCurrentStoreID())
-        .collection('items')
-        .doc(itemDocID)
-        .delete();
+        .doc(Database().getCurrentStoreID()).collection('items').doc(itemDocID).collection('graphData').doc('quantity').delete();
+
+    //! for some reason when I add the below delete, it doesn't delete the subcollections, however, when I just use the delete command directly above it deletes everything?
+    // delete the overall item
+    // await _storeCollection
+    //     .doc(Database().getCurrentStoreID())
+    //     .collection('items')
+    //     .doc(itemDocID)
+    //     .delete();
+
+    
 
     print('the delete buttonnnnnwas pressed.and the item id was ' +
         itemDocID.toString());

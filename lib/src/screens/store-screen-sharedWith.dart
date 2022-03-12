@@ -154,9 +154,6 @@ class _StoreScreenSharedWithState extends State<StoreScreenSharedWith> {
                               actions: <Widget>[
                                 // NOTE: using "secondaryActions" as opposed to "actions" allows us to slide in from the right instead of the left"
 
-                                //!IMPORTANT Next steps following 3-9-22
-                                //TODO: add the isCurrentUSerAdmin method so you can do and if(userAdmin) to control deletes and edits on the item screen
-                                //TODO: write a method to delete subcollections of store whenever store is deleted in firebase https://firebase.google.com/docs/firestore/manage-data/delete-data#python_4 
                                 // slide action to delete
                                 // IconSlideAction(
                                 //     caption: 'Delete',

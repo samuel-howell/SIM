@@ -204,7 +204,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-//TODO: change size of logo and get rid of all the extra space around it using something like pixlr. implememt change notifier provider on reset password and sign up pages.
 
     return ChangeNotifierProvider(
         create: (_) => ThemeModel(),

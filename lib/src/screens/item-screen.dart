@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/item-csv-import.dart';
 
 import 'package:howell_capstone/src/screens/item-info-screen.dart';
@@ -31,10 +32,15 @@ int searchFilter = 1;
 // for use with csv export
 List<List<String>> itemList = [];
 
+//use to determine if user can delete and edit items
+  bool isCurrentUserAdmin = false;
+
+
 class ItemScreen extends StatefulWidget {
   @override
   State<ItemScreen> createState() => _ItemScreenState();
 }
+
 
 class _ItemScreenState extends State<ItemScreen> {
   //String? Database().getCurrentUserID() = _auth.currentUser?.uid;
@@ -56,9 +62,15 @@ class _ItemScreenState extends State<ItemScreen> {
       <String>["ITEM", "QUANTITY"]
     ]; // we have to reset storeList  to empty every time the page is built. we add one entry <String>["STORE", "ADDRESS"] to serve as a headers though.
 
-//if true, add green to list. if false, add red.
-//Then iterate through list in listview builder to color each container holding quantity correctly
-    //updateQuantityColors();
+
+    // loads the admin status for the currently logged in user when the page loads.
+    Database().isCurrentUserAdmin().then((value) {
+      print('ADMIN STATUS for: ' + value.toString());
+
+      setState(() {
+        isCurrentUserAdmin = value;
+      });
+    });
   }
 
   @override
@@ -263,11 +275,16 @@ class _ItemScreenState extends State<ItemScreen> {
                                     color: Theme.of(context).primaryColor,
                                     icon: Icons.delete_sharp,
                                     onTap: () => {
+                                      if(isCurrentUserAdmin){
                                           showItemDeleteConfirmationAlertDialog(
                                               context, doc.id),
                                           print('item ' +
                                               doc.id +
                                               ' was deleted.')
+                                      }
+                                      else{
+                                        Fluttertoast.showToast(msg: 'You don\'t have privileges to delete items')
+                                      }
                                         }),
 
                                 // slide action to edit
@@ -277,9 +294,14 @@ class _ItemScreenState extends State<ItemScreen> {
                                         Theme.of(context).colorScheme.secondary,
                                     icon: Icons.edit,
                                     onTap: () => {
+                                      if(isCurrentUserAdmin){
                                           showEditItemDialog(context, doc.id),
                                           print(
                                               'item ' + doc.id + ' was edited')
+                                      }
+                                      else{
+                                        Fluttertoast.showToast(msg:'You don\'t have privileges to edit items')
+                                      }
                                         }),
                               ]);
                         }),
