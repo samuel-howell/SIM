@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:howell_capstone/src/screens/item-screen.dart';
+import 'package:howell_capstone/src/screens/login-screen.dart';
 import 'package:howell_capstone/src/screens/store-screen-createdBy.dart';
 import 'package:howell_capstone/src/screens/store-screen-main.dart';
 import 'package:howell_capstone/src/utilities/database.dart';
@@ -923,4 +924,50 @@ waitForStockRefreshDialog(BuildContext context) {
               ));
         });
       });
+}
+
+//  this method will show an alert dialog asking user if they really want to delete the store. If yes is clicked, store will be deleted from firebase database
+showAccountDeleteConfirmationAlertDialog(
+    BuildContext context) {
+  //
+  // set up the buttons
+  Widget cancelButton = TextButton(
+    child: Text("No"),
+    onPressed: () {
+      print('the cancel button was pressed');
+      Navigator.of(context).pop(); // removes the dialog from the screen
+    },
+  );
+  Widget continueButton = TextButton(
+    child: Text("Yes"),
+    onPressed: () async {
+      String? currentUserUID = _auth.currentUser
+          ?.uid; // get the current user id at the moment the method has been triggered
+
+      print(
+          'the delete button for account delete was pressed s ');
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+           ));
+  
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Account Deletion Confirmation"),
+    content: Text("Are you sure you would like to delete your account?  This is irreversible."),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

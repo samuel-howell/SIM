@@ -1,4 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:howell_capstone/src/screens/login-screen.dart';
+import 'package:howell_capstone/src/screens/privacy-policy-screen.dart';
+import 'package:howell_capstone/src/screens/tos-screen.dart';
+import 'package:howell_capstone/src/widgets/custom-alert-dialogs.dart';
 import 'package:howell_capstone/theme/theme_model.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +57,60 @@ class _SettingsScreenState extends State<SettingsScreen>
                         ),
                       ]),
                 ),
-              )
+              ),
+
+
+              Card(
+                elevation: 16,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => TosScreen(),
+                      ));
+                    }, 
+                  
+                          child: Text('View SIMPL Terms of Service'))
+                ),
+              ),
+
+              Card(
+                elevation: 16,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => PrivacyPolicyScreen(),
+                      ));
+                    }, 
+                  
+                          child: Text('View SIMPL Privacy Policy'))
+                ),
+              ),
+
+              Card(
+                elevation: 16,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextButton(
+                    onPressed: () {
+                      showAccountDeleteConfirmationAlertDialog(context);
+                    }, 
+                  
+                          child: Text('Delete Account', style: TextStyle(fontSize: 15, color: Colors.red)))
+                ),
+              ),
             ]),
           ));
     });
