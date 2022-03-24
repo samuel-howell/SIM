@@ -23,6 +23,7 @@ class _ScanScreenState extends State<ScanScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   int qrRead = 0;
   int scanType = 0;
+  String storeName = "";
 
   // this determines which button turns green on click
   bool isScanOutTapped = false;
@@ -38,6 +39,21 @@ class _ScanScreenState extends State<ScanScreen> {
       controller!.pauseCamera();
     }
     controller!.resumeCamera();
+  }
+
+  
+  @override
+  void initState() {
+    super.initState();
+
+    // loads the store name
+    Database().getCurrentStoreName().then((value) {
+      print('store name is: ' + value.toString());
+
+      setState(() {
+        storeName = value.toString();
+      });
+    });
   }
 
   // this is the helper method for the popup menu button
@@ -87,10 +103,25 @@ class _ScanScreenState extends State<ScanScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   if (result != null)
-                    Text(
-                        'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
+                  Container(
+              padding: EdgeInsets.all(5.0),
+              decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.secondaryVariant),
+                      borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+                      child: 
+                        Text(
+                            'Selected Store: ' + storeName  + '  Item ID: ${result!.code}')
+                        )
                   else
-                    Text('SELECT SCAN TYPE THEN BEGIN SCAN'),
+                  Container(
+                    padding: EdgeInsets.all(5.0),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                            color: Theme.of(context).colorScheme.secondaryVariant),
+                        borderRadius: BorderRadius.all(new Radius.circular(10.0))),
+                    child: Text('Selected Store: ' + storeName)
+              ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
