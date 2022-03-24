@@ -27,6 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen>
           body: Padding(
             padding: const EdgeInsets.all(10.0),
             child: Column(children: [
+              
+
               Card(
                 elevation: 16,
                 shape: RoundedRectangleBorder(
@@ -109,6 +111,13 @@ class _SettingsScreenState extends State<SettingsScreen>
                     }, 
                   
                           child: Text('Delete Account', style: TextStyle(fontSize: 15, color: Colors.red)))
+                ),
+              ),
+              Spacer(), // spacer pushes the widgets below it to as far of the bottom as they can go.
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  '1.0.0'
                 ),
               ),
             ]),
